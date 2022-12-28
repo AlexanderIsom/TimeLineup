@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { useRouter } from 'next/router'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
+import { useSession, signOut } from 'next-auth/react'
 import {
   Bars3Icon,
   BellIcon,
@@ -8,6 +9,7 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import styles from '../styles/Navbar.module.scss'
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
@@ -21,9 +23,9 @@ function classNames(...classes: any[]) {
 
 export default function CustomNavbar() {
   const router = useRouter()
-  const loggedIn = false
+  const { data: session } = useSession()
 
-  if (!loggedIn) {
+  if (!session) {
     return <></>
   }
 
@@ -144,6 +146,7 @@ export default function CustomNavbar() {
                               active ? 'bg-gray-100' : '',
                               'block px-4 py-2 text-sm text-gray-700'
                             )}
+                            onClick={() => signOut()}
                           >
                             Sign out
                           </a>
