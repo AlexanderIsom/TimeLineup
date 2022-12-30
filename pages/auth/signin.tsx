@@ -22,7 +22,7 @@ export default function singin({ providers }: any) {
               <button
                 key={provider.id}
                 className={classNames(
-                  styles.provider_button,
+                  styles.providerButton,
                   styles[provider.id]
                 )}
                 onClick={() => signIn(provider.id)}

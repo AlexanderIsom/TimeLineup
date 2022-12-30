@@ -23,7 +23,7 @@ export default function CustomNavbar() {
       <div className={styles.wrapper}>
         <div className={styles.content}>
           <div className={styles.justify}>
-            <div className={styles.navbar_container}>
+            <div className={styles.navbarContainer}>
               <Image
                 width={128}
                 height={128}
@@ -31,16 +31,16 @@ export default function CustomNavbar() {
                 src='/square-clock.png'
                 alt='Your Company'
               />
-              <div className={styles.items_container}>
+              <div className={styles.itemsContainer}>
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
                     className={classNames(
                       router.asPath === item.href
-                        ? styles.active_link
-                        : styles.inactive_link,
-                      styles.navbar_item
+                        ? styles.activeLink
+                        : styles.inactiveLink,
+                      styles.navbarItem
                     )}
                     aria-current={
                       router.asPath === item.href ? 'page' : undefined

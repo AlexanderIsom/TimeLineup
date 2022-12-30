@@ -1,5 +1,3 @@
-$smallScreenWidth: 640px;
-
 .wrapper {
   background-color: rgb(32 41 55);
 }
@@ -33,7 +31,7 @@ $smallScreenWidth: 640px;
   justify-content: space-between;
 }
 
-.navbar_container {
+.navbarContainer {
   display: flex;
   flex: 1 1 0%;
   align-items: center;
@@ -45,19 +43,19 @@ $smallScreenWidth: 640px;
   }
 }
 
-.items_container {
+.itemsContainer {
   display: flex;
   * {
     margin-left: 1rem;
   }
 }
 
-.active_link {
+.activeLink {
   background-color: rgb(17 24 39);
   color: white;
 }
 
-.inactive_link {
+.inactiveLink {
   color: rgb(209 213 219);
 
   &:hover {
@@ -66,7 +64,7 @@ $smallScreenWidth: 640px;
   }
 }
 
-.navbar_item {
+.navbarItem {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   padding-top: 0.5rem;
