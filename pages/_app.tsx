@@ -12,7 +12,7 @@ export default function App({
       <SessionProvider session={session}>
         <CustomNavbar />
 
-        <main className='min-h-screen text-center'>
+        <main>
           <Component {...pageProps} />
         </main>
       </SessionProvider>
