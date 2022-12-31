@@ -1,9 +1,9 @@
 import { signIn, getProviders } from 'next-auth/react'
 import Image from 'next/image'
+import Header from '../../components/Header'
 import backgroundImage from '../../public/RubberBandits.png'
 
 import styles from '../../styles/Signin.module.scss'
-
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
@@ -11,6 +11,7 @@ function classNames(...classes: any) {
 export default function singin({ providers }: any) {
   return (
     <>
+      <Header title='Login' />
       <div className={classNames(styles.center, styles.backgroundImage)}>
         <Image src={backgroundImage} alt='' />
       </div>
