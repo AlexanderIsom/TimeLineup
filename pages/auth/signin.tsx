@@ -11,26 +11,21 @@ function classNames(...classes: any) {
 export default function singin({ providers }: any) {
   return (
     <>
-      <div>
-        <div className={classNames(styles.center, styles.backgroundImage)}>
-          <Image src={backgroundImage} alt='' />
-        </div>
-        <div className={classNames(styles.center, styles.glass)}>
-          <div className={styles.signInText}>Sign in options</div>
-          {providers &&
-            Object.values(providers).map((provider: any) => (
-              <button
-                key={provider.id}
-                className={classNames(
-                  styles.providerButton,
-                  styles[provider.id]
-                )}
-                onClick={() => signIn(provider.id)}
-              >
-                {provider.name.toUpperCase()}
-              </button>
-            ))}
-        </div>
+      <div className={classNames(styles.center, styles.backgroundImage)}>
+        <Image src={backgroundImage} alt='' />
+      </div>
+      <div className={classNames(styles.center, styles.glass)}>
+        <div className={styles.signInText}>Sign in options</div>
+        {providers &&
+          Object.values(providers).map((provider: any) => (
+            <button
+              key={provider.id}
+              className={classNames(styles.providerButton, styles[provider.id])}
+              onClick={() => signIn(provider.id)}
+            >
+              {provider.name.toUpperCase()}
+            </button>
+          ))}
       </div>
     </>
   )

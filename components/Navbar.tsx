@@ -6,11 +6,10 @@ import Image from 'next/image'
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
-  { name: 'Projects', href: '/project', current: false },
-  { name: 'Calendar', href: '#', current: false },
+  { name: 'Events', href: '/Events', current: false },
 ]
 
-function classNames(...classes: any[]) {
+function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -51,6 +50,20 @@ export default function CustomNavbar() {
                 ))}
               </div>
             </div>
+            <Link
+              key={'newEvent'}
+              href={'/NewEvent'}
+              className={classNames(
+                router.asPath === '/NewEvent'
+                  ? styles.activeLink
+                  : styles.inactiveLink,
+                styles.navbarItem,
+                styles.marginRight
+              )}
+              aria-current={router.asPath === '/NewEvent' ? 'page' : undefined}
+            >
+              New Event
+            </Link>
             <div className={styles.profileUsernameText}>
               {session.user.name}
             </div>
