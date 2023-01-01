@@ -3,6 +3,7 @@ import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import styles from '../styles/Navbar.module.scss'
 import Image from 'next/image'
+import { PlusSmallIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
@@ -51,18 +52,15 @@ export default function CustomNavbar() {
               </div>
             </div>
             <Link
-              key={'newEvent'}
               href={'/NewEvent'}
               className={classNames(
-                router.asPath === '/NewEvent'
-                  ? styles.activeLink
-                  : styles.inactiveLink,
                 styles.navbarItem,
-                styles.marginRight
+                styles.marginRight,
+                styles.createEventButton
               )}
-              aria-current={router.asPath === '/NewEvent' ? 'page' : undefined}
             >
               New Event
+              <PlusSmallIcon className={styles.icon} />
             </Link>
             <div className={styles.profileUsernameText}>
               {session.user.name}
