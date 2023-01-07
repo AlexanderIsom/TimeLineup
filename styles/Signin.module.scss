@@ -5,11 +5,6 @@
   transform: translate(-50%, -50%);
 }
 
-.backgroundImage {
-  height: 100vh;
-  overflow: hidden;
-}
-
 .glass {
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 16px;
@@ -73,8 +68,6 @@
     hsl(var(--hue), 95%, 84%)
   );
 
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 
   -webkit-font-smoothing: antialiased;
@@ -82,6 +75,7 @@
 
   width: 100%;
   height: 100vh;
+  padding: 2rem;
   display: grid;
   place-items: center;
   font-family: var(--font-family);
@@ -225,14 +219,14 @@
 
     .btns {
       flex-wrap: wrap;
-    }
 
-    .btn {
-      width: 100%;
-      font-size: 0.75rem;
-      margin-right: 0;
-      :first-child {
-        margin-bottom: 1rem;
+      .btn {
+        width: 100%;
+        font-size: 0.75rem;
+        margin-right: 0;
+        &:first-child {
+          margin-bottom: 1rem;
+        }
       }
     }
   }
