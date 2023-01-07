@@ -1,11 +1,14 @@
 .wrapper {
+  position: fixed;
+  width:100vw;
   background-color: rgb(32 41 55);
+  overflow: hidden;
 }
 
 .content {
   margin-left: auto;
   margin-right: auto;
-  max-width: 1280px;
+  max-width: 1920px;
   padding-left: 8px;
   padding-right: 8px;
   @media (min-width: 640px) {
@@ -62,6 +65,8 @@
 .inactiveLink {
   color: rgb(209 213 219);
 
+  transition: 0.3s;
+
   &:hover {
     background-color: rgb(55 65 81);
     color: white;
@@ -87,6 +92,7 @@
   display: flex;
   align-items: center;
   padding-right: 16px;
+  
   @media (min-width: 640px) {
     position: static;
     top: auto;
@@ -126,12 +132,14 @@
   align-items: center;
   background-color: rgb(55 65 81);
   color: white;
+  transition: 0.3s;
   .icon {
     margin-left: 5px;
     width: 20px;
     height: 20px;
   }
   &:hover {
-    background-color: purple;
+    background-color: rgb(46, 85, 148);
   }
 }
+
