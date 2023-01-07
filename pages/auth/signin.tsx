@@ -14,9 +14,6 @@ export default function singin({ providers }: any) {
   return (
     <>
       <Header title="Login" />
-      <div className={classNames(styles.center, styles.backgroundImage)}>
-        <Image src={backgroundImage} alt="" />
-      </div>
       <div className={styles.wrapper}>
         <div className={styles.background} />
         <div className={styles.orbCanvas}>
