@@ -1,5 +1,6 @@
 import { signIn, getProviders } from "next-auth/react";
 import Header from "../../components/Header";
+import { Nunito } from "@next/font/google";
 
 import AnimateSphereBackground from "../../components/AnimateSpheres";
 
@@ -8,16 +9,19 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
+const nunito = Nunito({ subsets: ["latin"] });
+
 export default function SignIn({ providers }: any) {
   return (
     <>
       <Header title="Login" />
+
       <div className={styles.wrapper}>
         <div className={styles.background} />
         <div className={styles.orbCanvas}>
           <AnimateSphereBackground />
         </div>
-        <div className={styles.overlay}>
+        <div className={classNames(nunito.className, styles.overlay)}>
           <div className={styles.inner}>
             <h1 className={styles.title}>
               Welcome, <span className={styles.textGradient}> TimeLineup </span>

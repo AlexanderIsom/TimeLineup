@@ -6,8 +6,6 @@
   --complimentary1: hsl(var(--hue-complimentary1), 95%, 50%);
   --complimentary2: hsl(var(--hue-complimentary2), 95%, 50%);
 
-  --font-family: "Poppins", system-ui;
-
   --bg-gradient: linear-gradient(
     to bottom,
     hsl(var(--hue), 95%, 99%),
@@ -24,12 +22,7 @@
   padding: 2rem;
   display: grid;
   place-items: center;
-  font-family: var(--font-family);
   color: var(--dark-color);
-
-  strong {
-    font-weight: 600;
-  }
 }
 
 .background {
@@ -78,7 +71,7 @@
   .title {
     font-size: 1.875rem;
     line-height: 2.75rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -0.025em;
     margin-bottom: 2rem;
   }
@@ -174,6 +167,10 @@
       font-size: 0.875rem;
       line-height: 1.5rem;
       margin-bottom: 2.5rem;
+
+      .strong {
+        font-weight: 600;
+      }
     }
   }
 }

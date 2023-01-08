@@ -1,5 +1,7 @@
-import NextAuth from 'next-auth'
-import DiscordProvider from 'next-auth/providers/discord'
+import NextAuth from "next-auth";
+import DiscordProvider from "next-auth/providers/discord";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "../../../lib/mongodb";
 
 export const authOptions = {
   secret: process.env.SECRET,
@@ -10,12 +12,13 @@ export const authOptions = {
     }),
   ],
   pages: {
-    signIn: '/auth/signin',
+    signIn: "/auth/signin",
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return baseUrl
+      return baseUrl;
     },
   },
-}
-export default NextAuth(authOptions)
+  adapter: MongoDBAdapter(clientPromise),
+};
+export default NextAuth(authOptions);

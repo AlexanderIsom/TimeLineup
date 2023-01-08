@@ -1,7 +1,7 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import CustomNavbar from '../components/Navbar'
-import { SessionProvider } from 'next-auth/react'
+import "../styles/globals.css";
+import type { AppProps } from "next/app";
+import CustomNavbar from "../components/Navbar";
+import { SessionProvider } from "next-auth/react";
 
 export default function App({
   Component,
@@ -17,5 +17,5 @@ export default function App({
         </main>
       </SessionProvider>
     </>
-  )
+  );
 }
