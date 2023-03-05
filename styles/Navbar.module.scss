@@ -1,6 +1,5 @@
 .wrapper {
-  position: fixed;
-  width:100vw;
+  width: 100vw;
   background-color: rgb(32 41 55);
   overflow: hidden;
 }
@@ -92,7 +91,7 @@
   display: flex;
   align-items: center;
   padding-right: 16px;
-  
+
   @media (min-width: 640px) {
     position: static;
     top: auto;
@@ -142,4 +141,3 @@
     background-color: rgb(46, 85, 148);
   }
 }
-

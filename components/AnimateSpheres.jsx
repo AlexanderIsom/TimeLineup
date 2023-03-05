@@ -23,7 +23,7 @@ class ColorPalette {
   }
 
   setColors() {
-    this.hue = ~~random(220, 360);
+    this.hue = ~~random(50, 360);
     this.complimentaryHue1 = this.hue + 30;
     this.complimentaryHue2 = this.hue + 60;
     this.saturation = 95;
@@ -57,7 +57,6 @@ class ColorPalette {
   }
 
   setCustomProperties() {
-    // set CSS custom properties so that the colors defined here can be used throughout the UI
     document.documentElement.style.setProperty("--hue", this.hue);
     document.documentElement.style.setProperty(
       "--hue-complimentary1",

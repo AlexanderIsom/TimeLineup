@@ -1,22 +1,22 @@
-import { useRouter } from 'next/router'
-import { useSession, signOut } from 'next-auth/react'
-import Link from 'next/link'
-import styles from '../styles/Navbar.module.scss'
-import Image from 'next/image'
-import { PlusSmallIcon } from '@heroicons/react/24/outline'
+import { useRouter } from "next/router";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
+import styles from "../styles/Navbar.module.scss";
+import Image from "next/image";
+import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: 'Home', href: '/', current: true },
-  { name: 'Events', href: '/Events', current: false },
-]
+  { name: "Home", href: "/", current: true },
+  { name: "Events", href: "/Events", current: false },
+];
 
 function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function CustomNavbar() {
-  const router = useRouter()
-  const { data: session } = useSession()
+  const router = useRouter();
+  const { data: session } = useSession();
 
   if (session && session.user) {
     return (
@@ -28,8 +28,8 @@ export default function CustomNavbar() {
                 width={128}
                 height={128}
                 className={styles.logo}
-                src='/square-clock.png'
-                alt='Your Company'
+                src="/square-clock.png"
+                alt="Your Company"
               />
               <div className={styles.itemsContainer}>
                 {navigation.map((item) => (
@@ -43,7 +43,7 @@ export default function CustomNavbar() {
                       styles.navbarItem
                     )}
                     aria-current={
-                      router.asPath === item.href ? 'page' : undefined
+                      router.asPath === item.href ? "page" : undefined
                     }
                   >
                     {item.name}
@@ -52,7 +52,7 @@ export default function CustomNavbar() {
               </div>
             </div>
             <Link
-              href={'/NewEvent'}
+              href={"/NewEvent"}
               className={classNames(
                 styles.navbarItem,
                 styles.marginRight,
@@ -75,14 +75,14 @@ export default function CustomNavbar() {
                   src={session.user.image as string}
                   width={38}
                   height={38}
-                  alt='profile image'
+                  alt="profile image"
                 />
               </button>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
-  return <></>
+  return <></>;
 }
