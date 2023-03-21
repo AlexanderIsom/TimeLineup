@@ -1,10 +1,12 @@
+import { useSession } from "next-auth/react";
 import { useState } from "react";
-import styles from "../styles/Components/EventForm.module.scss";
 
 export default function EventForm() {
+  const { data: session } = useSession();
+
   const [name, setName] = useState("");
-  const [startDateTime, setStartDateTime] = useState(new Date());
-  const [endDateTime, setEndDateTime] = useState(new Date());
+  const [startDateTime, setStartDateTime] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: any) => {
@@ -14,9 +16,10 @@ export default function EventForm() {
         let response = await fetch("http://localhost:3000/api/addEvent", {
           method: "POST",
           body: JSON.stringify({
-            name,
-            startDateTime,
-            endDateTime,
+            ownerId: session?.user.id,
+            name: name,
+            startDateTime: startDateTime,
+            endDateTime: endDateTime,
           }),
           headers: {
             Accept: "application/json, text/plaion, */*",
@@ -25,7 +28,7 @@ export default function EventForm() {
         });
         response = await response.json();
         setName("");
-        setStartDateTime(new Date());
+        setStartDateTime(new Date().toISOString());
       } catch (errorMessage: any) {
         console.log(errorMessage);
         setError(errorMessage);
@@ -53,7 +56,7 @@ export default function EventForm() {
           <input
             type="datetime-local"
             name="eventDate"
-            onChange={(e) => setStartDateTime(new Date(e.target.value))}
+            onChange={(e) => setStartDateTime(new Date(e.target.value).toISOString())}
           />
         </label>
         <ul />
@@ -62,7 +65,7 @@ export default function EventForm() {
           <input
             type="datetime-local"
             name="eventDate"
-            onChange={(e) => setEndDateTime(new Date(e.target.value))}
+            onChange={(e) => setEndDateTime(new Date(e.target.value).toISOString())}
           />
         </label>
         <ul />

@@ -2,7 +2,6 @@ import { useSession, getSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 import Calendar from "../components/Calendar";
 import Header from "../components/Header";
-import clientPromise from "../lib/mongodb";
 import styles from "../styles/Index.module.scss";
 import EventsList from "../components/EventsList";
 import EventForm from "../components/NewEventForm";
@@ -11,11 +10,11 @@ import { Event } from "../types"
 import { startOfToday } from "date-fns";
 import Link from "next/link";
 
-type propTypes = {
+type Props = {
   events: Event[]
 }
 
-export default function Home({ events }: propTypes) {
+export default function Home({ events }: Props) {
   const { data: session } = useSession();
   let today = startOfToday();
   let [selectedDay, setSelectedDay] = useState(today);
@@ -34,7 +33,8 @@ export default function Home({ events }: propTypes) {
   if (session) {
     return (
       <>
-        <Header />
+        <div>welcome</div>
+        {/* <Header />
         <Modal show={showModal} handleClose={() => setShowModal(false)}>
           <EventForm />
         </Modal>
@@ -69,7 +69,7 @@ export default function Home({ events }: propTypes) {
             </div>) : "select an event to view more information"}</h1>
           </div>
 
-        </div>
+        </div> */}
       </>
     );
   }
@@ -88,13 +88,12 @@ export async function getServerSideProps(context: any) {
   }
 
   try {
-    const client = await clientPromise;
-    const db = client.db("Events");
 
-    const events = await db.collection("events").find({}).toArray();
+
+    const events = {}
 
     return {
-      props: { session, events: JSON.parse(JSON.stringify(events)) },
+      props: { session, events: {} },
     };
   } catch (e) {
     console.error(e);

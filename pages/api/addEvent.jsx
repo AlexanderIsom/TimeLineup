@@ -4,9 +4,10 @@ const addEvent = async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db("Events");
-    const { name, startDateTime, endDateTime } = req.body;
+    const { ownerId, name, startDateTime, endDateTime } = req.body;
 
     const post = await db.collection("events").insertOne({
+      ownerId,
       name,
       startDateTime,
       endDateTime,
