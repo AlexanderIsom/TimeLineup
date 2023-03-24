@@ -34,12 +34,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
   image         String?
   emailVerified DateTime?
   accounts      Account[]
   sessions      Session[]
+  Events        Event[]
+  EventResponse EventResponse[]
 }
 
 model VerificationToken {
@@ -48,4 +50,24 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Event {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDateTime DateTime
+  endDateTime   DateTime
+  EventResponse EventResponse[]
+}
+
+model EventResponse {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId       String
+  userId        String
+  startDateTime DateTime
+  endDateTime   DateTime
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

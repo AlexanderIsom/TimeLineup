@@ -1,28 +1,70 @@
-import { ObjectId } from "mongodb";
-import clientPromise from "../../lib/mongodb";
-import { Event, EventResponses } from "../../types/Events"
+import { PrismaClient } from "@prisma/client";
+import { useEffect, useState } from "react";
+import Modal from "../../components/Modal";
+import EventResponseForm from "../../components/NewEventResponseForm";
+import { Event, EventResponse } from "../../types/Events"
+import create from "../../utils/time";
+import styles from "../../styles/Components/eventResponse.module.scss"
 
+const prisma = new PrismaClient();
 interface EventProps {
 	currentEvent: Event
-	eventResponses: EventResponses;
+	eventResponses: EventResponse[];
 }
 
 export default function ViewEvent({ currentEvent, eventResponses }: EventProps) {
-	console.log(eventResponses);
+	const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
+	const [showModal, setShowModal] = useState(false);
+	const startDate = new Date(currentEvent.startDateTime);
+	const endDate = new Date(currentEvent.endDateTime);
+	const timeBar = create({ start: startDate, end: endDate, viewportWidth: windowSize.width })
 
-	return <h1>event name: {currentEvent.name}</h1>
+	useEffect(() => {
+		function handleWindowResize() {
+			setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+		}
+
+		window.addEventListener("resize", handleWindowResize);
+		handleWindowResize();
+		return () => window.removeEventListener("resize", handleWindowResize);
+	}, [])
+
+	return (<>
+		<Modal show={showModal} handleClose={() => setShowModal(false)}>
+			<EventResponseForm />
+		</Modal>
+		<button
+			type="button"
+			onClick={() => setShowModal(true)}
+		>
+			New Response
+		</button>
+		<h1>event name: {currentEvent.title}</h1>
+		{eventResponses.map((eventResponse: EventResponse, index: number) => {
+			const responseStartDate = new Date(eventResponse.startDateTime);
+			const responseEndDate = new Date(eventResponse.endDateTime);
+			return <div key={index} className={styles.eventResponse} style={timeBar.toStyleLeftAndWidth(responseStartDate, responseEndDate)}>hello</div>
+		})}
+
+	</>)
 }
 
 export async function getServerSideProps({ params }: any) {
 	try {
-		const client = await clientPromise;
-		const db = client.db("Events");
-		const id = new ObjectId(params.id)
-		const event = await db.collection("events").findOne({ _id: id });
-		const responses = await db.collection("responses").find({ eventId: params.id }).toArray();
+		const event = await prisma.event.findUnique({
+			where: {
+				id: params.id
+			}
+		});
+
+		const eventReseponses = await prisma.eventResponse.findMany({
+			where: {
+				eventId: params.id
+			}
+		})
 
 		return {
-			props: { currentEvent: JSON.parse(JSON.stringify(event)) as Event, eventResponses: JSON.parse(JSON.stringify(responses)) as EventResponses },
+			props: { currentEvent: JSON.parse(JSON.stringify(event)) as Event, eventResponses: JSON.parse(JSON.stringify(eventReseponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);

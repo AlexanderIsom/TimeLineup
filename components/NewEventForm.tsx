@@ -17,7 +17,7 @@ export default function EventForm() {
           method: "POST",
           body: JSON.stringify({
             ownerId: session?.user.id,
-            name: name,
+            title: name,
             startDateTime: startDateTime,
             endDateTime: endDateTime,
           }),

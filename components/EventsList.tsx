@@ -30,7 +30,7 @@ export default function EventsList({ events, displayAll, day, setSelectedEvent }
             <p>no events scheduled</p>
           ) : (
             filteredEvents.map((event: Event) => (
-              <li key={event._id} className={styles.meetingLI} onClick={() => {
+              <li key={event.id} className={styles.meetingLI} onClick={() => {
                 setSelectedEvent(event);
               }}>
                 {/* <Image
@@ -41,7 +41,7 @@ export default function EventsList({ events, displayAll, day, setSelectedEvent }
                   className={styles.meetingImage}
                 /> */}
                 <div className={styles.meetingInfo}>
-                  <p>{event.name}</p>
+                  <p>{event.title}</p>
                   <p>
                     <time dateTime={event.startDateTime}>start</time>-
                     <time dateTime={event.endDateTime}>end</time>

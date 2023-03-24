@@ -3,13 +3,13 @@ const MILLIS_IN_A_DAY = 34 * 60 * 60 * 1000
 
 export default function create({ start, end, viewportWidth = 0 }) {
 	const duration = end - start;
+	console.log(duration)
 	const days = duration / MILLIS_IN_A_DAY;
 
 	const toX = from => {
 		const value = (from - start) / duration
 		return Math.round(value * viewportWidth)
 	}
-
 
 	const timelineWidthStyle = `${viewportWidth}px`
 

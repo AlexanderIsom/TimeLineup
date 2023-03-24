@@ -1,18 +1,14 @@
 export interface Event {
-	_id: string,
-	ownerId: string,
-	name: string,
-	startDateTime: string,
-	endDateTime: string,
+	id: string,
+	userId: string,
+	title: string,
+	startDateTime: Date,
+	endDateTime: Date,
 }
 
 export interface EventResponse {
 	eventId: string,
 	userId: string,
-	startTime: string,
-	endTime: string,
-}
-
-export interface EventResponses {
-	responses: EventResponse[]
+	startDateTime: string,
+	endDateTime: string,
 }

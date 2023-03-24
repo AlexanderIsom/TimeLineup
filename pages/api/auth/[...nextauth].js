@@ -34,7 +34,7 @@ export default NextAuth({
   },
   callbacks: {
     async session({ session, token, user }) {
-      session.user.id = user.id;
+      session.user = user;
       return session
     },
 

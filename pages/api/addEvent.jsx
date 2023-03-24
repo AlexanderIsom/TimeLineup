@@ -1,19 +1,19 @@
-import clientPromise from "../../lib/mongodb";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const addEvent = async (req, res) => {
   try {
-    const client = await clientPromise;
-    const db = client.db("Events");
-    const { ownerId, name, startDateTime, endDateTime } = req.body;
+    const { ownerId, title, startDateTime, endDateTime } = req.body;
+    const newEvent =
+    {
+      userId: ownerId,
+      title: name,
+      startDateTime: startDateTime,
+      endDateTime: endDateTime,
+    }
 
-    const post = await db.collection("events").insertOne({
-      ownerId,
-      name,
-      startDateTime,
-      endDateTime,
-    });
-
-    res.json(post);
+    await prisma.event.create({ data: newEvent });
   } catch (e) {
     console.error(e);
     throw new Error(e).message;

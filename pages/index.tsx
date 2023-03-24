@@ -9,10 +9,13 @@ import Modal from "../components/Modal";
 import { Event } from "../types"
 import { startOfToday } from "date-fns";
 import Link from "next/link";
+import { PrismaClient } from "@prisma/client";
 
 type Props = {
   events: Event[]
 }
+
+const prisma = new PrismaClient();
 
 export default function Home({ events }: Props) {
   const { data: session } = useSession();
@@ -34,7 +37,7 @@ export default function Home({ events }: Props) {
     return (
       <>
         <div>welcome</div>
-        {/* <Header />
+        <Header />
         <Modal show={showModal} handleClose={() => setShowModal(false)}>
           <EventForm />
         </Modal>
@@ -62,14 +65,14 @@ export default function Home({ events }: Props) {
 
           <EventsList events={events} day={selectedDay} setSelectedEvent={setSelectedEvent} />
           <div>
-            <h1>{selectedEvent !== undefined ? (<div>name: {selectedEvent.name} <br />
-              <Link href={"/Events/" + selectedEvent._id}>
+            <h1>{selectedEvent !== undefined ? (<div>name: {selectedEvent.title} <br />
+              <Link href={"/Events/" + selectedEvent.id}>
                 <button type="button" >view more details</button>
               </Link>
             </div>) : "select an event to view more information"}</h1>
           </div>
 
-        </div> */}
+        </div>
       </>
     );
   }
@@ -89,11 +92,10 @@ export async function getServerSideProps(context: any) {
 
   try {
 
-
-    const events = {}
+    const events = await prisma.event.findMany();
 
     return {
-      props: { session, events: {} },
+      props: { session, events: JSON.parse(JSON.stringify(events)) },
     };
   } catch (e) {
     console.error(e);
