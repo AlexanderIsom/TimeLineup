@@ -7,7 +7,6 @@ import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  { name: "Events", href: "/Events", current: false },
 ];
 
 function classNames(...classes: any) {
@@ -24,13 +23,6 @@ export default function CustomNavbar() {
         <div className={styles.content}>
           <div className={styles.justify}>
             <div className={styles.navbarContainer}>
-              <Image
-                width={128}
-                height={128}
-                className={styles.logo}
-                src="/square-clock.png"
-                alt="Your Company"
-              />
               <div className={styles.itemsContainer}>
                 {navigation.map((item) => (
                   <Link
@@ -51,17 +43,6 @@ export default function CustomNavbar() {
                 ))}
               </div>
             </div>
-            <Link
-              href={"/NewEvent"}
-              className={classNames(
-                styles.navbarItem,
-                styles.marginRight,
-                styles.createEventButton
-              )}
-            >
-              New Event
-              <PlusSmallIcon className={styles.icon} />
-            </Link>
             <div className={styles.profileUsernameText}>
               {session.user.name}
             </div>

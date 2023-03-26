@@ -1,5 +1,6 @@
 .eventResponse{
-	position: absolute;
+	position: relative;
+	margin-top: 10px;
 	background: #06f;
 	background-color: #06f;
 	// color: #fff;
@@ -7,4 +8,10 @@
 	width: 50px;
 	text-align: center;
 	border-radius: 5px;
+}
+
+.responsesContainer{
+	position: absolute;
+	height: 100px;
+	width: 100px;
 }

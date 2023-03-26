@@ -40,12 +40,13 @@ export default function ViewEvent({ currentEvent, eventResponses }: EventProps) 
 			New Response
 		</button>
 		<h1>event name: {currentEvent.title}</h1>
-		{eventResponses.map((eventResponse: EventResponse, index: number) => {
-			const responseStartDate = new Date(eventResponse.startDateTime);
-			const responseEndDate = new Date(eventResponse.endDateTime);
-			return <div key={index} className={styles.eventResponse} style={timeBar.toStyleLeftAndWidth(responseStartDate, responseEndDate)}>hello</div>
-		})}
-
+		<div className={styles.responsesContainer}>
+			{eventResponses.map((eventResponse: EventResponse, index: number) => {
+				const responseStartDate = new Date(eventResponse.startDateTime);
+				const responseEndDate = new Date(eventResponse.endDateTime);
+				return <div key={index} className={styles.eventResponse} style={timeBar.toStyleLeftAndWidth(responseStartDate, responseEndDate, index)}>hello</div>
+			})}
+		</div>
 	</>)
 }
 
