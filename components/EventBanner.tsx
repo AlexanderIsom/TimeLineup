@@ -1,39 +1,31 @@
-import { Event } from "../types"
-import styles from "../styles/Components/EventBanner.module.scss"
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import { Event } from '../types'
+import styles from '../styles/Components/EventBanner.module.scss'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface Props {
-	event: Event
+  event: Event
 }
 
 export default function EventBanner({ event }: Props) {
-	const [ownerUser, setOwnerUser] = useState({});
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const reseponse = await fetch("/api/getUser?userId=" + event.userId, {
-					method: "post",
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						userId: event.userId
-					})
-				})
-				const json = await reseponse.json();
-				console.log(json)
-			} catch (e) {
-				console.log("error", e)
-			}
-		}
+  const [ownerUser, setOwnerUser] = useState({})
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const reseponse = await fetch('/api/getUser?userId=' + event.userId)
+        const json = await reseponse.json()
+        console.log(json)
+      } catch (e) {
+        console.log('error', e)
+      }
+    }
 
-		fetchData();
+    fetchData()
+  }, [])
 
-	}, [])
-
-	return <Link href={"/Events/" + event.id} className={styles.event}>
-		{event.title}
-	</ Link >
+  return (
+    <Link href={'/Events/' + event.id} className={styles.event}>
+      {event.title}
+    </Link>
+  )
 }
