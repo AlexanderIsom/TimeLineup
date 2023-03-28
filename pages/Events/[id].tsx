@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Event, EventResponse } from "../../types/Events"
-import styles from "../../styles/Components/eventResponse.module.scss"
+import styles from "../../styles/Components/EventResponse.module.scss"
 
 import CreateTimeline from "../../utils/time"
 import { useEffect, useState } from "react";
