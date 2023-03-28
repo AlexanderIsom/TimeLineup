@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { useEffect, useState } from "react";
-import Modal from "../../components/Modal";
-import EventResponseForm from "../../components/NewEventResponseForm";
 import { Event, EventResponse } from "../../types/Events"
-import create from "../../utils/time";
 import styles from "../../styles/Components/eventResponse.module.scss"
+
+import CreateTimeline from "../../utils/time"
+import { useEffect, useState } from "react";
+
+import TimelineContainer from "../../components/timelineComponent";
 
 const prisma = new PrismaClient();
 interface EventProps {
@@ -13,15 +14,12 @@ interface EventProps {
 }
 
 export default function ViewEvent({ currentEvent, eventResponses }: EventProps) {
-	const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
-	const [showModal, setShowModal] = useState(false);
-	const startDate = new Date(currentEvent.startDateTime);
-	const endDate = new Date(currentEvent.endDateTime);
-	const timeBar = create({ start: startDate, end: endDate, viewportWidth: windowSize.width })
+	const [viewportWidth, setViewportWidth] = useState(0);
+	const timeline = CreateTimeline({ start: currentEvent.startDateTime, end: currentEvent.endDateTime, viewportWidth: viewportWidth })
 
 	useEffect(() => {
-		function handleWindowResize() {
-			setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+		const handleWindowResize = () => {
+			setViewportWidth(window.innerWidth);
 		}
 
 		window.addEventListener("resize", handleWindowResize);
@@ -30,21 +28,10 @@ export default function ViewEvent({ currentEvent, eventResponses }: EventProps) 
 	}, [])
 
 	return (<>
-		<Modal show={showModal} handleClose={() => setShowModal(false)}>
-			<EventResponseForm />
-		</Modal>
-		<button
-			type="button"
-			onClick={() => setShowModal(true)}
-		>
-			New Response
-		</button>
-		<h1>event name: {currentEvent.title}</h1>
 		<div className={styles.responsesContainer}>
+
 			{eventResponses.map((eventResponse: EventResponse, index: number) => {
-				const responseStartDate = new Date(eventResponse.startDateTime);
-				const responseEndDate = new Date(eventResponse.endDateTime);
-				return <div key={index} className={styles.eventResponse} style={timeBar.toStyleLeftAndWidth(responseStartDate, responseEndDate, index)}>hello</div>
+				return <TimelineContainer key={index} event={eventResponse} timeline={timeline} index={index} />
 			})}
 		</div>
 	</>)

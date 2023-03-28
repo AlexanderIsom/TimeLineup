@@ -1,17 +1,22 @@
 .eventResponse{
-	position: relative;
-	margin-top: 10px;
-	background: #06f;
-	background-color: #06f;
-	// color: #fff;
-	height: 50px;
-	width: 50px;
-	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 	border-radius: 5px;
+	background-color: #f0f0f0;
 }
 
 .responsesContainer{
 	position: absolute;
 	height: 100px;
 	width: 100px;
+}
+
+.resizableObject{
+	background-color: blue;
+	text-align: center;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
 }
