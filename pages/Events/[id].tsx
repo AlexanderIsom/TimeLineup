@@ -5,7 +5,7 @@ import styles from "../../styles/Components/EventResponse.module.scss"
 import CreateTimeline from "../../utils/time"
 import { useEffect, useState } from "react";
 
-import TimelineContainer from "../../components/timelineComponent";
+import TimelineContainer from "../../components/TimelineContainer";
 
 const prisma = new PrismaClient();
 interface EventProps {
