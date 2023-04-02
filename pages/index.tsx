@@ -5,14 +5,12 @@ import styles from "../styles/Index.module.scss";
 import EventForm from "../components/NewEventForm";
 import Modal from "../components/Modal";
 import { Event } from "../types"
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/db";
 import EventBanner from "../components/EventBanner";
 
 type Props = {
   events: Event[]
 }
-
-const prisma = new PrismaClient();
 
 export default function Home({ events }: Props) {
   const { data: session } = useSession();

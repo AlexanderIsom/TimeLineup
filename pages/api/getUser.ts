@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from "../../lib/db";
 import { NextApiHandler } from 'next'
-const prisma = new PrismaClient()
 
 const getUser: NextApiHandler = async (req, res) => {
   const { userId } = req.query

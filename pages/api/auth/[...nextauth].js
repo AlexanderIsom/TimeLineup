@@ -1,9 +1,7 @@
 import NextAuth from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from "../../../lib/db";
 import TimeLineUpPrismaAdapter from './TimelineUpPrismaAdapter'
-
-const prisma = new PrismaClient()
 
 export default NextAuth({
   adapter: TimeLineUpPrismaAdapter(prisma),

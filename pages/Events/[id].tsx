@@ -1,38 +1,37 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../lib/db";
 import { Event, EventResponse } from "../../types/Events"
-import styles from "../../styles/Components/EventResponse.module.scss"
-
-import CreateTimeline from "../../utils/time"
-import { useEffect, useState } from "react";
-
 import TimelineContainer from "../../components/TimelineContainer";
+import { useSession } from "next-auth/react";
+import styles from "../../styles/id.module.scss"
+import { format, parseISO } from "date-fns";
+import CreateTimeline from "../../utils/TimelineUtils"
 
-const prisma = new PrismaClient();
 interface EventProps {
-	currentEvent: Event
+	event: Event
 	eventResponses: EventResponse[];
 }
 
-export default function ViewEvent({ currentEvent, eventResponses }: EventProps) {
-	const [viewportWidth, setViewportWidth] = useState(0);
-	const timeline = CreateTimeline({ start: currentEvent.startDateTime, end: currentEvent.endDateTime, viewportWidth: viewportWidth })
+export default function ViewEvent({ event, eventResponses }: EventProps) {
+	const { data: session } = useSession();
+	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime })
 
-	useEffect(() => {
-		const handleWindowResize = () => {
-			setViewportWidth(window.innerWidth);
-		}
-
-		window.addEventListener("resize", handleWindowResize);
-		handleWindowResize();
-		return () => window.removeEventListener("resize", handleWindowResize);
-	}, [])
+	const sessionUserResponses = eventResponses.filter(event => event.userId == session?.user.id)
 
 	return (<>
-		<div className={styles.responsesContainer}>
+		{/* <TimelineNumbers /> */}
+		<div style={{ height: "100%", minHeight: "800px" }} className={styles.wrapper}>
+			<div style={{ background: "red", overflowX: "scroll" }}>
+				{sessionUserResponses.map((eventResponse: EventResponse, index: number) => {
+					return <TimelineContainer key={index} event={eventResponse} timeline={timeline} />
+				})}
+			</div>
 
-			{eventResponses.map((eventResponse: EventResponse, index: number) => {
-				return <TimelineContainer key={index} event={eventResponse} timeline={timeline} index={index} />
-			})}
+			<div style={{ background: "blue" }}>
+				<h1>{event.title}</h1>
+				<h2>{event.userId}</h2>
+				<h2>{format(parseISO(event.startDateTime, { additionalDigits: 0 }), "dd/mm/yy hh:mm")}</h2>
+				<h2>{format(parseISO(event.endDateTime, { additionalDigits: 0 }), "dd/mm/yy hh:mm")}</h2>
+			</div>
 		</div>
 	</>)
 }
@@ -52,7 +51,7 @@ export async function getServerSideProps({ params }: any) {
 		})
 
 		return {
-			props: { currentEvent: JSON.parse(JSON.stringify(event)) as Event, eventResponses: JSON.parse(JSON.stringify(eventReseponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(event)) as Event, eventResponses: JSON.parse(JSON.stringify(eventReseponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);
