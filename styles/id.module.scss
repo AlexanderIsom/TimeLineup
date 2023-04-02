@@ -1,9 +1,12 @@
 .wrapper {
 	position: relative;
 	display: grid;
-	grid-template-columns: .70fr .30fr;
+	grid-template-columns: 1fr 4fr 1.5fr;
 }
 
-.test {
-	position: relative;
+.scrollable {
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	background: red;
+	overflow-x: scroll;
 }

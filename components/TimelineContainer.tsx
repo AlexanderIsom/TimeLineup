@@ -69,9 +69,11 @@ export default function TimelineContainer({ event, timeline }: Props) {
 		>
 			<div className="dragHandle" />
 
-			{format(startTime, "p")}
+			{format(startTime, "HH:mm")}
 			-
-			{format(endTime, "p")}
+			{format(endTime, "HH:mm")}
+			<br />
+			{width}px
 		</ResizableBox>
 	</Draggable >
 }

@@ -3,8 +3,9 @@ import { Event, EventResponse } from "../../types/Events"
 import TimelineContainer from "../../components/TimelineContainer";
 import { useSession } from "next-auth/react";
 import styles from "../../styles/id.module.scss"
-import { format, parseISO } from "date-fns";
+import { differenceInHours, format, parseISO } from "date-fns";
 import CreateTimeline from "../../utils/TimelineUtils"
+import TimelineNumbers from "../../components/TimelineNumber";
 
 interface EventProps {
 	event: Event
@@ -14,13 +15,13 @@ interface EventProps {
 export default function ViewEvent({ event, eventResponses }: EventProps) {
 	const { data: session } = useSession();
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime })
-
 	const sessionUserResponses = eventResponses.filter(event => event.userId == session?.user.id)
 
 	return (<>
-		{/* <TimelineNumbers /> */}
 		<div style={{ height: "100%", minHeight: "800px" }} className={styles.wrapper}>
-			<div style={{ background: "red", overflowX: "scroll" }}>
+			<div>users</div>
+			<div className={styles.scrollable} >
+				<TimelineNumbers />
 				{sessionUserResponses.map((eventResponse: EventResponse, index: number) => {
 					return <TimelineContainer key={index} event={eventResponse} timeline={timeline} />
 				})}
@@ -29,8 +30,8 @@ export default function ViewEvent({ event, eventResponses }: EventProps) {
 			<div style={{ background: "blue" }}>
 				<h1>{event.title}</h1>
 				<h2>{event.userId}</h2>
-				<h2>{format(parseISO(event.startDateTime, { additionalDigits: 0 }), "dd/mm/yy hh:mm")}</h2>
-				<h2>{format(parseISO(event.endDateTime, { additionalDigits: 0 }), "dd/mm/yy hh:mm")}</h2>
+				<h2>{format(parseISO(event.startDateTime, { additionalDigits: 0 }), "dd/mm/yy HH:mm")}</h2>
+				<h2>{format(parseISO(event.endDateTime, { additionalDigits: 0 }), "dd/mm/yy HH:mm")}</h2>
 			</div>
 		</div>
 	</>)
