@@ -29,15 +29,14 @@ export default function TimelineContainer({ event, timeline }: Props) {
 
 		const newEndTime = roundToNearestMinutes(timeline.toDate(x + size.width), { nearestTo: 15 })
 		setEndTime(newEndTime);
-
 		setWidth(size.width);
-
 		setDuration(differenceInSeconds(newEndTime, newStartTime));
 	};
 
 	const onResizeStop = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
-		setX(timeline.toX(startTime));
-		setWidth(timeline.toX(endTime) - timeline.toX(startTime));
+		const newX = timeline.toX(startTime)
+		setX(newX);
+		setWidth(timeline.toX(endTime) - newX);
 	}
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
@@ -73,7 +72,6 @@ export default function TimelineContainer({ event, timeline }: Props) {
 			{format(startTime, "p")}
 			-
 			{format(endTime, "p")}
-
 		</ResizableBox>
 	</Draggable >
 }
