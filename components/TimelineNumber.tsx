@@ -1,13 +1,23 @@
-import styles from "../styles/Components/TimelineHours.module.scss"
+import { eachHourOfInterval } from "date-fns";
+import styles from "styles/Components/TimelineHours.module.scss"
 
-export default function TimelineNumbers() {
-	//TODO show hours based on start and end times
-	// could be 200 px per hour, calculate the hours and that will give viewport width, min width of the fr value
-	const numberList: Array<number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+interface Props {
+	start: string;
+	end: string;
+}
+
+export default function TimelineNumbers({ start, end }: Props) {
+	const startTime = new Date(start);
+	const endTime = new Date(end);
+	const numberList: Array<Date> = eachHourOfInterval({ start: startTime, end: endTime });
+
 	return (<div className={styles.pagination}>
-		{numberList.map((num: number) => {
-			return <div key={num} style={{ width: "80px", justifyContent: "center", textAlign: "center" }}> {num} </div>
-		})}
-	</div>
+		{
+			numberList.map((hour: Date, index: number) => {
+				return <div className={styles.hourCellHeading} key={index} >
+					<div className={styles.hourCellLabel}>{`${hour.getHours()}:00`}</div>
+				</div>
+			})}
+	</div >
 	)
 }

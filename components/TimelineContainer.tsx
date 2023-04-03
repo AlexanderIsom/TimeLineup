@@ -1,15 +1,17 @@
-import { EventResponse } from "../types/Events"
+import { EventResponse } from "types/Events"
 import { SyntheticEvent, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import { Resizable, ResizableBox, ResizeCallbackData } from 'react-resizable';
-import { TimelineUtils } from "../utils/TimelineUtils";
+import { ResizableBox, ResizeCallbackData } from 'react-resizable';
+import { TimelineUtils } from "utils/TimelineUtils";
 import { addSeconds, differenceInSeconds, format, roundToNearestMinutes } from "date-fns";
+import styles from "styles/Components/TimelineContainer.module.scss"
 interface Props {
 	event: EventResponse
 	timeline: TimelineUtils
 }
 
 export default function TimelineContainer({ event, timeline }: Props) {
+	const cellHeight = 50;
 	const [startTime, setStartTime] = useState(new Date(event.startDateTime));
 	const [endTime, setEndTime] = useState(new Date(event.endDateTime));
 	const [duration, setDuration] = useState(differenceInSeconds(startTime, endTime));
@@ -45,24 +47,23 @@ export default function TimelineContainer({ event, timeline }: Props) {
 		const newEndTime = addSeconds(newStarttime, duration);
 		setStartTime(newStarttime);
 		setEndTime(newEndTime);
-		console.log("drag")
 	};
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
 		setX(timeline.toX(startTime));
 	}
 
-	return <Draggable
+	return <div className={styles.container}><Draggable
 		handle=".dragHandle"
 		axis="x"
-		position={{ x: x, y: 50 }}
+		position={{ x: x, y: 0 }}
 		onDrag={onDrag}
 		onStop={onDragStopped}
 	>
 		<ResizableBox
 			className="container"
 			width={width}
-			height={50}
+			height={cellHeight}
 			resizeHandles={['e', 'w']}
 			onResize={onResize}
 			onResizeStop={onResizeStop}
@@ -76,4 +77,6 @@ export default function TimelineContainer({ event, timeline }: Props) {
 			{width}px
 		</ResizableBox>
 	</Draggable >
+	</div>
+
 }

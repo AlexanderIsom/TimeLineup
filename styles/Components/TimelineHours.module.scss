@@ -1,6 +1,22 @@
 .pagination {
-	position: relative;
 	display: flex;
-	justify-content: center;
 	width: 1920px;
+	height: 32px;
+}
+
+.hourCellHeading {
+	width: 80px;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	background: white;
+	display: inline-flex;
+	border-right: #efefef 1px solid;
+	border-bottom: #efefef 1px solid;
+	border-top: #efefef 1px solid;
+}
+
+.hourCellLabel {
+	justify-content: center;
+	text-align: center;
 }

@@ -1,11 +1,11 @@
-import { prisma } from "../../lib/db";
-import { Event, EventResponse } from "../../types/Events"
-import TimelineContainer from "../../components/TimelineContainer";
+import { prisma } from "lib/db";
+import { Event, EventResponse } from "types/Events"
+import TimelineContainer from "components/TimelineContainer";
 import { useSession } from "next-auth/react";
-import styles from "../../styles/id.module.scss"
-import { differenceInHours, format, parseISO } from "date-fns";
-import CreateTimeline from "../../utils/TimelineUtils"
-import TimelineNumbers from "../../components/TimelineNumber";
+import styles from "styles/id.module.scss"
+import { format, parseISO } from "date-fns";
+import CreateTimeline from "utils/TimelineUtils"
+import TimelineNumbers from "components/TimelineNumber";
 
 interface EventProps {
 	event: Event
@@ -18,20 +18,25 @@ export default function ViewEvent({ event, eventResponses }: EventProps) {
 	const sessionUserResponses = eventResponses.filter(event => event.userId == session?.user.id)
 
 	return (<>
-		<div style={{ height: "100%", minHeight: "800px" }} className={styles.wrapper}>
-			<div>users</div>
+		<div className={styles.wrapper}>
+			<div className={styles.userInfo}>users</div>
 			<div className={styles.scrollable} >
-				<TimelineNumbers />
-				{sessionUserResponses.map((eventResponse: EventResponse, index: number) => {
-					return <TimelineContainer key={index} event={eventResponse} timeline={timeline} />
-				})}
+				<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
+				<div className={styles.timelineBody}>
+					<div className={styles.column} />
+					<div className={styles.responses}>
+						{sessionUserResponses.map((eventResponse: EventResponse, index: number) => {
+							return <TimelineContainer key={index} event={eventResponse} timeline={timeline} />
+						})}
+					</div>
+				</div>
 			</div>
 
-			<div style={{ background: "blue" }}>
+			<div className={styles.eventInfo}>
 				<h1>{event.title}</h1>
 				<h2>{event.userId}</h2>
-				<h2>{format(parseISO(event.startDateTime, { additionalDigits: 0 }), "dd/mm/yy HH:mm")}</h2>
-				<h2>{format(parseISO(event.endDateTime, { additionalDigits: 0 }), "dd/mm/yy HH:mm")}</h2>
+				<h2>{format(parseISO(event.startDateTime, { additionalDigits: 0 }), "dd/MM/yy HH:mm")}</h2>
+				<h2>{format(parseISO(event.endDateTime, { additionalDigits: 0 }), "dd/MM/yy HH:mm")}</h2>
 			</div>
 		</div>
 	</>)
