@@ -8,10 +8,11 @@ export interface TimelineUtils {
 interface props {
 	start: string;
 	end: string;
+	size: number;
 }
 
-export default function CreateTimeline({ start, end }: props): TimelineUtils {
-	const width = 1920
+export default function CreateTimeline({ start, end, size }: props): TimelineUtils {
+	const width = size
 	const timelineStartDate = new Date(start)
 	const timelineEndDate = new Date(end)
 	const duration = differenceInSeconds(timelineEndDate, timelineStartDate)

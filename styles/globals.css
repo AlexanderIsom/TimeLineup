@@ -8,3 +8,9 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+main {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

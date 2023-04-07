@@ -7,8 +7,9 @@ export interface Event {
 }
 
 export interface EventResponse {
+	id: string;
 	eventId: string,
 	userId: string,
-	startDateTime: string,
-	endDateTime: string,
+	startDateTime: Date,
+	endDateTime: Date,
 }

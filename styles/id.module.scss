@@ -1,9 +1,11 @@
 .wrapper {
-	position: relative;
 	display: flex;
-	flex: 1;
+	flex: 1 1 0;
 	width: 100%;
-	height: 800px;
+}
+
+.content {
+	width: 1920px;
 }
 
 .userInfo {
@@ -16,9 +18,27 @@
 	background: blue;
 }
 
-.scrollable {
-	display: block;
+.timelineContainer {
+	display: flex;
 	flex: 3 1 0;
+	overflow: hidden;
+	flex-direction: column;
+}
+
+.timelineTools {
+	height: 50px;
+	display: flex;
+	padding-left: 50px;
+	padding-right: 50px;
+	justify-content: space-between;
+	justify-items: center;
+	align-items: center;
+}
+
+.scrollable {
+	flex-direction: column;
+	display: block;
+	flex: 1 1 0;
 	scroll-behavior: smooth;
 	scrollbar-width: none;
 	overflow-x: scroll;
@@ -27,4 +47,48 @@
 .timelineBody {
 	position: relative;
 	flex: 1 1 0;
+}
+
+.magnify {
+	display: flex;
+}
+
+.button {
+	background: gray;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&:hover {
+		background: rgb(68, 68, 68);
+	}
+}
+
+.buttonLeft {
+	@extend .button;
+	border-radius: 5px 0px 0px 5px;
+}
+
+.buttonRight {
+	@extend .button;
+	border-radius: 0px 5px 5px 0px;
+}
+
+.icon {
+	width: 30px;
+	height: 30px;
+}
+
+.saveButton {
+	width: 50px;
+	height: 30px;
+	background: rgb(206, 206, 206);
+	border: none;
+	border-radius: 5px;
+
+	&:hover {
+		background: rgb(134, 134, 134)
+	}
 }
