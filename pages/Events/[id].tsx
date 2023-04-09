@@ -1,16 +1,21 @@
 import { prisma } from "lib/db";
 import { Event, EventResponse } from "types/Events"
 import ResizeableTimeContainer from "components/ResizableTimeContainer";
-import { useSession } from "next-auth/react";
 import styles from "styles/id.module.scss"
 import { format, parseISO } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import { FiZoomIn, FiZoomOut } from "react-icons/fi";
 import { useRef, useState } from "react";
+import StaticTimeContainer from "components/StaticTimeContainer";
+import { authOptions } from 'pages/api/auth/[...nextauth]'
+import { GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth";
+
 interface EventProps {
 	event: Event
-	eventResponses: EventResponse[];
+	userResponses: EventResponse[];
+	localUserResponses: EventResponse[];
 }
 
 class EnumX {
@@ -30,23 +35,20 @@ const ZoomLevels = [
 	2
 ]
 
-export default function ViewEvent({ event, eventResponses }: EventProps) {
-	const { data: session } = useSession();
+export default function ViewEvent({ event, userResponses, localUserResponses }: EventProps) {
 	const [currentZoom, setCurrentZoom] = useState(1);
 	const designSize = 1920
 	let designWidth = designSize * currentZoom
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
-	const sessionUserResponses = eventResponses.filter(event => event.userId == session?.user.id)
-
 
 	async function handleSave() {
 		try {
 			let response = await fetch("http://localhost:3000/api/updateEventResponses", {
 				method: "POST",
 				body: JSON.stringify({
-					sessionUserResponses
+					localUserResponses
 				}),
 				headers: {
 					Accept: "application/json, text/plaion, */*",
@@ -60,7 +62,7 @@ export default function ViewEvent({ event, eventResponses }: EventProps) {
 	}
 
 	function handleUpdate(id: string, start: Date, end: Date) {
-		const response = sessionUserResponses.find(r => r.id === id)
+		const response = localUserResponses.find(r => r.id === id)
 		if (response) {
 			response.startDateTime = start;
 			response.endDateTime = end;
@@ -96,8 +98,12 @@ export default function ViewEvent({ event, eventResponses }: EventProps) {
 						<div className={styles.timelineBody}>
 							<div className={styles.column} />
 							<div className={styles.responses}>
-								{sessionUserResponses.map((eventResponse: EventResponse, index: number) => {
+								{localUserResponses.map((eventResponse: EventResponse, index: number) => {
 									return <ResizeableTimeContainer key={index} event={eventResponse} timeline={timeline} updateHandler={handleUpdate} />
+								})}
+
+								{userResponses.map((eventResponse: EventResponse, index: number) => {
+									return <StaticTimeContainer key={index} event={eventResponse} timeline={timeline} />
 								})}
 							</div>
 						</div>
@@ -115,8 +121,15 @@ export default function ViewEvent({ event, eventResponses }: EventProps) {
 	</>)
 }
 
-export async function getServerSideProps({ params }: any) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
 	try {
+		const session = await getServerSession(context.req, context.res, authOptions);
+		const { params } = context;
+
+		if (!params || typeof params.id != "string") {
+			throw new Error("no paramters passed")
+		}
+
 		const event = await prisma.event.findUnique({
 			where: {
 				id: params.id
@@ -126,9 +139,22 @@ export async function getServerSideProps({ params }: any) {
 			}
 		});
 
-		const eventReseponses = await prisma.eventResponse.findMany({
+		const userResponses = await prisma.eventResponse.findMany({
 			where: {
-				eventId: params.id
+				eventId: params.id,
+				NOT: {
+					userId: session?.user.id
+				}
+			},
+			include: {
+				user: true,
+			}
+		})
+
+		const localUserResponses = await prisma.eventResponse.findMany({
+			where: {
+				eventId: params.id,
+				userId: session?.user.id,
 			},
 			include: {
 				user: true,
@@ -136,7 +162,7 @@ export async function getServerSideProps({ params }: any) {
 		})
 
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as Event, eventResponses: JSON.parse(JSON.stringify(eventReseponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localUserResponses: JSON.parse(JSON.stringify(localUserResponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);

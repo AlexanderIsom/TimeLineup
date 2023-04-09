@@ -3,7 +3,8 @@ import DiscordProvider from 'next-auth/providers/discord'
 import { prisma } from "../../../lib/db";
 import TimeLineUpPrismaAdapter from './TimelineUpPrismaAdapter'
 
-export default NextAuth({
+
+export const authOptions = {
   adapter: TimeLineUpPrismaAdapter(prisma),
   secret: process.env.SECRET,
   providers: [
@@ -40,4 +41,6 @@ export default NextAuth({
       return baseUrl
     },
   },
-})
+}
+
+export default NextAuth(authOptions)

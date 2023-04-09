@@ -22,17 +22,15 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		if (!element)
 			return
 
-		const observer = new ResizeObserver((elements) => {
-			elements.forEach(entry => {
-				setWidth(entry.contentRect.width);
-			});
+		const observer = new ResizeObserver(([element]) => {
+			setWidth(element.contentRect.width);
 		})
 
 		observer.observe(element);
 		return () => {
 			observer.disconnect();
 		}
-	}, [])
+	}, [ref])
 
 	const timelineStartDate = new Date(start)
 	const timelineEndDate = new Date(end)
