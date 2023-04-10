@@ -37,16 +37,10 @@
 
 .scrollable {
 	flex-direction: column;
-	display: block;
 	flex: 1 1 0;
 	scroll-behavior: smooth;
 	scrollbar-width: none;
 	overflow-x: scroll;
-}
-
-.timelineBody {
-	position: relative;
-	flex: 1 1 0;
 }
 
 .magnify {
@@ -81,15 +75,35 @@
 	height: 30px;
 }
 
-.saveButton {
+.buttonCore {
 	width: 50px;
 	height: 30px;
-	background: rgb(206, 206, 206);
 	border: none;
 	border-radius: 5px;
+	margin-right: 5px;
 
 	&:hover {
 		background: rgb(134, 134, 134);
+		cursor: pointer;
+	}
+}
+
+.saveButton {
+	@extend .buttonCore;
+	background: rgb(39, 81, 158);
+}
+
+.addButton {
+	@extend .buttonCore;
+	background: rgb(206, 206, 206);
+}
+
+.deleteButton {
+	@extend .buttonCore;
+	background: rgb(161, 49, 49);
+
+	&:hover {
+		background: rgb(77, 23, 23);
 		cursor: pointer;
 	}
 }

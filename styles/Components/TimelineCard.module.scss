@@ -1,0 +1,53 @@
+.container {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #cecece;
+	border-radius: 5px;
+}
+
+.content {
+	height: 50px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.deleteButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 5px;
+	width: 40px;
+	height: 40px;
+
+	&:hover {
+		background: #c73030;
+	}
+}
+
+.binIcon {
+	height: 90%;
+	width: 90%;
+}
+
+.timeContainer {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.staticContainer {
+	@extend .timeContainer;
+	display: flex;
+}
+
+.timeCue {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

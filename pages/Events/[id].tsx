@@ -1,16 +1,20 @@
 import { prisma } from "lib/db";
 import { Event, EventResponse } from "types/Events"
-import ResizeableTimeContainer from "components/ResizableTimeContainer";
+import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
 import { format, parseISO } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import { FiZoomIn, FiZoomOut } from "react-icons/fi";
 import { useRef, useState } from "react";
-import StaticTimeContainer from "components/StaticTimeContainer";
+import StaticTimeCard from "components/StaticTimeCard";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
+import TranslucentTimeCard from "components/TranslucentTimeCard";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+
 
 interface EventProps {
 	event: Event
@@ -36,10 +40,14 @@ const ZoomLevels = [
 ]
 
 export default function ViewEvent({ event, userResponses, localUserResponses }: EventProps) {
+	const router = useRouter();
+	const { data: session } = useSession();
 	const [currentZoom, setCurrentZoom] = useState(1);
 	const designSize = 1920
 	let designWidth = designSize * currentZoom
 	const containerRef = useRef<HTMLDivElement>(null);
+	const scrollingContainerRef = useRef<HTMLDivElement>(null);
+	const [isAdding, setIsAdding] = useState(false);
 
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
 
@@ -56,6 +64,28 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 				},
 			});
 			response = await response.json();
+		} catch (errorMessage: any) {
+			console.log(errorMessage);
+		}
+	}
+
+	async function handleCreate(start: Date, end: Date) {
+		try {
+			let response = await fetch("http://localhost:3000/api/createEventResponse", {
+				method: "POST",
+				body: JSON.stringify({
+					eventId: event.id, userId: session?.user.id, startDateTime: start, endDateTime: end
+				}),
+				headers: {
+					Accept: "application/json, text/plaion, */*",
+					"Content-Type": "application/json",
+				},
+			});
+			response = await response.json();
+			if (response.status === 200) {
+				setIsAdding(false);
+				router.reload();
+			}
 		} catch (errorMessage: any) {
 			console.log(errorMessage);
 		}
@@ -81,6 +111,10 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 		designWidth = designSize * newZoom
 	}
 
+	function handleAdd() {
+		setIsAdding(!isAdding);
+	}
+
 	return (<>
 		<div className={styles.wrapper}>
 			<div className={styles.userInfo}>users</div>
@@ -90,22 +124,25 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 						<div className={styles.buttonLeft} onClick={handleZoomIn}><FiZoomIn className={styles.icon} /></div>
 						<div className={styles.buttonRight} onClick={handleZoomOut}><FiZoomOut className={styles.icon} /></div>
 					</div>
-					<button className={styles.saveButton} onClick={handleSave}>save</button>
+					<div>
+						<button className={styles.saveButton} onClick={handleSave}>save</button>
+						<button className={styles.addButton} onClick={handleAdd}>Add</button>
+					</div>
 				</div>
-				<div className={styles.scrollable} >
+
+				<div className={styles.scrollable} ref={scrollingContainerRef}>
 					<div className={styles.content} style={{ width: designWidth }} ref={containerRef} >
 						<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
-						<div className={styles.timelineBody}>
-							<div className={styles.column} />
-							<div className={styles.responses}>
-								{localUserResponses.map((eventResponse: EventResponse, index: number) => {
-									return <ResizeableTimeContainer key={index} event={eventResponse} timeline={timeline} updateHandler={handleUpdate} />
-								})}
-
-								{userResponses.map((eventResponse: EventResponse, index: number) => {
-									return <StaticTimeContainer key={index} event={eventResponse} timeline={timeline} />
-								})}
-							</div>
+						<div style={{ height: "50px" }}>
+							{localUserResponses.map((eventResponse: EventResponse, index: number) => {
+								return <ResizableTimeCard key={index} event={eventResponse} timeline={timeline} updateHandler={handleUpdate} />
+							})}
+							{isAdding && <TranslucentTimeCard container={containerRef} scrollingContainer={scrollingContainerRef} timeline={timeline} createHandler={handleCreate} />}
+						</div>
+						<div>
+							{userResponses.map((eventResponse: EventResponse, index: number) => {
+								return <StaticTimeCard key={index} event={eventResponse} timeline={timeline} />
+							})}
 						</div>
 					</div>
 				</div>

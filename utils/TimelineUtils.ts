@@ -4,7 +4,6 @@ import { RefObject, useEffect, useState } from "react";
 export interface TimelineUtils {
 	toX: (from: any) => number;
 	toDate: (x: number) => Date;
-	getWidth: (from: Date, to: Date) => number;
 
 }
 
@@ -46,12 +45,6 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		return addSeconds(timelineStartDate, (percentage * duration))
 	}
 
-	const getWidth = (from: Date, to: Date) => {
-		const x1 = toX(from);
-		const x2 = toX(to);
-		return x2 - x1;
-	}
-
-	return { toX, toDate, getWidth }
+	return { toX, toDate }
 }
 

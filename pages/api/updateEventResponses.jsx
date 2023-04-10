@@ -18,8 +18,8 @@ async function updateTimes(resposneId, startDateTime, endDateTime) {
 const updateEventResponses = async (req, res) => {
 	try {
 
-		const { sessionUserResponses } = req.body;
-		sessionUserResponses.forEach(response => {
+		const { localUserResponses } = req.body;
+		localUserResponses.forEach(response => {
 			updateTimes(response.id, response.startDateTime, response.endDateTime)
 		});
 
