@@ -1,10 +1,14 @@
 .container {
-	position: relative;
+	position: absolute;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	background: #cecece;
 	border-radius: 5px;
+}
+
+.newCard {
+	position: absolute;
 }
 
 .content {

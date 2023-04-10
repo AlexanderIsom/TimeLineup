@@ -100,6 +100,7 @@ export default function ResizableTimeCard({
 	}
 
 	return (
+
 		<Draggable
 			handle='.dragHandle'
 			axis='x'
@@ -134,5 +135,6 @@ export default function ResizableTimeCard({
 				</div>
 			</Resizable>
 		</Draggable >
+
 	)
 }

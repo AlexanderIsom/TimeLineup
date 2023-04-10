@@ -13,6 +13,12 @@
 	border: #efefef 1px solid;
 }
 
+.localUserResponses {
+	position: relative;
+	display: flex;
+	height: 60px;
+}
+
 .eventInfo {
 	flex: 1 1 0%;
 	background: blue;

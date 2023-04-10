@@ -49,6 +49,6 @@ export default function TranslucentTimeCard({ container, scrollingContainer, tim
 	}
 
 	return (
-		<div style={{ translate: `${startX}px`, width: `${endX - startX}px` }} className={`${styles.content} ${styles.container}`} onClick={handleOnClick}>+</div>
+		<div style={{ translate: `${startX}px`, width: `${endX - startX}px` }} className={`${styles.newCard} ${styles.content} ${styles.container}`} onClick={handleOnClick}>+</div>
 	)
 }

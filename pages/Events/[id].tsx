@@ -133,7 +133,7 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 				<div className={styles.scrollable} ref={scrollingContainerRef}>
 					<div className={styles.content} style={{ width: designWidth }} ref={containerRef} >
 						<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
-						<div style={{ height: "50px" }}>
+						<div className={styles.localUserResponses}>
 							{localUserResponses.map((eventResponse: EventResponse, index: number) => {
 								return <ResizableTimeCard key={index} event={eventResponse} timeline={timeline} updateHandler={handleUpdate} />
 							})}
