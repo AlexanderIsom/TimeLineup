@@ -1,32 +1,36 @@
 import { EventResponse } from 'types/Events'
-import { SyntheticEvent, useState } from 'react'
+import React, { SyntheticEvent, useState } from 'react'
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable'
 import { Resizable, ResizeCallbackData } from 'react-resizable'
 import { TimelineUtils } from 'utils/TimelineUtils'
 import {
 	addSeconds,
+	clamp,
 	differenceInSeconds,
 	format,
 	roundToNearestMinutes,
 } from 'date-fns'
 import styles from 'styles/Components/TimelineCard.module.scss'
-import { TbTrashXFilled } from "react-icons/tb"
-import { useRouter } from 'next/router'
+
 interface Props {
-	event: EventResponse
+	response: EventResponse
 	timeline: TimelineUtils
 	updateHandler: (id: string, start: Date, end: Date) => void
+	onMouseOverHandler: (resposne: EventResponse | undefined) => void;
+	dragAndResizeHandler: (value: boolean) => void;
+	bounds: { start: Date, end: Date };
 }
 
 export default function ResizableTimeCard({
-	event,
+	response,
 	timeline,
 	updateHandler,
+	onMouseOverHandler,
+	dragAndResizeHandler,
+	bounds
 }: Props) {
-	const [startTime, setStartTime] = useState(new Date(event.startDateTime))
-	const [endTime, setEndTime] = useState(new Date(event.endDateTime))
-	const [showTools, setShowTools] = useState(false);
-	const router = useRouter();
+	const [startTime, setStartTime] = useState(new Date(response.startDateTime))
+	const [endTime, setEndTime] = useState(new Date(response.endDateTime))
 
 	const startX = timeline.toX(startTime)
 	const endX = timeline.toX(endTime)
@@ -35,15 +39,20 @@ export default function ResizableTimeCard({
 		differenceInSeconds(endTime, startTime)
 	)
 
+	function clampDateWithinBounds(date: Date): Date {
+		return clamp(date, { start: bounds.start, end: bounds.end });
+	}
+
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
+		dragAndResizeHandler(true);
 		const newSize = size.width
 
 		if (handle === 'w') {
-			setStartTime(timeline.toDate(startX + (endX - startX - newSize)))
+			setStartTime(clampDateWithinBounds(timeline.toDate(startX + (endX - startX - newSize))))
 		}
 
 		if (handle === 'e') {
-			setEndTime(timeline.toDate(startX + newSize))
+			setEndTime(clampDateWithinBounds(timeline.toDate(startX + newSize)))
 		}
 	}
 
@@ -53,60 +62,47 @@ export default function ResizableTimeCard({
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
 		setDuration(differenceInSeconds(newEndTime, newStartTime))
-		updateHandler(event.id, newStartTime, newEndTime)
+		updateHandler(response.id, newStartTime, newEndTime)
+		dragAndResizeHandler(false);
 	}
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
+		dragAndResizeHandler(true);
+		if (endX + ui.deltaX >= timeline.getWidth()) {
+			return;
+		}
+
 		const newStartTime = timeline.toDate(ui.x)
 		const newEndTime = addSeconds(newStartTime, duration)
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
 	}
 
-	const onDragStopped = () => {
+	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
 		const newStartTime = roundToNearestMinutes(startTime, { nearestTo: 15 })
+		const newEndTime = roundToNearestMinutes(endTime, { nearestTo: 15 })
 		setStartTime(newStartTime)
-		setEndTime(addSeconds(newStartTime, duration))
-		updateHandler(event.id, startTime, endTime)
+		setEndTime(newEndTime)
+		updateHandler(response.id, newStartTime, newEndTime)
+		dragAndResizeHandler(false);
 	}
 
-	function handleMouseEnter() {
-		setShowTools(true)
-	}
-	function handleMouseExit() {
-		setShowTools(false);
+	const handleMouseEnter = () => {
+		onMouseOverHandler(response);
 	}
 
-	async function handleDelete() {
-		try {
-			let response = await fetch("http://localhost:3000/api/deleteEventResponse", {
-				method: "POST",
-				body: JSON.stringify({
-					event
-				}),
-				headers: {
-					Accept: "application/json, text/plaion, */*",
-					"Content-Type": "application/json",
-				},
-			});
-			response = await response.json();
-			console.log(response);
-			if (response.status === 200) {
-				router.reload();
-			}
-		} catch (errorMessage: any) {
-			console.log(errorMessage);
-		}
+	const handleMouseLeave = () => {
+		onMouseOverHandler(undefined);
 	}
 
 	return (
-
 		<Draggable
 			handle='.dragHandle'
 			axis='x'
 			position={{ x: startX, y: 0 }}
 			onDrag={onDrag}
 			onStop={onDragStopped}
+			bounds={"parent"}
 		>
 			<Resizable
 				className={styles.container}
@@ -116,21 +112,20 @@ export default function ResizableTimeCard({
 				onResize={onResize}
 				onResizeStop={onResizeStop}
 			>
-				<div style={{ width: `${endX - startX}px` }} className={styles.content} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseExit}>
+				<div style={{ width: `${endX - startX}px` }} className={styles.content} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
 					<div className={`dragHandle ${styles.timeContainer}`} >
-						<li className={styles.timeCue}>
+						<span className={styles.timeCue}>
 							{format(
 								roundToNearestMinutes(startTime, { nearestTo: 15 }),
 								'HH:mm'
 							)}
-						</li>
-						{showTools && <div className={styles.deleteButton} onClick={handleDelete}><TbTrashXFilled className={styles.binIcon} /></div>}
-						<li className={styles.timeCue}>
+						</span>
+						<span className={styles.timeCue}>
 							{format(
 								roundToNearestMinutes(endTime, { nearestTo: 15 }),
 								'HH:mm'
 							)}
-						</li>
+						</span>
 					</div>
 				</div>
 			</Resizable>

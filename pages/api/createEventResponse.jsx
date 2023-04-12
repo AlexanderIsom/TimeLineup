@@ -11,8 +11,8 @@ const createEventResponse = async (req, res) => {
 			endDateTime: endDateTime,
 		}
 
-		await prisma.eventResponse.create({ data: newEvent });
-		return res.send({ status: 200 })
+		const newResponse = await prisma.eventResponse.create({ data: newEvent });
+		return res.status(200).json(newResponse)
 	} catch (e) {
 		console.error(e);
 		throw new Error(e).message;

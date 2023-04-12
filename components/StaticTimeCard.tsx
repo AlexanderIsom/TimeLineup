@@ -18,18 +18,18 @@ export default function StaticTimeCard({ event, timeline }: Props) {
 
     return (
         <div style={{ width: `${width}px`, translate: `${timeline.toX(startTime)}px` }} className={`${styles.container} ${styles.staticContainer} ${styles.content}`} >
-            <li className={styles.timeCue}>
+            <span className={styles.timeCue}>
                 {format(
                     roundToNearestMinutes(startTime, { nearestTo: 15 }),
                     'HH:mm'
                 )}
-            </li>
-            <li className={styles.timeCue}>
+            </span>
+            <span className={styles.timeCue}>
                 {format(
                     roundToNearestMinutes(endTime, { nearestTo: 15 }),
                     'HH:mm'
                 )}
-            </li>
+            </span>
         </div>
     )
 }
