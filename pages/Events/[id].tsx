@@ -210,9 +210,11 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 						</div>
 						<div className={styles.userResponses}>
 							{userResponses.map((eventResponse: EventResponse, index: number) => {
-								return eventResponse.schedule.map((sch: TimePair) => {
-									return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
-								})
+								return <div key={index} className={styles.staticRow}>{
+									eventResponse.schedule.map((sch: TimePair) => {
+										return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
+									})
+								}</div>
 							})}
 						</div>
 					</div>

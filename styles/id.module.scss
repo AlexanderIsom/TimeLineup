@@ -21,6 +21,13 @@
 
 .userResponses {
 	position: relative;
+	display: block;
+}
+
+.staticRow {
+	position: relative;
+	display: block;
+	height: 50px
 }
 
 .eventInfo {
