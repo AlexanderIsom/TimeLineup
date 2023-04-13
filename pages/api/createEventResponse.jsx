@@ -2,13 +2,12 @@ import { prisma } from "../../lib/db";
 
 const createEventResponse = async (req, res) => {
 	try {
-		const { eventId, userId, startDateTime, endDateTime } = req.body;
+		const { eventId, userId, schedule } = req.body;
 		const newEvent =
 		{
 			eventId: eventId,
 			userId: userId,
-			startDateTime: startDateTime,
-			endDateTime: endDateTime,
+			schedule: schedule,
 		}
 
 		const newResponse = await prisma.eventResponse.create({ data: newEvent });

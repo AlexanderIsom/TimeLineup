@@ -1,5 +1,5 @@
 import { prisma } from "lib/db";
-import { Event, EventResponse } from "types/Events"
+import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
 import { add, format, isWithinInterval, parseISO } from "date-fns";
@@ -14,12 +14,14 @@ import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { debounce } from "debounce";
+import { v4 as uuidv4 } from "uuid";
+import { scheduler } from "timers/promises";
 
 
 interface EventProps {
 	event: Event
 	userResponses: EventResponse[];
-	localUserResponses: EventResponse[];
+	localSchedule: TimePair[];
 }
 
 class EnumX {
@@ -39,19 +41,17 @@ const ZoomLevels = [
 	2
 ]
 
-export default function ViewEvent({ event, userResponses, localUserResponses }: EventProps) {
-	const router = useRouter();
+export default function ViewEvent({ event, userResponses, localSchedule }: EventProps) {
 	const { data: session } = useSession();
-	const [localResponsesState, setLocalResponsesState] = useState(localUserResponses)
+	const [scheduleState, setScheduleState] = useState(localSchedule)
 
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
 	const [isDraggingOrResizing, setIsDraggingOrResizing] = useState(false);
 	let designWidth = designSize * currentZoom
 
-	const [currentMousedOverResponse, setCurrentMousedOverResponse] = useState<EventResponse | undefined>();
-	const [targetResponse, setTargetResponse] = useState<EventResponse>();
-	const [showMenu, setShowMenu] = useState({ x: 0, y: 0, showing: false })
+	const [currentTimePair, setCurrentTimePair] = useState<string | undefined>();
+	const [showMenu, setShowMenu] = useState({ x: 0, y: 0, showing: false, currentId: "" })
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -66,8 +66,7 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 			}
 
 			if (showMenu.showing) {
-				setShowMenu({ x: 0, y: 0, showing: false })
-				setTargetResponse(undefined);
+				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
 			}
 		}
 
@@ -78,11 +77,12 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 	}, [showMenu])
 
 	async function handleSave() {
+		//TODO save on page reload / page transition
 		try {
 			let response = await fetch("http://localhost:3000/api/updateEventResponses", {
 				method: "POST",
 				body: JSON.stringify({
-					localUserResponses
+					localUserResponses: localSchedule
 				}),
 				headers: {
 					Accept: "application/json, text/plaion, */*",
@@ -96,54 +96,14 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 	}
 
 	async function handleCreate(start: Date, end: Date) {
-		//TODO change to create on save
-		try {
-			let response = await fetch("http://localhost:3000/api/createEventResponse", {
-				method: "POST",
-				body: JSON.stringify({
-					eventId: event.id, userId: session?.user.id, startDateTime: start, endDateTime: end
-				}),
-				headers: {
-					Accept: "application/json, text/plaion, */*",
-					"Content-Type": "application/json",
-				},
-			});
-
-			if (response.status === 200) {
-				const newReponse = await response.json() as EventResponse;
-				const newArray = Array.from(localResponsesState);
-				newArray.push(newReponse)
-				setLocalResponsesState(newArray);
-			}
-		} catch (errorMessage: any) {
-			console.log(errorMessage);
-		}
+		const newArray = Array.from(scheduleState);
+		newArray.push({ start: start, end: end, id: uuidv4() })
+		setScheduleState(newArray);
 	}
 
-	async function handleDelete() {
-		setShowMenu({ x: 0, y: 0, showing: false })
-
-		try {
-			const previousState = Array.from(localResponsesState);
-			setLocalResponsesState(localResponsesState.filter(r => r.id !== targetResponse?.id));
-			setTargetResponse(undefined);
-			let response = await fetch("http://localhost:3000/api/deleteEventResponse", {
-				method: "POST",
-				body: JSON.stringify({
-					event: targetResponse
-				}),
-				headers: {
-					Accept: "application/json, text/plaion, */*",
-					"Content-Type": "application/json",
-				},
-			});
-			response = await response.json();
-			if (response.status !== 200) {
-				setLocalResponsesState(previousState);
-			}
-		} catch (errorMessage: any) {
-			console.log(errorMessage);
-		}
+	async function handleDelete(idToDelete: string) {
+		setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
+		setScheduleState(scheduleState.filter(r => r.id !== idToDelete));
 	}
 
 	function handleDraggingOrResizing(value: boolean) {
@@ -152,16 +112,14 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 		});
 
 		if (value && showMenu.showing) {
-			setShowMenu({ x: 0, y: 0, showing: false })
+			setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
 		}
 	}
 
-	function checkForOverlap(table: EventResponse[], start: Date, end: Date) {
-		const overlappingResponse = table.find(r => {
-			const resultStart = new Date(r.startDateTime);
-			const resultEnd = new Date(r.endDateTime);
-			const isStartOverlapping = isWithinInterval(start, { start: resultStart, end: resultEnd })
-			const isEndOverlapping = isWithinInterval(end, { start: resultStart, end: resultEnd })
+	function checkForOverlap(table: Array<TimePair>, start: Date, end: Date) {
+		const overlappingResponse = table.find(s => {
+			const isStartOverlapping = isWithinInterval(start, { start: s.start, end: s.end })
+			const isEndOverlapping = isWithinInterval(end, { start: s.start, end: s.end })
 
 			if (isStartOverlapping || isEndOverlapping) {
 				return true;
@@ -170,33 +128,30 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 		return overlappingResponse;
 	}
 
-	function onResponseMouseOver(response: EventResponse | undefined) {
-		setCurrentMousedOverResponse(response);
+	function onResponseMouseOver(responseId: string | undefined) {
+		setCurrentTimePair(responseId);
 	}
 
-	function handleUpdate(id: string, start: Date, end: Date) {
-		const filteredUserResponses = localUserResponses.filter(r => r.id !== id);
-		const overlappingEvent = checkForOverlap(filteredUserResponses, start, end);
+	function handleUpdate(id: string, newStart: Date, newEnd: Date) {
+		const filteredUserResponses = scheduleState.filter(s => s.id !== id);
+		const overlappingEvent = checkForOverlap(filteredUserResponses, newStart, newEnd);
+		console.log(overlappingEvent);
 
 		//TODO add modal asking if the responses should be merged "Do you want to merge these two time cards ?"
 
-		const response = localUserResponses.find(r => r.id === id)
-		if (response) {
-			response.startDateTime = start;
-			response.endDateTime = end;
-		}
+		filteredUserResponses.push({ id: id, start: newStart, end: newEnd })
+		setScheduleState(filteredUserResponses);
 	}
 
 	function onClickHandler(e: React.MouseEvent) {
 		if (showMenu.showing) {
-			setShowMenu({ x: 0, y: 0, showing: false })
+			setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
 			return
 		}
 
-		if (currentMousedOverResponse && !isDraggingOrResizing) {
+		if (currentTimePair && !isDraggingOrResizing) {
 			setTimeout(() => {
-				setTargetResponse(currentMousedOverResponse);
-				setShowMenu({ x: e.clientX, y: e.clientY, showing: true })
+				setShowMenu({ x: e.clientX, y: e.clientY, showing: true, currentId: currentTimePair })
 			}, 100);
 		}
 	}
@@ -220,7 +175,7 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 		startTime.setMinutes(0, 0, 0);
 		const endTime = add(startTime, { hours: 1 })
 
-		if (checkForOverlap(localUserResponses, startTime, endTime) === undefined) {
+		if (checkForOverlap(scheduleState, startTime, endTime) === undefined) {
 			handleCreate(startTime, endTime)
 		}
 	}
@@ -234,19 +189,17 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 						<div className={styles.buttonLeft} onClick={handleZoomIn}><FiZoomIn className={styles.icon} /></div>
 						<div className={styles.buttonRight} onClick={handleZoomOut}><FiZoomOut className={styles.icon} /></div>
 					</div>
-					<div>
-						<button className={styles.saveButton} onClick={handleSave}>save</button>
-					</div>
+					{/* TODO display date */}
 				</div>
 
 				<div className={styles.scrollable} onClick={onClickHandler}>
 					<div className={styles.content} style={{ width: designWidth }} ref={containerRef} >
 						<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
 						<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
-							{localResponsesState.map((response: EventResponse, index: number) => {
+							{scheduleState.map((schedule: TimePair, index: number) => {
 								return <ResizableTimeCard
-									key={response.id}
-									response={response}
+									key={schedule.id}
+									schedule={schedule}
 									timeline={timeline}
 									updateHandler={handleUpdate}
 									onMouseOverHandler={onResponseMouseOver}
@@ -256,9 +209,10 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 							})}
 						</div>
 						<div className={styles.userResponses}>
-
 							{userResponses.map((eventResponse: EventResponse, index: number) => {
-								return <StaticTimeCard key={index} event={eventResponse} timeline={timeline} />
+								return eventResponse.schedule.map((sch: TimePair) => {
+									return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
+								})
 							})}
 						</div>
 					</div>
@@ -274,9 +228,11 @@ export default function ViewEvent({ event, userResponses, localUserResponses }: 
 		</div>
 
 		{showMenu.showing && <div style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px` }} className={styles.contextMenu} ref={contextMenuRef}>
-			<ul className={styles.contextMenuItem} onClick={handleDelete}>Delete</ul>
 			<ul className={styles.contextMenuItem} onClick={() => {
-				setShowMenu({ x: 0, y: 0, showing: false })
+				handleDelete(showMenu.currentId)
+			}}>Delete</ul>
+			<ul className={styles.contextMenuItem} onClick={() => {
+				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
 			}}>Cancel</ul>
 		</div>}
 	</>)
@@ -300,8 +256,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 			}
 		});
 
-		//TODO change event responeses so they are responses per use instead of individual responses
-
 		const userResponses = await prisma.eventResponse.findMany({
 			where: {
 				eventId: params.id,
@@ -314,18 +268,21 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 			}
 		})
 
-		const localUserResponses = await prisma.eventResponse.findMany({
+		const localUserResponse = await prisma.eventResponse.findFirst({
 			where: {
 				eventId: params.id,
 				userId: session?.user.id,
-			},
-			include: {
-				user: true,
 			}
 		})
 
+		const parsedLocalUserResponse = JSON.parse(JSON.stringify(localUserResponse)) as EventResponse
+		var schedule: TimePair[] = [];
+		if (parsedLocalUserResponse) {
+			schedule = parsedLocalUserResponse.schedule
+		}
+
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localUserResponses: JSON.parse(JSON.stringify(localUserResponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localSchedule: schedule },
 		};
 	} catch (e) {
 		console.error(e);

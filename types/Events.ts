@@ -6,10 +6,15 @@ export interface Event {
 	endDateTime: string,
 }
 
+export interface TimePair {
+	id: string,
+	start: Date,
+	end: Date
+}
+
 export interface EventResponse {
 	id: string;
 	eventId: string,
 	userId: string,
-	startDateTime: Date,
-	endDateTime: Date,
+	schedule: Array<TimePair>
 }

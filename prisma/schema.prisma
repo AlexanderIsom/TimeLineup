@@ -25,6 +25,12 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+type TimePairs {
+  id    String
+  start DateTime @db.Date
+  end   DateTime @db.Date
+}
+
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
@@ -57,17 +63,16 @@ model Event {
   title         String
   userId        String
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  startDateTime DateTime
-  endDateTime   DateTime
+  startDateTime DateTime        @db.Date
+  endDateTime   DateTime        @db.Date
   EventResponse EventResponse[]
 }
 
 model EventResponse {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId       String
-  userId        String
-  startDateTime DateTime
-  endDateTime   DateTime
-  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String      @id @default(auto()) @map("_id") @db.ObjectId
+  eventId  String
+  userId   String
+  schedule TimePairs[]
+  event    Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

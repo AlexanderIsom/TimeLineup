@@ -1,4 +1,4 @@
-import { EventResponse } from 'types/Events'
+import { EventResponse, TimePair } from 'types/Events'
 import React, { SyntheticEvent, useState } from 'react'
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable'
 import { Resizable, ResizeCallbackData } from 'react-resizable'
@@ -13,24 +13,24 @@ import {
 import styles from 'styles/Components/TimelineCard.module.scss'
 
 interface Props {
-	response: EventResponse
+	schedule: TimePair
 	timeline: TimelineUtils
-	updateHandler: (id: string, start: Date, end: Date) => void
-	onMouseOverHandler: (resposne: EventResponse | undefined) => void;
+	updateHandler: (id: string, tart: Date, end: Date) => void
+	onMouseOverHandler: (resposne: string | undefined) => void;
 	dragAndResizeHandler: (value: boolean) => void;
 	bounds: { start: Date, end: Date };
 }
 
 export default function ResizableTimeCard({
-	response,
+	schedule,
 	timeline,
 	updateHandler,
 	onMouseOverHandler,
 	dragAndResizeHandler,
 	bounds
 }: Props) {
-	const [startTime, setStartTime] = useState(new Date(response.startDateTime))
-	const [endTime, setEndTime] = useState(new Date(response.endDateTime))
+	const [startTime, setStartTime] = useState(new Date(schedule.start))
+	const [endTime, setEndTime] = useState(new Date(schedule.end))
 
 	const startX = timeline.toX(startTime)
 	const endX = timeline.toX(endTime)
@@ -62,7 +62,7 @@ export default function ResizableTimeCard({
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
 		setDuration(differenceInSeconds(newEndTime, newStartTime))
-		updateHandler(response.id, newStartTime, newEndTime)
+		updateHandler(schedule.id, newStartTime, newEndTime);
 		dragAndResizeHandler(false);
 	}
 
@@ -83,12 +83,12 @@ export default function ResizableTimeCard({
 		const newEndTime = roundToNearestMinutes(endTime, { nearestTo: 15 })
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
-		updateHandler(response.id, newStartTime, newEndTime)
+		updateHandler(schedule.id, newStartTime, newEndTime)
 		dragAndResizeHandler(false);
 	}
 
 	const handleMouseEnter = () => {
-		onMouseOverHandler(response);
+		onMouseOverHandler(schedule.id);
 	}
 
 	const handleMouseLeave = () => {
