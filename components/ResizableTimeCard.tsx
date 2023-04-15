@@ -1,4 +1,4 @@
-import { EventResponse, TimePair } from 'types/Events'
+import { TimePair } from 'types/Events'
 import React, { SyntheticEvent, useState } from 'react'
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable'
 import { Resizable, ResizeCallbackData } from 'react-resizable'
@@ -16,8 +16,8 @@ interface Props {
 	schedule: TimePair
 	timeline: TimelineUtils
 	updateHandler: (id: string, tart: Date, end: Date) => void
-	onMouseOverHandler: (resposne: string | undefined) => void;
-	dragAndResizeHandler: (value: boolean) => void;
+	onClickHandler: (event: React.MouseEvent, pairId: string) => void;
+	hideContextHandler: () => void;
 	bounds: { start: Date, end: Date };
 }
 
@@ -25,12 +25,13 @@ export default function ResizableTimeCard({
 	schedule,
 	timeline,
 	updateHandler,
-	onMouseOverHandler,
-	dragAndResizeHandler,
+	onClickHandler,
+	hideContextHandler,
 	bounds
 }: Props) {
 	const [startTime, setStartTime] = useState(new Date(schedule.start))
 	const [endTime, setEndTime] = useState(new Date(schedule.end))
+	const [inUse, setInUse] = useState(false);
 
 	const startX = timeline.toX(startTime)
 	const endX = timeline.toX(endTime)
@@ -44,7 +45,8 @@ export default function ResizableTimeCard({
 	}
 
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
-		dragAndResizeHandler(true);
+		hideContextHandler();
+		setInUse(true);
 		const newSize = size.width
 
 		if (handle === 'w') {
@@ -56,18 +58,23 @@ export default function ResizableTimeCard({
 		}
 	}
 
-	const onResizeStop = () => {
+	const onResizeStop = (e: SyntheticEvent | MouseEvent) => {
+		if (!inUse) {
+			onClickHandler(e as React.MouseEvent, schedule.id);
+			return;
+		}
 		const newStartTime = roundToNearestMinutes(startTime, { nearestTo: 15 })
 		const newEndTime = roundToNearestMinutes(endTime, { nearestTo: 15 })
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
 		setDuration(differenceInSeconds(newEndTime, newStartTime))
 		updateHandler(schedule.id, newStartTime, newEndTime);
-		dragAndResizeHandler(false);
+		setInUse(false);
 	}
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
-		dragAndResizeHandler(true);
+		hideContextHandler();
+		setInUse(true);
 		if (endX + ui.deltaX >= timeline.getWidth()) {
 			return;
 		}
@@ -79,20 +86,16 @@ export default function ResizableTimeCard({
 	}
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
+		if (!inUse) {
+			onClickHandler(e as React.MouseEvent, schedule.id);
+			return;
+		}
 		const newStartTime = roundToNearestMinutes(startTime, { nearestTo: 15 })
 		const newEndTime = roundToNearestMinutes(endTime, { nearestTo: 15 })
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
 		updateHandler(schedule.id, newStartTime, newEndTime)
-		dragAndResizeHandler(false);
-	}
-
-	const handleMouseEnter = () => {
-		onMouseOverHandler(schedule.id);
-	}
-
-	const handleMouseLeave = () => {
-		onMouseOverHandler(undefined);
+		setInUse(false);
 	}
 
 	return (
@@ -103,6 +106,7 @@ export default function ResizableTimeCard({
 			onDrag={onDrag}
 			onStop={onDragStopped}
 			bounds={"parent"}
+
 		>
 			<Resizable
 				className={styles.container}
@@ -112,7 +116,7 @@ export default function ResizableTimeCard({
 				onResize={onResize}
 				onResizeStop={onResizeStop}
 			>
-				<div style={{ width: `${endX - startX}px` }} className={styles.content} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+				<div style={{ width: `${endX - startX}px` }} className={styles.content}>
 					<div className={`dragHandle ${styles.timeContainer}`} >
 						<span className={styles.timeCue}>
 							{format(
@@ -130,6 +134,5 @@ export default function ResizableTimeCard({
 				</div>
 			</Resizable>
 		</Draggable >
-
 	)
 }

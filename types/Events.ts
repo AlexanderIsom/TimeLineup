@@ -2,8 +2,8 @@ export interface Event {
 	id: string,
 	userId: string,
 	title: string,
-	startDateTime: string,
-	endDateTime: string,
+	startDateTime: Date,
+	endDateTime: Date,
 }
 
 export interface TimePair {

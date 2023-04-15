@@ -1,28 +1,19 @@
 import { prisma } from "../../lib/db";
 
 
-async function updateTimes(resposneId, startDateTime, endDateTime) {
-	return await prisma.$transaction(async (tx) => {
-		await tx.eventResponse.update({
-			data: {
-				startDateTime: startDateTime,
-				endDateTime: endDateTime,
-			},
-			where: {
-				id: resposneId
-			}
-		})
-	})
-}
-
 const updateEventResponses = async (req, res) => {
 	try {
+		const { schedule, eventId, userId } = req.body;
 
-		const { localUserResponses } = req.body;
-		localUserResponses.forEach(response => {
-			updateTimes(response.id, response.startDateTime, response.endDateTime)
-		});
-
+		await prisma.eventResponse.update({
+			where: {
+				userId: userId,
+				eventId: eventId
+			},
+			data: {
+				schedule: schedule
+			}
+		})
 
 	} catch (e) {
 		console.error(e);

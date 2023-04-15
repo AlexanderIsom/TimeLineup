@@ -2,14 +2,12 @@ import { eachHourOfInterval } from "date-fns";
 import styles from "styles/Components/TimelineHours.module.scss"
 
 interface Props {
-	start: string;
-	end: string;
+	start: Date;
+	end: Date;
 }
 
 export default function TimelineNumbers({ start, end }: Props) {
-	const startTime = new Date(start);
-	const endTime = new Date(end);
-	const numberList: Array<Date> = eachHourOfInterval({ start: startTime, end: endTime });
+	const numberList: Array<Date> = eachHourOfInterval({ start: start, end: end });
 
 	return (<div className={styles.pagination}>
 		{

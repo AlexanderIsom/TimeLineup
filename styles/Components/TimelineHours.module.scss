@@ -1,3 +1,5 @@
+@use "styles/Variables.scss";
+
 .pagination {
 	display: flex;
 	flex: 1 1 0;
@@ -11,9 +13,9 @@
 	align-items: center;
 	background: white;
 	display: inline-flex;
-	border-right: #efefef 1px solid;
-	border-bottom: #efefef 1px solid;
-	border-top: #efefef 1px solid;
+	border-right: Variables.$gridColor 1px solid;
+	border-bottom: Variables.$gridColor 1px solid;
+	border-top: Variables.$gridColor 1px solid;
 }
 
 .hourCellLabel {

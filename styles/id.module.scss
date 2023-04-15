@@ -1,3 +1,5 @@
+@use "styles/Variables.scss";
+
 .wrapper {
 	display: flex;
 	flex: 1 1 0;
@@ -5,7 +7,9 @@
 }
 
 .content {
+	position: relative;
 	min-width: 100%;
+	height: 100%;
 }
 
 .userInfo {
@@ -14,18 +18,15 @@
 }
 
 .localUserResponses {
-	position: relative;
 	display: flex;
 	height: 50px;
 }
 
 .userResponses {
-	position: relative;
 	display: block;
 }
 
 .staticRow {
-	position: relative;
 	display: block;
 	height: 50px
 }
@@ -153,4 +154,9 @@
 		cursor: pointer;
 		background: #505050;
 	}
+}
+
+.gridBackground {
+	background-image: linear-gradient(to right, Variables.$gridColor 1px, transparent 1px), linear-gradient(to bottom, Variables.$gridColor 1px, transparent 1px);
+	background-position-x: -1px;
 }
