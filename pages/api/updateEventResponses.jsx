@@ -1,14 +1,12 @@
 import { prisma } from "../../lib/db";
 
-
 const updateEventResponses = async (req, res) => {
 	try {
-		const { schedule, eventId, userId } = req.body;
+		const { schedule, eventId, userId, responseId } = req.body;
 
 		await prisma.eventResponse.update({
 			where: {
-				userId: userId,
-				eventId: eventId
+				id: responseId
 			},
 			data: {
 				schedule: schedule

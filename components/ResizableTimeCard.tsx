@@ -47,10 +47,10 @@ export default function ResizableTimeCard({
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
 		hideContextHandler();
 		setInUse(true);
-		const newSize = size.width
+		const newSize = size.width;
 
 		if (handle === 'w') {
-			setStartTime(clampDateWithinBounds(timeline.toDate(startX + (endX - startX - newSize))))
+			setStartTime(timeline.toDate(endX - newSize))
 		}
 
 		if (handle === 'e') {

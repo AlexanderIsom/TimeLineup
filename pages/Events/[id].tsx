@@ -2,7 +2,7 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, format, isEqual, isWithinInterval, parseISO, roundToNearestMinutes } from "date-fns";
+import { add, format, isEqual, isWithinInterval, max, min, parseISO, roundToNearestMinutes } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import { FiZoomIn, FiZoomOut } from "react-icons/fi";
@@ -13,15 +13,13 @@ import { GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { debounce } from "debounce";
 import { v4 as uuidv4 } from "uuid";
-import { scheduler } from "timers/promises";
 
 
 interface EventProps {
 	event: Event
 	userResponses: EventResponse[];
-	localSchedule: TimePair[];
+	localResponse: EventResponse;
 }
 
 class EnumX {
@@ -41,13 +39,13 @@ const ZoomLevels = [
 	2
 ]
 
-export default function ViewEvent({ event, userResponses, localSchedule }: EventProps) {
+export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
 
 	const router = useRouter();
 	const { data: session } = useSession();
-	const [scheduleState, setScheduleState] = useState(localSchedule)
+	const [scheduleState, setScheduleState] = useState(localResponse.schedule)
 
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
@@ -59,6 +57,28 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
+
+	const handleSave = useCallback(async () => {
+		//TODO save on page reload / page transition
+		try {
+			let response = await fetch("http://localhost:3000/api/updateEventResponses", {
+				method: "POST",
+				body: JSON.stringify({
+					schedule: scheduleState,
+					responseId: localResponse.id,
+					eventId: event.id,
+					userId: session?.user.id
+				}),
+				headers: {
+					Accept: "application/json, text/plaion, */*",
+					"Content-Type": "application/json",
+				},
+			});
+			response = await response.json();
+		} catch (errorMessage: any) {
+			console.log(errorMessage);
+		}
+	}, [event, scheduleState, session, localResponse])
 
 	useEffect(() => {
 		function handleClick(event: MouseEvent) {
@@ -72,36 +92,24 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 			}
 		}
 
+		function handleUnload(e: BeforeUnloadEvent) {
+			e.preventDefault();
+			handleSave();
+		}
+
+		window.addEventListener("beforeunload", handleUnload)
 		router.events.on('routeChangeStart', handleSave)
 
 		document.addEventListener("click", handleClick)
 		return () => {
 			document.removeEventListener("click", handleClick)
+			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 
 		}
-	}, [showMenu, router])
+	}, [showMenu, router, handleSave])
 
-	async function handleSave() {
-		//TODO save on page reload / page transition
-		try {
-			let response = await fetch("http://localhost:3000/api/updateEventResponses", {
-				method: "POST",
-				body: JSON.stringify({
-					schedule: scheduleState,
-					eventId: event.id,
-					userId: session?.user.id
-				}),
-				headers: {
-					Accept: "application/json, text/plaion, */*",
-					"Content-Type": "application/json",
-				},
-			});
-			response = await response.json();
-		} catch (errorMessage: any) {
-			console.log(errorMessage);
-		}
-	}
+
 
 	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
 		const newSchedule = Array.from(table);
@@ -131,6 +139,8 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 
 	function checkForOverlap(table: Array<TimePair>, start: Date, end: Date) {
 		const overlappingResponse = table.find(s => {
+			s.start = new Date(s.start);
+			s.end = new Date(s.end);
 			const isStartOverlapping = !isEqual(start, s.end) && isWithinInterval(start, { start: s.start, end: s.end })
 			const isEndOverlapping = !isEqual(end, s.start) && isWithinInterval(end, { start: s.start, end: s.end })
 
@@ -142,13 +152,19 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 	}
 
 	function handleUpdate(id: string, newStart: Date, newEnd: Date) {
-		const filteredUserResponses = scheduleState.filter(s => s.id !== id);
+		let filteredUserResponses = scheduleState.filter(s => s.id !== id);
 		const overlappingEvent = checkForOverlap(filteredUserResponses, newStart, newEnd);
-		// console.log(overlappingEvent);
 
-		//TODO add modal asking if the responses should be merged "Do you want to merge these two time cards ?"
+		if (overlappingEvent !== undefined) {
+			const start = min([newStart, overlappingEvent.start])
+			const end = max([newEnd, overlappingEvent.end])
+			filteredUserResponses = handleDelete(overlappingEvent.id, filteredUserResponses);
+			filteredUserResponses = handleCreate(start, end, filteredUserResponses)
 
-		filteredUserResponses.push({ id: id, start: newStart, end: newEnd })
+		} else {
+			filteredUserResponses.push({ id: id, start: newStart, end: newEnd })
+		}
+
 		setScheduleState(filteredUserResponses);
 	}
 
@@ -203,7 +219,6 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 					{/* TODO display date */}
 				</div>
 
-
 				<div className={styles.scrollable}>
 					<div className={`${styles.content} ${styles.gridBackground} `} style={{
 						width: designWidth,
@@ -211,7 +226,7 @@ export default function ViewEvent({ event, userResponses, localSchedule }: Event
 					}} ref={containerRef} >
 						<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
 						<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
-							{scheduleState.map((schedule: TimePair, index: number) => {
+							{scheduleState.map((schedule: TimePair) => {
 								return <ResizableTimeCard
 									key={schedule.id}
 									schedule={schedule}
@@ -299,14 +314,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 			}
 		})
 
-		const parsedLocalUserResponse = JSON.parse(JSON.stringify(localUserResponse)) as EventResponse
-		var schedule: TimePair[] = [];
-		if (parsedLocalUserResponse) {
-			schedule = parsedLocalUserResponse.schedule
-		}
+
 
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localSchedule: schedule },
+			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localResponse: JSON.parse(JSON.stringify(localUserResponse)) as EventResponse },
 		};
 	} catch (e) {
 		console.error(e);
