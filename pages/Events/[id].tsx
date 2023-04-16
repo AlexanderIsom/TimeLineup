@@ -14,7 +14,11 @@ import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
-
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import {
+	ZoomInIcon,
+	ZoomOutIcon
+} from '@radix-ui/react-icons';
 
 interface EventProps {
 	event: Event
@@ -39,6 +43,13 @@ const ZoomLevels = [
 	2
 ]
 
+interface menu {
+	x?: number,
+	y?: number,
+	showing: boolean,
+	currentId?: string
+}
+
 export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
@@ -50,10 +61,8 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
 	let designWidth = designSize * currentZoom
-	const [showMenu, setShowMenu] = useState({ x: 0, y: 0, showing: false, currentId: "" })
-
+	const [showMenu, setShowMenu] = useState<menu>({ showing: false })
 	const containerRef = useRef<HTMLDivElement>(null);
-	const contextMenuRef = useRef<HTMLDivElement>(null);
 
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
@@ -81,17 +90,6 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	}, [event, scheduleState, session, localResponse])
 
 	useEffect(() => {
-		function handleClick(event: MouseEvent) {
-			const element = contextMenuRef?.current;
-			if (!element || element.contains((event?.target as Node) || null)) {
-				return;
-			}
-
-			if (showMenu.showing) {
-				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-			}
-		}
-
 		function handleUnload(e: BeforeUnloadEvent) {
 			e.preventDefault();
 			handleSave();
@@ -100,15 +98,12 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		window.addEventListener("beforeunload", handleUnload)
 		router.events.on('routeChangeStart', handleSave)
 
-		document.addEventListener("click", handleClick)
 		return () => {
-			document.removeEventListener("click", handleClick)
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 
 		}
 	}, [showMenu, router, handleSave])
-
 
 
 	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
@@ -173,13 +168,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	}
 
 	function onClickHandler(e: React.MouseEvent, pairId: string) {
-		if (showMenu.showing && showMenu.currentId === pairId) {
-			setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-			return;
-		}
-		setTimeout(() => {
-			setShowMenu({ x: e.clientX, y: e.clientY, showing: true, currentId: pairId })
-		}, 100);
+		setShowMenu({ x: e.clientX, y: e.clientY, showing: true, currentId: pairId })
 	}
 
 	function handleZoomOut() {
@@ -213,8 +202,8 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			<div className={styles.timelineContainer}>
 				<div className={styles.timelineTools}>
 					<div className={styles.magnify}>
-						<div className={styles.buttonLeft} onClick={handleZoomIn}><FiZoomIn className={styles.icon} /></div>
-						<div className={styles.buttonRight} onClick={handleZoomOut}><FiZoomOut className={styles.icon} /></div>
+						<div className={styles.buttonLeft} onClick={handleZoomIn}>< ZoomInIcon className={styles.icon} /></div>
+						<div className={styles.buttonRight} onClick={handleZoomOut}><ZoomOutIcon className={styles.icon} /></div>
 					</div>
 					{/* TODO display date */}
 				</div>
@@ -259,21 +248,24 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			</div>
 		</div>
 
-		{showMenu.showing && <div style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px` }} className={styles.contextMenu} ref={contextMenuRef}>
-			<ul className={styles.contextMenuItem} onClick={() => {
-				const newSchedule = handleDelete(showMenu.currentId, scheduleState)
-				setScheduleState(newSchedule);
-				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-			}}>Delete</ul>
-			<ul className={styles.contextMenuItem} onClick={() => {
-				const newSchedule = handleSplit(showMenu.currentId, showMenu.x, scheduleState)
-				setScheduleState(newSchedule);
-				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-			}}>Split</ul>
-			<ul className={styles.contextMenuItem} onClick={() => {
-				setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-			}}>Cancel</ul>
-		</div>}
+		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
+			<DropdownMenu.Portal>
+				<DropdownMenu.Content style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", background: "gray", width: "50px", height: "50px" }}>
+					<DropdownMenu.Item onSelect={() => {
+						const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
+						setScheduleState(newSchedule);
+					}}>
+						Delete
+					</DropdownMenu.Item>
+					<DropdownMenu.Item onSelect={() => {
+						const newSchedule = handleSplit(showMenu.currentId!, showMenu.x!, scheduleState)
+						setScheduleState(newSchedule);
+					}}>
+						Split
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Portal>
+		</DropdownMenu.Root>
 	</>)
 }
 
@@ -313,8 +305,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				userId: session?.user.id,
 			}
 		})
-
-
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localResponse: JSON.parse(JSON.stringify(localUserResponse)) as EventResponse },
