@@ -12,9 +12,17 @@ export interface TimePair {
 	end: Date
 }
 
+export interface User {
+	emailVerified: Date,
+	name: string,
+	id: string,
+	image: string
+}
+
 export interface EventResponse {
 	id: string;
 	eventId: string,
 	userId: string,
+	user: User,
 	schedule: Array<TimePair>
 }

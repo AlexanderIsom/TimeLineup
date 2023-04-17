@@ -17,7 +17,6 @@ interface Props {
 	timeline: TimelineUtils
 	updateHandler: (id: string, tart: Date, end: Date) => void
 	onClickHandler: (event: React.MouseEvent, pairId: string) => void;
-	hideContextHandler: () => void;
 	bounds: { start: Date, end: Date };
 }
 
@@ -26,7 +25,6 @@ export default function ResizableTimeCard({
 	timeline,
 	updateHandler,
 	onClickHandler,
-	hideContextHandler,
 	bounds
 }: Props) {
 	const [startTime, setStartTime] = useState(new Date(schedule.start))
@@ -45,16 +43,16 @@ export default function ResizableTimeCard({
 	}
 
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
-		hideContextHandler();
 		setInUse(true);
-		const newSize = size.width;
 
 		if (handle === 'w') {
-			setStartTime(timeline.toDate(endX - newSize))
+			setStartTime(clampDateWithinBounds(timeline.toDate(endX - size.width)))
+			return;
 		}
 
 		if (handle === 'e') {
-			setEndTime(clampDateWithinBounds(timeline.toDate(startX + newSize)))
+			setEndTime(clampDateWithinBounds(timeline.toDate(startX + size.width)))
+			return;
 		}
 	}
 
@@ -73,11 +71,7 @@ export default function ResizableTimeCard({
 	}
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
-		hideContextHandler();
 		setInUse(true);
-		if (endX + ui.deltaX >= timeline.getWidth()) {
-			return;
-		}
 
 		const newStartTime = timeline.toDate(ui.x)
 		const newEndTime = addSeconds(newStartTime, duration)
@@ -99,6 +93,7 @@ export default function ResizableTimeCard({
 	}
 
 	return (
+
 		<Draggable
 			handle='.dragHandle'
 			axis='x'
@@ -106,7 +101,6 @@ export default function ResizableTimeCard({
 			onDrag={onDrag}
 			onStop={onDragStopped}
 			bounds={"parent"}
-
 		>
 			<Resizable
 				className={styles.container}
@@ -116,8 +110,9 @@ export default function ResizableTimeCard({
 				onResize={onResize}
 				onResizeStop={onResizeStop}
 			>
-				<div style={{ width: `${endX - startX}px` }} className={styles.content}>
+				<div style={{ width: `${endX - startX}px` }}>
 					<div className={`dragHandle ${styles.timeContainer}`} >
+
 						<span className={styles.timeCue}>
 							{format(
 								roundToNearestMinutes(startTime, { nearestTo: 15 }),
@@ -130,9 +125,11 @@ export default function ResizableTimeCard({
 								'HH:mm'
 							)}
 						</span>
+
 					</div>
 				</div>
 			</Resizable>
 		</Draggable >
+
 	)
 }

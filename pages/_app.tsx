@@ -12,7 +12,7 @@ export default function App({
     <>
       <SessionProvider session={session}>
 
-        <main>
+        <main style={{ display: "grid", gridTemplateRows: "64px 1fr" }}>
           <CustomNavbar />
           <Component {...pageProps} />
         </main>

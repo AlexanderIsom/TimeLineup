@@ -1,39 +1,31 @@
+@use "styles/Variables.scss";
+
 .container {
 	position: absolute;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #cecece;
-	border-radius: 5px;
-}
-
-.content {
-	height: 45px;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-.binIcon {
-	height: 90%;
-	width: 90%;
+	height: Variables.$cardHeight;
 }
 
 .timeContainer {
-	width: 100%;
 	display: flex;
+	position: absolute;
+	height: auto;
+	top: 0;
+	bottom: 0;
+	margin-top: 5px;
+	background: #cecece;
+	border-radius: 5px;
+	width: 100%;
 	justify-content: center;
 	align-items: center;
 	justify-content: space-between;
-}
-
-.staticContainer {
-	@extend .timeContainer;
-	display: flex;
+	overflow: hidden;
 }
 
 .timeCue {
+	padding: 10px;
 	align-items: center;
 	text-overflow: ellipsis;
 	overflow: hidden;

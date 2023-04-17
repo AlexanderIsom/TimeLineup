@@ -15,6 +15,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Avatar from "@radix-ui/react-avatar"
 import {
 	ZoomInIcon,
 	ZoomOutIcon
@@ -53,6 +54,13 @@ interface menu {
 export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
+
+	const testData = [];
+	const testDataCount = 50;
+	for (let index = 0; index < testDataCount; index++) {
+		testData.push({ id: uuidv4(), schedule: localResponse.schedule } as EventResponse)
+
+	}
 
 	const router = useRouter();
 	const { data: session } = useSession();
@@ -163,10 +171,6 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		setScheduleState(filteredUserResponses);
 	}
 
-	function hideContext() {
-		setShowMenu({ x: 0, y: 0, showing: false, currentId: "" })
-	}
-
 	function onClickHandler(e: React.MouseEvent, pairId: string) {
 		setShowMenu({ x: e.clientX, y: e.clientY, showing: true, currentId: pairId })
 	}
@@ -198,47 +202,72 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 
 	return (<>
 		<div className={styles.wrapper}>
-			<div className={styles.userInfo}>users</div>
-			<div className={styles.timelineContainer}>
-				<div className={styles.timelineTools}>
-					<div className={styles.magnify}>
-						<div className={styles.buttonLeft} onClick={handleZoomIn}>< ZoomInIcon className={styles.icon} /></div>
-						<div className={styles.buttonRight} onClick={handleZoomOut}><ZoomOutIcon className={styles.icon} /></div>
+			<div className={styles.scrollable}>
+				<div className={styles.userContainer}>
+					<div className={styles.userItem}>
+						<Avatar.Root key={session?.user.id} className={styles.avatarRoot} >
+							<Avatar.Image src={session?.user.image} alt={session?.user.name} className={styles.userAvatar} />
+							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
+								{session?.user.name.slice(0, 2)}
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<div>{session?.user.name}</div>
 					</div>
-					{/* TODO display date */}
-				</div>
 
-				<div className={styles.scrollable}>
-					<div className={`${styles.content} ${styles.gridBackground} `} style={{
-						width: designWidth,
-						backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
-					}} ref={containerRef} >
-						<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
-						<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
-							{scheduleState.map((schedule: TimePair) => {
-								return <ResizableTimeCard
-									key={schedule.id}
-									schedule={schedule}
-									timeline={timeline}
-									updateHandler={handleUpdate}
-									onClickHandler={onClickHandler}
-									hideContextHandler={hideContext}
-									bounds={bounds}
-								/>
-							})}
+					{userResponses.map((eventResponse: EventResponse, index: number) => {
+						return <div key={eventResponse.user.id} className={styles.userItem}>
+							<Avatar.Root className={styles.avatarRoot} >
+								<Avatar.Image src={eventResponse.user.image} alt={eventResponse.user.name} className={styles.userAvatar} />
+								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
+									{session?.user.name.slice(0, 2)}
+								</Avatar.Fallback>
+							</Avatar.Root>
+							<div>{eventResponse.user.name}</div>
 						</div>
-						<div className={styles.userResponses}>
-							{userResponses.map((eventResponse: EventResponse, index: number) => {
-								return <div key={index} className={styles.staticRow}>{
-									eventResponse.schedule.map((sch: TimePair) => {
-										return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
-									})
-								}</div>
-							})}
+					})}
+				</div>
+				<div className={styles.timelineContainer}>
+					<div className={styles.timelineHeader}>
+						<div className={styles.timelineTools}>
+							<div className={styles.magnify}>
+								<div className={styles.buttonLeft} onClick={handleZoomIn}>< ZoomInIcon className={styles.icon} /></div>
+								<div className={styles.buttonRight} onClick={handleZoomOut}><ZoomOutIcon className={styles.icon} /></div>
+							</div>
+						</div>
+					</div>
+					<div className={styles.timelineContent}  >
+
+						<div className={`${styles.gridBackground} `} style={{
+							width: designWidth,
+							backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
+						}} ref={containerRef} >
+							<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
+							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
+								{scheduleState.map((schedule: TimePair) => {
+									return <ResizableTimeCard
+										key={schedule.id}
+										schedule={schedule}
+										timeline={timeline}
+										updateHandler={handleUpdate}
+										onClickHandler={onClickHandler}
+										bounds={bounds}
+									/>
+								})}
+							</div>
+							<div className={styles.userResponses}>
+								{userResponses.map((eventResponse: EventResponse, index: number) => {
+									return <div key={index} className={styles.staticRow}>{
+										eventResponse.schedule.map((sch: TimePair) => {
+											return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
+										})
+									}</div>
+								})}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
 
 			<div className={styles.eventInfo}>
 				<h1>{event.title}</h1>

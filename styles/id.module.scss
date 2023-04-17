@@ -1,25 +1,43 @@
 @use "styles/Variables.scss";
 
 .wrapper {
-	display: flex;
-	flex: 1 1 0;
-	width: 100%;
-}
-
-.content {
-	position: relative;
-	min-width: 100%;
+	min-height: 0;
+	min-width: 0;
+	display: grid;
+	grid-template-columns: 4fr 1fr;
 	height: 100%;
 }
 
-.userInfo {
-	width: 240px;
-	border: #efefef 1px solid;
+.timeline {
+	display: flex;
+	flex: 2 1 0%;
+	flex-direction: row;
+}
+
+.eventInfo {
+	grid-column: 2;
+	background: blue;
+}
+
+
+
+.userContainer {
+	grid-column: 1;
+	border: Variables.$gridColor 1px solid;
+	flex: 1 1 0%;
+}
+
+.userItem {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: Variables.$cardHeight;
 }
 
 .localUserResponses {
 	display: flex;
-	height: 50px;
+	height: Variables.$cardHeight;
 }
 
 .userResponses {
@@ -28,37 +46,40 @@
 
 .staticRow {
 	display: block;
-	height: 50px
-}
-
-.eventInfo {
-	flex: 1 1 0%;
-	background: blue;
+	height: Variables.$cardHeight
 }
 
 .timelineContainer {
-	display: flex;
-	flex: 3 1 0;
-	overflow: hidden;
-	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+	grid-column: 2;
+	display: grid;
+	grid-template-rows: 50px 1fr;
 }
 
-.timelineTools {
-	height: 50px;
+.timelineHeader {
+	grid-row: 1;
 	display: flex;
-	padding-left: 50px;
-	padding-right: 50px;
-	justify-content: space-between;
-	justify-items: center;
 	align-items: center;
 }
 
+.timelineTools {
+	padding-left: 50px;
+}
+
+.timelineContent {
+	min-height: 0;
+	min-width: 100%;
+	grid-row: 2;
+	overflow: auto;
+}
+
 .scrollable {
-	flex-direction: column;
-	flex: 1 1 0;
-	scroll-behavior: smooth;
-	scrollbar-width: none;
-	overflow-x: scroll;
+	min-height: 0;
+	min-width: 0;
+	grid-column: 1;
+	display: grid;
+	grid-template-columns: 1fr 4fr;
 }
 
 .magnify {
@@ -93,39 +114,6 @@
 	height: 30px;
 }
 
-.buttonCore {
-	width: 50px;
-	height: 30px;
-	border: none;
-	border-radius: 5px;
-	margin-right: 5px;
-
-	&:hover {
-		background: rgb(134, 134, 134);
-		cursor: pointer;
-	}
-}
-
-.saveButton {
-	@extend .buttonCore;
-	background: rgb(39, 81, 158);
-}
-
-.addButton {
-	@extend .buttonCore;
-	background: rgb(206, 206, 206);
-}
-
-.deleteButton {
-	@extend .buttonCore;
-	background: rgb(161, 49, 49);
-
-	&:hover {
-		background: rgb(77, 23, 23);
-		cursor: pointer;
-	}
-}
-
 .contextMenu {
 	position: fixed;
 	background: white;
@@ -157,6 +145,31 @@
 }
 
 .gridBackground {
+	min-width: 100%;
+	position: relative;
+	height: 100%;
 	background-image: linear-gradient(to right, Variables.$gridColor 1px, transparent 1px), linear-gradient(to bottom, Variables.$gridColor 1px, transparent 1px);
 	background-position-x: -1px;
+}
+
+.avatarRoot {
+	border-radius: 100%;
+	$size: 35px;
+	width: $size;
+	height: $size;
+	display: flex;
+	background-color: gray;
+}
+
+.userAvatar {
+	width: 100%;
+	height: 100%;
+
+	border-radius: inherit;
+}
+
+.avatarFallback {
+	width: 100%;
+	height: 100%;
+	color: #c947d4
 }
