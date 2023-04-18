@@ -2,10 +2,9 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, format, isEqual, isWithinInterval, max, min, parseISO, roundToNearestMinutes } from "date-fns";
+import { add, format, isEqual, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
-import { FiZoomIn, FiZoomOut } from "react-icons/fi";
 import { useCallback, useEffect, useRef, useState } from "react";
 import StaticTimeCard from "components/StaticTimeCard";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
@@ -20,6 +19,7 @@ import {
 	ZoomInIcon,
 	ZoomOutIcon
 } from '@radix-ui/react-icons';
+import { Poppins } from "@next/font/google";
 
 interface EventProps {
 	event: Event
@@ -51,17 +51,11 @@ interface menu {
 	currentId?: string
 }
 
+const poppins = Poppins({ weight: '100', subsets: ['latin'] })
+
 export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
-
-	const testData = [];
-	const testDataCount = 50;
-	for (let index = 0; index < testDataCount; index++) {
-		testData.push({ id: uuidv4(), schedule: localResponse.schedule } as EventResponse)
-
-	}
-
 	const router = useRouter();
 	const { data: session } = useSession();
 	const [scheduleState, setScheduleState] = useState(localResponse.schedule)
@@ -71,9 +65,12 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	let designWidth = designSize * currentZoom
 	const [showMenu, setShowMenu] = useState<menu>({ showing: false })
 	const containerRef = useRef<HTMLDivElement>(null);
+	const userContainerRef = useRef<HTMLDivElement>(null);
+
 
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
+	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
 		//TODO save on page reload / page transition
@@ -200,10 +197,17 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		}
 	}
 
+	const onContentScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+		if (e.currentTarget.scrollTop !== contentLastScroll) {
+			userContainerRef.current!.scrollTop = e.currentTarget.scrollTop;
+			setContentLastScroll(e.currentTarget.scrollTop);
+		}
+	}
+
 	return (<>
 		<div className={styles.wrapper}>
 			<div className={styles.scrollable}>
-				<div className={styles.userContainer}>
+				<div className={styles.userContainer} ref={userContainerRef}>
 					<div className={styles.userItem}>
 						<Avatar.Root key={session?.user.id} className={styles.avatarRoot} >
 							<Avatar.Image src={session?.user.image} alt={session?.user.name} className={styles.userAvatar} />
@@ -211,7 +215,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 								{session?.user.name.slice(0, 2)}
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<div>{session?.user.name}</div>
+						<div className={`${styles.userName} ${poppins.className}`}>{session?.user.name}</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
@@ -222,7 +226,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 									{session?.user.name.slice(0, 2)}
 								</Avatar.Fallback>
 							</Avatar.Root>
-							<div>{eventResponse.user.name}</div>
+							<div className={`${styles.userName} ${poppins.className}`}>{eventResponse.user.name}</div>
 						</div>
 					})}
 				</div>
@@ -235,7 +239,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 							</div>
 						</div>
 					</div>
-					<div className={styles.timelineContent}  >
+					<div className={styles.timelineContent} onScroll={onContentScroll} >
 
 						<div className={`${styles.gridBackground} `} style={{
 							width: designWidth,
@@ -269,11 +273,32 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			</div>
 
 
-			<div className={styles.eventInfo}>
-				<h1>{event.title}</h1>
-				<h2>{event.userId}</h2>
-				<h2>{format(event.startDateTime, "dd/MM/yy HH:mm")}</h2>
-				<h2>{format(event.endDateTime, "dd/MM/yy HH:mm")}</h2>
+			<div className={`${styles.eventInfo} ${poppins.className}`} >
+
+
+				<div className={styles.eventTitle}>
+					<h1>{event.title}</h1>
+					<h2>from: {format(event.startDateTime, "MMMM dd HH:mm")} to: {format(event.endDateTime, "HH:mm")}</h2>
+				</div>
+				<div className={styles.eventHostInformation}>
+					<h3>hosted by:</h3>
+					<div style={{ display: "inline-flex", justifyContent: "center", alignItems: "center" }}>
+						<Avatar.Root className={styles.avatarRoot} >
+							<Avatar.Image src={event.user.image} alt={event.user.name} className={styles.userAvatar} />
+							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
+								{event.user.name.slice(0, 2)}
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<h2>{event.user.name}</h2>
+					</div>
+				</div>
+				<div className={styles.eventDescription}>
+					event items
+				</div>
+
+				<div className={styles.eventDescription}>
+					description goes here
+				</div>
 			</div>
 		</div>
 
@@ -299,6 +324,11 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+
+	// const randomTimeBetween = (start: Date, end: Date) => {
+	// 	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+	// }
+
 	try {
 		const session = await getServerSession(context.req, context.res, authOptions);
 		const { params } = context;
@@ -334,6 +364,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				userId: session?.user.id,
 			}
 		})
+
+		const testDataCount = 50;
+
+		// for (let index = 0; index < testDataCount; index++) {
+		// 	const newUser = Object.assign({}, session?.user);
+		// 	newUser.name = index.toString();
+		// 	const eventStartDate = new Date(event!.startDateTime);
+		// 	let eventEndDate = subMinutes(new Date(event!.endDateTime), 15);
+		// 	const startTime = roundToNearestMinutes(randomTimeBetween(eventStartDate, eventEndDate), { nearestTo: 15 })
+		// 	const endTime = roundToNearestMinutes(randomTimeBetween(addHours(startTime, 1), eventEndDate), { nearestTo: 15 });
+		// 	const newSchedule: TimePair[] = [];
+		// 	newSchedule.push({ id: uuidv4(), start: startTime, end: endTime })
+		// 	userResponses.push({ id: uuidv4(), schedule: newSchedule, user: newUser, userId: session?.user.id } as EventResponse)
+		// }
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localResponse: JSON.parse(JSON.stringify(localUserResponse)) as EventResponse },
