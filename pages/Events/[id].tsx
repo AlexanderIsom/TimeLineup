@@ -15,11 +15,11 @@ import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Avatar from "@radix-ui/react-avatar"
-import {
-	ZoomInIcon,
-	ZoomOutIcon
-} from '@radix-ui/react-icons';
-import { Poppins } from "@next/font/google";
+import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
+import { TbTrashX } from "react-icons/tb"
+import { Inter } from "@next/font/google";
+import dropdownStyle from "styles/Components/Dropdown.module.scss"
+
 
 interface EventProps {
 	event: Event
@@ -51,7 +51,7 @@ interface menu {
 	currentId?: string
 }
 
-const poppins = Poppins({ weight: '100', subsets: ['latin'] })
+const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
 
 export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
@@ -137,30 +137,36 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		return table
 	}
 
-	function checkForOverlap(table: Array<TimePair>, start: Date, end: Date) {
-		const overlappingResponse = table.find(s => {
+	function checkForOverlap(table: Array<TimePair>, start: Date, end: Date): Array<TimePair> {
+		const overlappingResponses = table.filter(s => {
 			s.start = new Date(s.start);
 			s.end = new Date(s.end);
 			const isStartOverlapping = !isEqual(start, s.end) && isWithinInterval(start, { start: s.start, end: s.end })
 			const isEndOverlapping = !isEqual(end, s.start) && isWithinInterval(end, { start: s.start, end: s.end })
+			const isAllOverlapping = start < s.start && end > s.end;
 
-			if (isStartOverlapping || isEndOverlapping) {
+			if (isStartOverlapping || isEndOverlapping || isAllOverlapping) {
 				return true;
 			}
 		});
-		return overlappingResponse;
+		return overlappingResponses;
 	}
 
 	function handleUpdate(id: string, newStart: Date, newEnd: Date) {
 		let filteredUserResponses = scheduleState.filter(s => s.id !== id);
-		const overlappingEvent = checkForOverlap(filteredUserResponses, newStart, newEnd);
+		const overlappingEvents = checkForOverlap(filteredUserResponses, newStart, newEnd);
 
-		if (overlappingEvent !== undefined) {
-			const start = min([newStart, overlappingEvent.start])
-			const end = max([newEnd, overlappingEvent.end])
-			filteredUserResponses = handleDelete(overlappingEvent.id, filteredUserResponses);
+		if (overlappingEvents.length > 0) {
+			const startTimes = overlappingEvents.map(e => e.start)
+			const endTimes = overlappingEvents.map(e => e.end)
+			startTimes.push(newStart);
+			endTimes.push(newEnd);
+			const start = min(startTimes)
+			const end = max(endTimes)
+			overlappingEvents.forEach(event => {
+				filteredUserResponses = handleDelete(event.id, filteredUserResponses);
+			});
 			filteredUserResponses = handleCreate(start, end, filteredUserResponses)
-
 		} else {
 			filteredUserResponses.push({ id: id, start: newStart, end: newEnd })
 		}
@@ -191,7 +197,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		startTime.setMinutes(0, 0, 0);
 		const endTime = add(startTime, { hours: 1 })
 
-		if (checkForOverlap(scheduleState, startTime, endTime) === undefined) {
+		if (checkForOverlap(scheduleState, startTime, endTime).length == 0) {
 			const newSchedule = handleCreate(startTime, endTime, scheduleState)
 			setScheduleState(newSchedule);
 		}
@@ -215,7 +221,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 								{session?.user.name.slice(0, 2)}
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<div className={`${styles.userName} ${poppins.className}`}>{session?.user.name}</div>
+						<div className={`${styles.userName} ${inter.className}`}>{session?.user.name}</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
@@ -226,7 +232,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 									{session?.user.name.slice(0, 2)}
 								</Avatar.Fallback>
 							</Avatar.Root>
-							<div className={`${styles.userName} ${poppins.className}`}>{eventResponse.user.name}</div>
+							<div className={`${styles.userName} ${inter.className}`}>{eventResponse.user.name}</div>
 						</div>
 					})}
 				</div>
@@ -234,8 +240,8 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 					<div className={styles.timelineHeader}>
 						<div className={styles.timelineTools}>
 							<div className={styles.magnify}>
-								<div className={styles.buttonLeft} onClick={handleZoomIn}>< ZoomInIcon className={styles.icon} /></div>
-								<div className={styles.buttonRight} onClick={handleZoomOut}><ZoomOutIcon className={styles.icon} /></div>
+								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.icon} /></div>
+								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.icon} /></div>
 							</div>
 						</div>
 					</div>
@@ -273,7 +279,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			</div>
 
 
-			<div className={`${styles.eventInfo} ${poppins.className}`} >
+			<div className={`${styles.eventInfo} ${inter.className}`} >
 
 
 				<div className={styles.eventTitle}>
@@ -303,19 +309,33 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		</div>
 
 		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
-			<DropdownMenu.Portal>
-				<DropdownMenu.Content style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", background: "gray", width: "50px", height: "50px" }}>
-					<DropdownMenu.Item onSelect={() => {
-						const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
-						setScheduleState(newSchedule);
+			<DropdownMenu.Portal >
+				<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", }}>
+					<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
+					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
+					<DropdownMenu.Group className={dropdownStyle.group}>
+						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
+							const newSchedule = handleSplit(showMenu.currentId!, showMenu.x!, scheduleState)
+							setScheduleState(newSchedule);
+						}}>
+							<RxScissors className={dropdownStyle.icon} />
+							Split
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
+							const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
+							setScheduleState(newSchedule);
+						}}>
+							<TbTrashX className={dropdownStyle.icon} style={{ strokeWidth: "1" }} />
+							Delete
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
+					<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
+
 					}}>
-						Delete
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onSelect={() => {
-						const newSchedule = handleSplit(showMenu.currentId!, showMenu.x!, scheduleState)
-						setScheduleState(newSchedule);
-					}}>
-						Split
+						<RxCircleBackslash className={dropdownStyle.icon} />
+						Cancel
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>
@@ -365,7 +385,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 			}
 		})
 
-		const testDataCount = 50;
+		// const testDataCount = 50;
 
 		// for (let index = 0; index < testDataCount; index++) {
 		// 	const newUser = Object.assign({}, session?.user);

@@ -1,0 +1,61 @@
+.content {
+	background: white;
+	width: 224px;
+	height: auto;
+	padding: 4px;
+	border-radius: 5px;
+	border: #E1E7EF 1px solid;
+	gap: 5px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-shadow: 0px 2px 4px -2px rgba(0, 0, 0, 0.1), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+	font-family: Inter;
+	font-size: 14px;
+	width: 100%;
+	line-height: 20px;
+	font-weight: 600;
+	height: 32px;
+	padding: 6px 8px 6px 8px;
+}
+
+.group {
+	width: 100%;
+}
+
+.sepparator {
+	position: relative;
+	height: 1px;
+	width: 224px;
+	background-color: #F1F5F9;
+}
+
+.icon {
+	$size: 15px;
+	width: $size;
+	height: $size;
+}
+
+.item {
+	height: 32px;
+	font-family: Inter;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	padding: 6px 8px 6px 8px;
+	width: 100%;
+	gap: 8px;
+	outline: none;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+
+
+	&:hover {
+		background: #F1F5F9;
+	}
+}
