@@ -4,14 +4,8 @@
 	min-height: 0;
 	min-width: 0;
 	display: grid;
-	grid-template-columns: 4fr 1fr;
+	grid-template-columns: 1fr 450px;
 	height: 100%;
-}
-
-.eventInfo {
-	grid-column: 2;
-	border: Variables.$gridColor 1px solid;
-	padding: 20px;
 }
 
 .userContainer {
@@ -168,12 +162,6 @@
 	display: flex;
 }
 
-.eventInfoHeading {
-	display: grid;
-	grid-template-rows: 1fr 1fr 1fr;
-	justify-content: center;
-	align-items: center;
-}
 
 .userAvatar {
 	width: 100%;
@@ -190,42 +178,4 @@
 .avatarFallback {
 	width: 100%;
 	height: 100%;
-}
-
-.eventTitle {
-	grid-column: 3;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	background: rgb(241, 241, 241);
-	border-radius: 5px;
-	border: #E1E7EF 1px solid;
-
-	h1 {
-		font-size: xx-large;
-	}
-
-	h2 {
-		font-size: medium;
-	}
-}
-
-.eventHostInformation {
-	background: rgb(241, 241, 241);
-	border-radius: 5px;
-	border: #E1E7EF 1px solid;
-	justify-content: center;
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-	padding: 10px;
-}
-
-.eventDescription {
-	background: rgb(241, 241, 241);
-	border-radius: 5px;
-	border: #E1E7EF 1px solid;
-	padding: 10px;
-	min-height: 200px;
 }

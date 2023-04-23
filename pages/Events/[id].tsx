@@ -2,7 +2,7 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, format, isEqual, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
+import { add, format, isEqual, isSameDay, isSameMonth, isSameYear, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -14,11 +14,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Separator from "@radix-ui/react-separator"
 import * as Avatar from "@radix-ui/react-avatar"
 import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
+import { BsCalendar4Week } from "react-icons/bs"
 import { Inter } from "@next/font/google";
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
+import eventDetailStyle from "styles/Components/EventDetails.module.scss"
 
 
 interface EventProps {
@@ -210,6 +213,19 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		}
 	}
 
+	function formatDateRange(start: Date, end: Date): string {
+		if (!isSameYear(start, end)) {
+			`${format(start, "yyyy MMM do hh:mmaaa")} - ${format(end, "yyyy MMM do hh:mmaaa")}`
+		}
+		if (!isSameMonth(start, end)) {
+			`${format(start, "MMM do hh:mmaaa")} - ${format(end, "MMM do hh:mmaaa")}`
+		}
+		if (!isSameDay(start, end)) {
+			`${format(start, "do hh:mmaaa")} - ${format(end, "do hh:mmaaa")}`
+		}
+		return `${format(start, "MMM do hh:mmaaa")} - ${format(end, "hh:mmaaa")}`;
+	}
+
 	return (<>
 		<div className={styles.wrapper}>
 			<div className={styles.scrollable}>
@@ -279,30 +295,32 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			</div>
 
 
-			<div className={`${styles.eventInfo} ${inter.className}`} >
-
-
-				<div className={styles.eventTitle}>
-					<h1>{event.title}</h1>
-					<h2>from: {format(event.startDateTime, "MMMM dd HH:mm")} to: {format(event.endDateTime, "HH:mm")}</h2>
-				</div>
-				<div className={styles.eventHostInformation}>
-					<h3>hosted by:</h3>
-					<div style={{ display: "inline-flex", justifyContent: "center", alignItems: "center" }}>
-						<Avatar.Root className={styles.avatarRoot} >
-							<Avatar.Image src={event.user.image} alt={event.user.name} className={styles.userAvatar} />
-							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
+			<div className={eventDetailStyle.container} >
+				<div className={eventDetailStyle.heading}>
+					<div className={eventDetailStyle.eventTitle}>
+						Defeating the Minecraft dragon
+					</div>
+					<div className={eventDetailStyle.eventHostInformation}>
+						<Avatar.Root className={eventDetailStyle.avatarRoot} >
+							<Avatar.Image src={event.user.image} alt={event.user.name} className={eventDetailStyle.userAvatar} />
+							<Avatar.Fallback className={eventDetailStyle.avatarFallback} delayMs={600}>
 								{event.user.name.slice(0, 2)}
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<h2>{event.user.name}</h2>
+						{event.user.name}
 					</div>
 				</div>
-				<div className={styles.eventDescription}>
+				<Separator.Root className={eventDetailStyle.separator} />
+				<div className={eventDetailStyle.eventDate}>
+					<BsCalendar4Week className={eventDetailStyle.calendarIcon} />
+					{formatDateRange(event.startDateTime, event.endDateTime)}
+				</div>
+
+				<div className={eventDetailStyle.eventDescription}>
 					event items
 				</div>
 
-				<div className={styles.eventDescription}>
+				<div className={eventDetailStyle.eventDescription}>
 					description goes here
 				</div>
 			</div>
