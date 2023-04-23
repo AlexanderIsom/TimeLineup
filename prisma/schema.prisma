@@ -63,8 +63,8 @@ model Event {
   title         String
   userId        String
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  startDateTime DateTime        @db.Date
-  endDateTime   DateTime        @db.Date
+  startDateTime DateTime
+  endDateTime   DateTime
   EventResponse EventResponse[]
 }
 
