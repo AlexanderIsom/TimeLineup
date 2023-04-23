@@ -343,20 +343,29 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 				<div className={eventDetailStyle.invites}>
 					<div className={eventDetailStyle.sectionHeading}>Invites</div>
 					<Tabs.Root defaultValue="tab1">
-						<Tabs.List >
-							<Tabs.Trigger value="tab1">
+						<Tabs.List className={eventDetailStyle.tabContainer}>
+							<Tabs.Trigger className={eventDetailStyle.tab} value="tab1">
 								Attending
 								<div className={eventDetailStyle.attendingCount}>12</div>
 							</Tabs.Trigger>
-							<Tabs.Trigger value="tab2">
+							<Tabs.Trigger className={eventDetailStyle.tab} value="tab2">
 								Invited
-								<div className={eventDetailStyle.invitedCount}>5</div>
+								<div className={eventDetailStyle.inviteCount}>5</div>
 							</Tabs.Trigger>
-							<Tabs.Trigger value="tab2">
+							<Tabs.Trigger className={eventDetailStyle.tab} value="tab3">
 								Declined
 								<div className={eventDetailStyle.declinedCount}>8</div>
 							</Tabs.Trigger>
 						</Tabs.List>
+						<Tabs.Content value="tab1">
+							<div>this is for attendes</div>
+						</Tabs.Content>
+						<Tabs.Content value="tab2">
+							<div>this is for invites</div>
+						</Tabs.Content>
+						<Tabs.Content value="tab3">
+							<div>this is for declined</div>
+						</Tabs.Content>
 					</Tabs.Root>
 				</div>
 

@@ -138,4 +138,65 @@
 
 .invites {
 	@extend .sectionPadding;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.tabContainer {
+	width: 100%;
+	display: flex;
+	border-bottom: solid 2px #B8B8B8;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.tab {
+	background: none;
+	border: none;
+	flex: 1 1 0%;
+	outline: none;
+	background-color: none;
+	color: gray;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+	padding: 5px 0px;
+	font-size: 12px;
+	font-family: Inter;
+
+	&:not(:active):hover {
+		color: black;
+		cursor: pointer;
+	}
+}
+
+.tab[data-state='active'] {
+	color: black;
+	box-shadow: 0 2px 0 0 black;
+
+}
+
+.count {
+	padding: 2px 5px;
+	border-radius: 5px;
+	color: black;
+	font-size: 10px;
+	line-height: 15px;
+}
+
+.attendingCount {
+	@extend .count;
+	background-color: #63B562;
+}
+
+.inviteCount {
+	@extend .count;
+	background-color: #D9AC39;
+}
+
+.declinedCount {
+	@extend .count;
+	background-color: #DC7878;
 }
