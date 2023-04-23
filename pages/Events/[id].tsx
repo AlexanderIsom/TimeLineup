@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Separator from "@radix-ui/react-separator"
 import * as Avatar from "@radix-ui/react-avatar"
+import * as Tabs from "@radix-ui/react-tabs"
 import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
 import { BsCalendar4Week } from "react-icons/bs"
@@ -214,16 +215,18 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	}
 
 	function formatDateRange(start: Date, end: Date): string {
+		let formatString = "";
+		let endFormatString = "";
 		if (!isSameYear(start, end)) {
-			`${format(start, "yyyy MMM do hh:mmaaa")} - ${format(end, "yyyy MMM do hh:mmaaa")}`
+			formatString += "yyyy ";
 		}
 		if (!isSameMonth(start, end)) {
-			`${format(start, "MMM do hh:mmaaa")} - ${format(end, "MMM do hh:mmaaa")}`
+			endFormatString += "MMM ";
 		}
 		if (!isSameDay(start, end)) {
-			`${format(start, "do hh:mmaaa")} - ${format(end, "do hh:mmaaa")}`
+			endFormatString += "do ";
 		}
-		return `${format(start, "MMM do hh:mmaaa")} - ${format(end, "hh:mmaaa")}`;
+		return `${format(start, formatString + "MMM do hh:mmaaa")} - ${format(end, formatString + endFormatString + "hh:mmaaa")}`;
 	}
 
 	return (<>
@@ -317,12 +320,46 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 				</div>
 
 				<div className={eventDetailStyle.eventDescription}>
-					event items
+					<div className={eventDetailStyle.sectionHeading}>Description</div>
+					We gonna go kill that flying advanced pidgeon turd
+
+				</div>
+				<Separator.Root className={eventDetailStyle.separator} />
+
+				<div className={eventDetailStyle.agenda}>
+					<div className={eventDetailStyle.sectionHeading}>Agenda</div>
+					<div className={eventDetailStyle.agendaContent}>
+						<div style={{ gridRow: 1, gridColumn: 1 }}>4:00pm - 6:00pm</div>
+						<div style={{ gridRow: 2, gridColumn: 1 }}>6:00pm - 8:00pm</div>
+						<div style={{ gridRow: 3, gridColumn: 1 }}>8:00pm - 10:00pm</div>
+						<Separator.Root className={eventDetailStyle.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: 4, gridColumn: 2 }} />
+						<div style={{ gridRow: 1, gridColumn: 3 }}>Prep</div>
+						<div style={{ gridRow: 2, gridColumn: 3 }}>Minecraft</div>
+						<div style={{ gridRow: 3, gridColumn: 3 }}>Post dragon party</div>
+					</div>
 				</div>
 
-				<div className={eventDetailStyle.eventDescription}>
-					description goes here
+				<Separator.Root className={eventDetailStyle.separator} />
+				<div className={eventDetailStyle.invites}>
+					<div className={eventDetailStyle.sectionHeading}>Invites</div>
+					<Tabs.Root defaultValue="tab1">
+						<Tabs.List >
+							<Tabs.Trigger value="tab1">
+								Attending
+								<div className={eventDetailStyle.attendingCount}>12</div>
+							</Tabs.Trigger>
+							<Tabs.Trigger value="tab2">
+								Invited
+								<div className={eventDetailStyle.invitedCount}>5</div>
+							</Tabs.Trigger>
+							<Tabs.Trigger value="tab2">
+								Declined
+								<div className={eventDetailStyle.declinedCount}>8</div>
+							</Tabs.Trigger>
+						</Tabs.List>
+					</Tabs.Root>
 				</div>
+
 			</div>
 		</div>
 

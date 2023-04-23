@@ -12,8 +12,12 @@
 	z-index: 10;
 }
 
+.sectionPadding {
+	padding: 6px 8px;
+}
+
 .heading {
-	padding: 6px 8px 6px 8px;
+	@extend .sectionPadding;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
@@ -37,16 +41,29 @@
 
 .separator {
 	background-color: #F1F5F9;
+}
+
+.separator[data-orientation='horizontal'] {
 	height: 1px;
 	width: 100%;
 }
 
+.separator[data-orientation='vertical'] {
+	height: 100%;
+	width: 1px;
+}
+
 .eventDescription {
-	background: rgb(241, 241, 241);
-	border-radius: 5px;
-	border: #E1E7EF 1px solid;
-	padding: 10px;
-	min-height: 200px;
+	@extend .sectionPadding;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+
+	min-height: 100px;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 15px;
+	color: #4B4B4B;
 }
 
 .avatarRoot {
@@ -71,7 +88,7 @@
 }
 
 .eventDate {
-	padding: 6px 8px 6px 8px;
+	@extend .sectionPadding;
 	display: flex;
 	align-items: center;
 	gap: 10px;
@@ -84,4 +101,41 @@
 	width: $size;
 	height: $size;
 	fill: #24384F;
+}
+
+.sectionHeading {
+	font-weight: 500;
+	font-size: 10px;
+	line-height: 15px;
+	color: #B8B8B8;
+}
+
+.agenda {
+	@extend .sectionPadding;
+	display: flex;
+	flex-direction: column;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
+	gap: 2px;
+}
+
+.gridSeparator {
+	background-color: black;
+	width: 10px;
+	height: 100%;
+}
+
+.agendaContent {
+	display: inline-grid;
+	padding: 6px 0px;
+	gap: 10px 5px;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 15px;
+	grid-template-columns: auto 1px 1fr;
+	color: #4B4B4B;
+}
+
+.invites {
+	@extend .sectionPadding;
 }
