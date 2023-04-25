@@ -2,10 +2,10 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, format, isEqual, isSameDay, isSameMonth, isSameYear, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
+import { add, format, isBefore, isEqual, isSameDay, isSameMonth, isSameYear, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import StaticTimeCard from "components/StaticTimeCard";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { GetServerSidePropsContext } from "next";
@@ -301,7 +301,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			<div className={eventDetailStyle.container} >
 				<div className={eventDetailStyle.heading}>
 					<div className={eventDetailStyle.eventTitle}>
-						Defeating the Minecraft dragon
+						{event.title}
 					</div>
 					<div className={eventDetailStyle.eventHostInformation}>
 						<Avatar.Root className={eventDetailStyle.avatarRoot} >
@@ -321,21 +321,22 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 
 				<div className={eventDetailStyle.eventDescription}>
 					<div className={eventDetailStyle.sectionHeading}>Description</div>
-					We gonna go kill that flying advanced pidgeon turd
-
+					{event.description}
 				</div>
 				<Separator.Root className={eventDetailStyle.separator} />
 
 				<div className={eventDetailStyle.agenda}>
 					<div className={eventDetailStyle.sectionHeading}>Agenda</div>
 					<div className={eventDetailStyle.agendaContent}>
-						<div style={{ gridRow: 1, gridColumn: 1 }}>4:00pm - 6:00pm</div>
-						<div style={{ gridRow: 2, gridColumn: 1 }}>6:00pm - 8:00pm</div>
-						<div style={{ gridRow: 3, gridColumn: 1 }}>8:00pm - 10:00pm</div>
-						<Separator.Root className={eventDetailStyle.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: 4, gridColumn: 2 }} />
-						<div style={{ gridRow: 1, gridColumn: 3 }}>Prep</div>
-						<div style={{ gridRow: 2, gridColumn: 3 }}>Minecraft</div>
-						<div style={{ gridRow: 3, gridColumn: 3 }}>Post dragon party</div>
+						{event.agenda.map((e, index) => {
+							return (
+								<React.Fragment key={index}>
+									<div style={{ gridRow: index + 1, gridColumn: 1 }}>{`${format(new Date(e.start), "h:mmaaa")} - ${format(new Date(e.end), "h:mmaaa")}`}</div>
+									<div style={{ gridRow: index + 1, gridColumn: 3 }}>{e.description}</div>
+								</React.Fragment>
+							)
+						})}
+						<Separator.Root className={eventDetailStyle.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: event.agenda.length + 1, gridColumn: 2 }} />
 					</div>
 				</div>
 
@@ -452,15 +453,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		// const testDataCount = 50;
 
 		// for (let index = 0; index < testDataCount; index++) {
-		// 	const newUser = Object.assign({}, session?.user);
+		// 	const newUser = Object.assign({ }, session?.user);
 		// 	newUser.name = index.toString();
 		// 	const eventStartDate = new Date(event!.startDateTime);
 		// 	let eventEndDate = subMinutes(new Date(event!.endDateTime), 15);
-		// 	const startTime = roundToNearestMinutes(randomTimeBetween(eventStartDate, eventEndDate), { nearestTo: 15 })
-		// 	const endTime = roundToNearestMinutes(randomTimeBetween(addHours(startTime, 1), eventEndDate), { nearestTo: 15 });
+		// 	const startTime = roundToNearestMinutes(randomTimeBetween(eventStartDate, eventEndDate), {nearestTo: 15 })
+		// 	const endTime = roundToNearestMinutes(randomTimeBetween(addHours(startTime, 1), eventEndDate), {nearestTo: 15 });
 		// 	const newSchedule: TimePair[] = [];
-		// 	newSchedule.push({ id: uuidv4(), start: startTime, end: endTime })
-		// 	userResponses.push({ id: uuidv4(), schedule: newSchedule, user: newUser, userId: session?.user.id } as EventResponse)
+		// 	newSchedule.push({id: uuidv4(), start: startTime, end: endTime })
+		// 	userResponses.push({id: uuidv4(), schedule: newSchedule, user: newUser, userId: session?.user.id } as EventResponse)
 		// }
 
 		return {

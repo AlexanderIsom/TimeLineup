@@ -5,6 +5,14 @@ export interface Event {
 	startDateTime: Date,
 	endDateTime: Date,
 	user: User,
+	description: string,
+	agenda: AgendaItem[],
+}
+
+interface AgendaItem {
+	start: Date,
+	end: Date,
+	description: string
 }
 
 export interface TimePair {

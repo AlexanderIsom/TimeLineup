@@ -31,6 +31,12 @@ type TimePairs {
   end   DateTime @db.Date
 }
 
+type AgendaItem {
+  start       DateTime @db.Date
+  end         DateTime @db.Date
+  description String
+}
+
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
@@ -62,6 +68,8 @@ model Event {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   userId        String
+  description   String
+  agenda        AgendaItem[]
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   startDateTime DateTime
   endDateTime   DateTime
