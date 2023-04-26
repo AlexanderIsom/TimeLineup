@@ -1,23 +1,50 @@
-.event {
-	min-width: 500px;
-	min-height: 50px;
-	height: 150px;
-	display: flex;
-	padding-left: 1rem;
-	/* 16px */
-	padding-right: 1rem;
-	/* 16px */
-	padding-top: 0.5rem;
-	/* 8px */
-	padding-bottom: 0.5rem;
-	/* 8px */
+.card {
+	width: 400px;
+	height: 100px;
+
 	margin-left: 1rem;
 	align-items: center;
 	border-radius: 0.75rem;
 	/* 12px */
+	background-color: rgb(221, 221, 221);
+	box-shadow: 0px 2px 4px -2px rgba(0, 0, 0, 0.1), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+	font-family: Inter;
+	font-weight: 600;
+	overflow: hidden;
 
 	&:hover {
-		background-color: rgb(243 244 246);
+		background-color: rgb(243, 243, 243);
 		cursor: pointer;
 	}
+}
+
+.title {
+	font-weight: 600;
+}
+
+.host {
+	font-weight: 400;
+	font-size: 14px;
+}
+
+.wrapper {
+	display: flex;
+	width: 100%;
+	height: 100%;
+
+}
+
+.colorStrip {
+	width: 10px;
+	background-color: orange;
+	height: auto;
+}
+
+.informationContainer {
+	margin: 10px;
+}
+
+.time {
+	font-weight: 500;
+	font-size: 14px;
 }

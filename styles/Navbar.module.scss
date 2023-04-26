@@ -2,6 +2,7 @@
   height: 64px;
   width: 100%;
   background-color: rgb(32 41 55);
+  font-family: Inter;
 }
 
 .content {
@@ -22,9 +23,11 @@
   }
 }
 
-.logo {
-  height: 32px;
-  width: auto;
+.title {
+  align-self: center;
+  color: white;
+  font-weight: 600;
+  font-size: x-large;
 }
 
 .justify {

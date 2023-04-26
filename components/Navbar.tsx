@@ -24,6 +24,7 @@ export default function CustomNavbar() {
           <div className={styles.justify}>
             <div className={styles.navbarContainer}>
               <div className={styles.itemsContainer}>
+                <div className={styles.title}>TimeLineup</div>
                 {navigation.map((item) => (
                   <Link
                     key={item.name}

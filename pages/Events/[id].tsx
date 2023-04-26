@@ -21,6 +21,7 @@ import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/
 import { TbTrashX } from "react-icons/tb"
 import { BsCalendar4Week } from "react-icons/bs"
 import { Inter } from "@next/font/google";
+import { formatDateRange } from "utils/TimeUtils"
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import eventDetailStyle from "styles/Components/EventDetails.module.scss"
 
@@ -214,20 +215,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 		}
 	}
 
-	function formatDateRange(start: Date, end: Date): string {
-		let formatString = "";
-		let endFormatString = "";
-		if (!isSameYear(start, end)) {
-			formatString += "yyyy ";
-		}
-		if (!isSameMonth(start, end)) {
-			endFormatString += "MMM ";
-		}
-		if (!isSameDay(start, end)) {
-			endFormatString += "do ";
-		}
-		return `${format(start, formatString + "MMM do hh:mmaaa")} - ${format(end, formatString + endFormatString + "hh:mmaaa")}`;
-	}
+
 
 	return (<>
 		<div className={styles.wrapper}>
@@ -410,10 +398,6 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-	// const randomTimeBetween = (start: Date, end: Date) => {
-	// 	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
-	// }
-
 	try {
 		const session = await getServerSession(context.req, context.res, authOptions);
 		const { params } = context;
@@ -449,20 +433,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				userId: session?.user.id,
 			}
 		})
-
-		// const testDataCount = 50;
-
-		// for (let index = 0; index < testDataCount; index++) {
-		// 	const newUser = Object.assign({ }, session?.user);
-		// 	newUser.name = index.toString();
-		// 	const eventStartDate = new Date(event!.startDateTime);
-		// 	let eventEndDate = subMinutes(new Date(event!.endDateTime), 15);
-		// 	const startTime = roundToNearestMinutes(randomTimeBetween(eventStartDate, eventEndDate), {nearestTo: 15 })
-		// 	const endTime = roundToNearestMinutes(randomTimeBetween(addHours(startTime, 1), eventEndDate), {nearestTo: 15 });
-		// 	const newSchedule: TimePair[] = [];
-		// 	newSchedule.push({id: uuidv4(), start: startTime, end: endTime })
-		// 	userResponses.push({id: uuidv4(), schedule: newSchedule, user: newUser, userId: session?.user.id } as EventResponse)
-		// }
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localResponse: JSON.parse(JSON.stringify(localUserResponse)) as EventResponse },

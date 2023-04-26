@@ -1,4 +1,4 @@
-import { useSession, getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Header from "../components/Header";
 import styles from "../styles/Index.module.scss";
@@ -7,6 +7,8 @@ import Modal from "../components/Modal";
 import { Event } from "../types"
 import { prisma } from "../lib/db";
 import EventBanner from "../components/EventBanner";
+import { getServerSession } from "next-auth";
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 
 type Props = {
   events: Event[]
@@ -35,7 +37,7 @@ export default function Home({ events }: Props) {
 }
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
+  const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {
     return {
@@ -47,12 +49,17 @@ export async function getServerSideProps(context: any) {
   }
 
   try {
-    const events = await prisma.event.findMany();
+    const events = await prisma.event.findMany({
+      include: {
+        user: true,
+      }
+    });
 
     return {
-      props: { session, events: JSON.parse(JSON.stringify(events)) },
+      props: { events: JSON.parse(JSON.stringify(events)) as Event[] },
     };
   } catch (e) {
     console.error(e);
   }
 }
+
