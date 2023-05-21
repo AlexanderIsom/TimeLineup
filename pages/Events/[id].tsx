@@ -2,7 +2,7 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, format, isBefore, isEqual, isSameDay, isSameMonth, isSameYear, isWithinInterval, max, min, parseISO, roundToNearestMinutes, subMinutes } from "date-fns";
+import { add, isEqual, isWithinInterval, max, min, roundToNearestMinutes } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -14,16 +14,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import * as Separator from "@radix-ui/react-separator"
 import * as Avatar from "@radix-ui/react-avatar"
-import * as Tabs from "@radix-ui/react-tabs"
 import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
-import { BsCalendar4Week } from "react-icons/bs"
+
 import { Inter } from "@next/font/google";
-import { formatDateRange } from "utils/TimeUtils"
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
-import eventDetailStyle from "styles/Components/EventDetails.module.scss"
+import EventDetails from "components/EventDetails";
 
 
 interface EventProps {
@@ -284,81 +281,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 					</div>
 				</div>
 			</div>
-
-
-			<div className={eventDetailStyle.container} >
-				<div className={eventDetailStyle.heading}>
-					<div className={eventDetailStyle.eventTitle}>
-						{event.title}
-					</div>
-					<div className={eventDetailStyle.eventHostInformation}>
-						<Avatar.Root className={eventDetailStyle.avatarRoot} >
-							<Avatar.Image src={event.user.image} alt={event.user.name} className={eventDetailStyle.userAvatar} />
-							<Avatar.Fallback className={eventDetailStyle.avatarFallback} delayMs={600}>
-								{event.user.name.slice(0, 2)}
-							</Avatar.Fallback>
-						</Avatar.Root>
-						{event.user.name}
-					</div>
-				</div>
-				<Separator.Root className={eventDetailStyle.separator} />
-				<div className={eventDetailStyle.eventDate}>
-					<BsCalendar4Week className={eventDetailStyle.calendarIcon} />
-					{formatDateRange(event.startDateTime, event.endDateTime)}
-				</div>
-
-				<div className={eventDetailStyle.eventDescription}>
-					<div className={eventDetailStyle.sectionHeading}>Description</div>
-					{event.description}
-				</div>
-				<Separator.Root className={eventDetailStyle.separator} />
-
-				<div className={eventDetailStyle.agenda}>
-					<div className={eventDetailStyle.sectionHeading}>Agenda</div>
-					<div className={eventDetailStyle.agendaContent}>
-						{event.agenda.map((e, index) => {
-							return (
-								<React.Fragment key={index}>
-									<div style={{ gridRow: index + 1, gridColumn: 1 }}>{`${format(new Date(e.start), "h:mmaaa")} - ${format(new Date(e.end), "h:mmaaa")}`}</div>
-									<div style={{ gridRow: index + 1, gridColumn: 3 }}>{e.description}</div>
-								</React.Fragment>
-							)
-						})}
-						<Separator.Root className={eventDetailStyle.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: event.agenda.length + 1, gridColumn: 2 }} />
-					</div>
-				</div>
-
-				<Separator.Root className={eventDetailStyle.separator} />
-				<div className={eventDetailStyle.invites}>
-					<div className={eventDetailStyle.sectionHeading}>Invites</div>
-					<Tabs.Root defaultValue="tab1">
-						<Tabs.List className={eventDetailStyle.tabContainer}>
-							<Tabs.Trigger className={eventDetailStyle.tab} value="tab1">
-								Attending
-								<div className={eventDetailStyle.attendingCount}>12</div>
-							</Tabs.Trigger>
-							<Tabs.Trigger className={eventDetailStyle.tab} value="tab2">
-								Invited
-								<div className={eventDetailStyle.inviteCount}>5</div>
-							</Tabs.Trigger>
-							<Tabs.Trigger className={eventDetailStyle.tab} value="tab3">
-								Declined
-								<div className={eventDetailStyle.declinedCount}>8</div>
-							</Tabs.Trigger>
-						</Tabs.List>
-						<Tabs.Content value="tab1">
-							<div>this is for attendes</div>
-						</Tabs.Content>
-						<Tabs.Content value="tab2">
-							<div>this is for invites</div>
-						</Tabs.Content>
-						<Tabs.Content value="tab3">
-							<div>this is for declined</div>
-						</Tabs.Content>
-					</Tabs.Root>
-				</div>
-
-			</div>
+			<EventDetails event={event} />
 		</div>
 
 		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>

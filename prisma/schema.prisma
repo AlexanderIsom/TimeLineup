@@ -80,6 +80,7 @@ model EventResponse {
   id       String      @id @default(auto()) @map("_id") @db.ObjectId
   eventId  String
   userId   String
+  declined Boolean
   schedule TimePairs[]
   event    Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)

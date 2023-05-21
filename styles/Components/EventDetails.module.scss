@@ -200,3 +200,9 @@
 	@extend .count;
 	background-color: #DC7878;
 }
+
+.attending {
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+}

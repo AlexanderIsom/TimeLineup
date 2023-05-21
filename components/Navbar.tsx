@@ -3,7 +3,6 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import styles from "../styles/Navbar.module.scss";
 import Image from "next/image";
-import { PlusSmallIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
