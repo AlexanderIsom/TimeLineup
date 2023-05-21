@@ -58,6 +58,7 @@ const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', 
 export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
+	console.log(event.userId, event.user)
 	const router = useRouter();
 	const { data: session } = useSession();
 	const [scheduleState, setScheduleState] = useState(localResponse.schedule)

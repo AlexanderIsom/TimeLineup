@@ -8,11 +8,14 @@ interface Props {
   event: Event
 }
 
+
+
 export default function EventBanner({ event }: Props) {
+  var randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return (
     <Link href={'/Events/' + event.id} className={styles.card}>
       <div className={styles.wrapper}>
-        <div className={styles.colorStrip} />
+        <div className={styles.colorStrip} style={{ backgroundColor: `#${randomColor}` }} />
         <div className={styles.informationContainer}>
           <div className={styles.title}>
             {event.title}

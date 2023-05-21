@@ -3,31 +3,67 @@ import { Event } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
 import eventData = require("./Titles.json")
 
+interface JsonAgenda {
+	start: string,
+	end: string,
+	description: string,
+}
+
+interface jsonEvent {
+	title: string,
+	description: string,
+	agenda: JsonAgenda[],
+}
 
 export function generateEvents() {
+	const clonedEvents: jsonEvent[] = [];
+	eventData.forEach(event => clonedEvents.push(Object.assign({}, event)));
+
 	const eventsMax = 50;
 	const eventsMin = 40;
 	const quantityToGenerate = getRandomInt(eventsMin, eventsMax);
 
-	const events = [];
+	var events = [];
 
 	for (let index = 0; index < quantityToGenerate; index++) {
-		var generatedTitle = getRandomTitle();
+		var randomEvent = getRandomEvent(clonedEvents);
 		var dateRange = generateRandomDateRange();
-		var user;
+		const newAgenda = convertJsonAgenda(randomEvent.agenda);
 		const newEvent: Event = {
-			id: uuidv4(), userId: uuidv4(), title: generatedTitle.title,
-			description: generatedTitle.description, startDateTime: dateRange.start, endDateTime: dateRange.end,
+			user: getRandomUser(),
+			id: uuidv4(), userId: uuidv4(), title: randomEvent.title,
+			description: randomEvent.description, startDateTime: dateRange.start, endDateTime: dateRange.end,
+			agenda: newAgenda
 		}
+		events.push(newEvent);
 	}
 
-	return "thing"
+	return events
 }
 
-function getRandomTitle() {
-	const selectionIndex = Math.floor(Math.random() * eventData.length);
-	const selection = eventData[selectionIndex]
-	eventData.splice(selectionIndex, 1);
+function convertJsonAgenda(agenada: JsonAgenda[]) {
+	const convertedAgenda = agenada.map((jsonAgendaItem) => {
+		return { start: new Date(jsonAgendaItem.start), end: new Date(jsonAgendaItem.end), description: jsonAgendaItem.description }
+	})
+	return convertedAgenda;
+}
+
+function getRandomUser() {
+	const newUser = {
+		id: "64207b44dde0af34e25432aa",
+		name: "Alex",
+		image: "https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png",
+		emailVerified: new Date(),
+	}
+	return newUser
+}
+
+function getRandomEvent(clonedEvents: jsonEvent[]) {
+	const selectionIndex = Math.floor(Math.random() * clonedEvents.length);
+	const selection = Object.assign({}, clonedEvents[selectionIndex]);
+	if (clonedEvents.length > 1) {
+		clonedEvents.splice(selectionIndex, 1);
+	}
 	return selection;
 }
 

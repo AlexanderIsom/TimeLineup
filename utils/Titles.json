@@ -141,27 +141,6 @@
 		]
 	},
 	{
-		"title": "Virtual Art Show",
-		"description": "We're hosting a virtual art show featuring our favorite artworks. Come join us to appreciate some amazing art!",
-		"agenda": [
-			{
-				"start": "2023-05-23T19:00:00.000Z",
-				"end": "2023-05-23T19:15:00.000Z",
-				"description": "Introductions and opening remarks"
-			},
-			{
-				"start": "2023-05-23T19:15:00.000Z",
-				"end": "2023-05-23T19:45:00.000Z",
-				"description": "Virtual tour of the artworks"
-			},
-			{
-				"start": "2023-05-23T19:45:00.000Z",
-				"end": "2023-05-23T20:00:00.000Z",
-				"description": "Q&A session with the artists"
-			}
-		]
-	},
-	{
 		"title": "Karaoke Night",
 		"description": "Let's have a karaoke night at my place! Sing your heart out and have some fun.",
 		"agenda": [

@@ -9,6 +9,7 @@ import { prisma } from "../lib/db";
 import EventBanner from "../components/EventBanner";
 import { getServerSession } from "next-auth";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
+import { generateEvents } from "utils/GenerateData"
 
 type Props = {
   events: Event[]
@@ -49,11 +50,7 @@ export async function getServerSideProps(context: any) {
   }
 
   try {
-    const events = await prisma.event.findMany({
-      include: {
-        user: true,
-      }
-    });
+    const events = generateEvents();
 
     return {
       props: { events: JSON.parse(JSON.stringify(events)) as Event[] },
