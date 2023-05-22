@@ -5,11 +5,10 @@ import styles from "../styles/Index.module.scss";
 import EventForm from "../components/NewEventForm";
 import Modal from "../components/Modal";
 import { Event } from "../types"
-import { prisma } from "../lib/db";
 import EventBanner from "../components/EventBanner";
 import { getServerSession } from "next-auth";
 import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { generateEvents } from "utils/GenerateData"
+import { generateEvents } from "utils/FakeData"
 
 type Props = {
   events: Event[]
@@ -18,6 +17,7 @@ type Props = {
 export default function Home({ events }: Props) {
   const { data: session } = useSession();
   const [showModal, setShowModal] = useState(false);
+  console.log(events);
 
   if (session) {
     return (
@@ -27,6 +27,7 @@ export default function Home({ events }: Props) {
           <EventForm />
         </Modal>
         <div className={styles.wrapper}>
+
 
           {events.map((event: Event, index: number) => {
             return <EventBanner key={index} event={event} />

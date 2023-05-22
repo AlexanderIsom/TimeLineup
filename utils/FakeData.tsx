@@ -1,7 +1,8 @@
 import { addDays, endOfMonth, roundToNearestMinutes, startOfMonth } from "date-fns";
-import { Event } from "types/Events";
+import { Event, User } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
 import eventData = require("./Titles.json")
+import userData = require("./Users.json")
 
 interface JsonAgenda {
 	start: string,
@@ -29,16 +30,21 @@ export function generateEvents() {
 		var randomEvent = getRandomEvent(clonedEvents);
 		var dateRange = generateRandomDateRange();
 		const newAgenda = convertJsonAgenda(randomEvent.agenda);
+		const user = getRandomUser()
 		const newEvent: Event = {
-			user: getRandomUser(),
-			id: uuidv4(), userId: uuidv4(), title: randomEvent.title,
+			id: uuidv4(), user: user, userId: user.id, title: randomEvent.title,
 			description: randomEvent.description, startDateTime: dateRange.start, endDateTime: dateRange.end,
 			agenda: newAgenda
 		}
+		console.log(newEvent);
 		events.push(newEvent);
 	}
 
 	return events
+}
+
+export function getUserByID(id: string) {
+	return userData.find(e => { e.id === id })
 }
 
 function convertJsonAgenda(agenada: JsonAgenda[]) {
@@ -49,13 +55,10 @@ function convertJsonAgenda(agenada: JsonAgenda[]) {
 }
 
 function getRandomUser() {
-	const newUser = {
-		id: "64207b44dde0af34e25432aa",
-		name: "Alex",
-		image: "https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png",
-		emailVerified: new Date(),
-	}
-	return newUser
+	const index = Math.floor(Math.random() * userData.length);
+	const userClone = Object.assign({}, userData[index]) as User;
+	userClone.emailVerified = new Date();
+	return userClone
 }
 
 function getRandomEvent(clonedEvents: jsonEvent[]) {
