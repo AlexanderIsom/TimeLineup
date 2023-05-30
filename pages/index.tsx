@@ -1,63 +1,61 @@
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { signIn, getProviders } from "next-auth/react";
 import Header from "../components/Header";
-import styles from "../styles/Index.module.scss";
-import EventForm from "../components/NewEventForm";
-import Modal from "../components/Modal";
-import { Event } from "../types"
-import EventBanner from "../components/EventBanner";
-import { getServerSession } from "next-auth";
-import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { generateEvents } from "utils/FakeData"
+import { Nunito } from "@next/font/google";
 
-type Props = {
-  events: Event[]
+import AnimateSphereBackground from "../components/AnimateSpheres";
+
+import styles from "../styles/Signin.module.scss";
+import Link from "next/link";
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(" ");
 }
 
-export default function Home({ events }: Props) {
-  const { data: session } = useSession();
-  const [showModal, setShowModal] = useState(false);
-  console.log(events);
+const nunito = Nunito({ subsets: ["latin"] });
 
-  if (session) {
-    return (
-      <>
-        <Header />
-        <Modal show={showModal} handleClose={() => setShowModal(false)}>
-          <EventForm />
-        </Modal>
-        <div className={styles.wrapper}>
+export default function SignIn({ providers }: any) {
+  return (
+    <>
+      <Header title="Login" />
 
-
-          {events.map((event: Event, index: number) => {
-            return <EventBanner key={index} event={event} />
-          })}
+      <div className={styles.wrapper}>
+        <div className={styles.background} />
+        <div className={styles.orbCanvas}>
+          <AnimateSphereBackground />
         </div>
-      </>
-    );
-  }
+        <div className={classNames(nunito.className, styles.overlay)}>
+          <div className={styles.inner}>
+            <h1 className={styles.title}>
+              Welcome, <span className={styles.textGradient}> TimeLineup </span>
+              the app making event planning around the world simpler!
+            </h1>
+
+            <p className={styles.description}>
+              Ever wanted a shared calendar between your friends, allowing you
+              to see when people are avaliable in order to plan events?
+              <strong> Thats what TimeLineup aims to solve.</strong>
+            </p>
+
+            <div className={styles.btns}>
+              <Link className={classNames(styles.btn, styles.discord)} href={"./events"}><span>Continue here</span></Link>
+
+              <button
+                id="ColorsButton"
+                className={classNames(styles.btn, styles.colors)}
+              >
+                <span>Randomise Colors</span>
+                <span className={styles.emoji}>🎨</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export async function getServerSideProps(context: any) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  try {
-    const events = generateEvents();
-
-    return {
-      props: { events: JSON.parse(JSON.stringify(events)) as Event[] },
-    };
-  } catch (e) {
-    console.error(e);
-  }
+  const providers = await getProviders();
+  return {
+    props: { providers },
+  };
 }
-

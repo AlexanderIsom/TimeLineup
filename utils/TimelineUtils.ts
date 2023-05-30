@@ -22,7 +22,9 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		endTime = addHours(endTime, 1);
 		endTime.setMinutes(0, 0, 0);
 	}
-	const hoursCount: number = eachHourOfInterval({ start: start, end: end }).length;
+	console.log(startTime)
+	console.log(endTime)
+	const hoursCount: number = eachHourOfInterval({ start: startTime, end: endTime }).length;
 
 	const [width, setWidth] = useState(0);
 

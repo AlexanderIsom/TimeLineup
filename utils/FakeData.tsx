@@ -1,5 +1,5 @@
-import { addDays, endOfMonth, roundToNearestMinutes, startOfMonth } from "date-fns";
-import { Event, User } from "types/Events";
+import { addDays, endOfMonth, max, min, roundToNearestMinutes, startOfMonth } from "date-fns";
+import { Event, User, AgendaItem } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
 import eventData = require("./Titles.json")
 import userData = require("./Users.json")
@@ -16,27 +16,30 @@ interface jsonEvent {
 	agenda: JsonAgenda[],
 }
 
+interface CustomEvent {
+	userId: string,
+	title: string,
+	description: string,
+	agenda: any[],
+}
+
 export function generateEvents() {
 	const clonedEvents: jsonEvent[] = [];
 	eventData.forEach(event => clonedEvents.push(Object.assign({}, event)));
 
-	const eventsMax = 50;
-	const eventsMin = 40;
-	const quantityToGenerate = getRandomInt(eventsMin, eventsMax);
-
 	var events = [];
 
-	for (let index = 0; index < quantityToGenerate; index++) {
+	for (let index = 0; index < 50; index++) {
 		var randomEvent = getRandomEvent(clonedEvents);
-		var dateRange = generateRandomDateRange();
 		const newAgenda = convertJsonAgenda(randomEvent.agenda);
 		const user = getRandomUser()
-		const newEvent: Event = {
-			id: uuidv4(), user: user, userId: user.id, title: randomEvent.title,
-			description: randomEvent.description, startDateTime: dateRange.start, endDateTime: dateRange.end,
-			agenda: newAgenda
+		const newEvent = {
+			userId: user.id, title: randomEvent.title,
+			startDateTime: { $date: newAgenda.range.start },
+			endDateTime: { $date: newAgenda.range.end },
+			description: randomEvent.description,
+			agenda: newAgenda.agenda
 		}
-		console.log(newEvent);
 		events.push(newEvent);
 	}
 
@@ -48,10 +51,22 @@ export function getUserByID(id: string) {
 }
 
 function convertJsonAgenda(agenada: JsonAgenda[]) {
+	let first: Date | undefined;
+	let last: Date | undefined;
 	const convertedAgenda = agenada.map((jsonAgendaItem) => {
-		return { start: new Date(jsonAgendaItem.start), end: new Date(jsonAgendaItem.end), description: jsonAgendaItem.description }
+		if (first == undefined) {
+			first = new Date(jsonAgendaItem.start);
+		}
+		if (last == undefined) {
+			last = new Date(jsonAgendaItem.end);
+		}
+		first = min([first, new Date(jsonAgendaItem.start)])
+		last = max([last, new Date(jsonAgendaItem.end)])
+		return { start: { $date: new Date(jsonAgendaItem.start) }, end: { $date: new Date(jsonAgendaItem.end) }, description: jsonAgendaItem.description }
 	})
-	return convertedAgenda;
+	return {
+		agenda: convertedAgenda, range: { start: first, end: last }
+	};
 }
 
 function getRandomUser() {
@@ -81,11 +96,13 @@ function randomDate(start: Date, end: Date) {
 }
 
 function generateRandomDateRange(): { start: Date, end: Date } {
-	const now = new Date();
-	var startDate = randomDate(startOfMonth(now), endOfMonth(now));
-	var endDate = randomDate(startDate, addDays(startDate, 3));
-	startDate = roundToNearestMinutes(startDate, { nearestTo: 15 })
-	endDate = roundToNearestMinutes(endDate, { nearestTo: 15 })
+	const startDate = new Date('2023-01-01T07:00:00')
+	const endDate = new Date('2023-01-01T23:59:59')
 
-	return { start: startDate, end: endDate }
+	var startTime = roundToNearestMinutes(randomDate(startDate, endDate), { nearestTo: 15 });
+	var endTime = roundToNearestMinutes(randomDate(startTime, endDate), { nearestTo: 15 });
+	startTime = roundToNearestMinutes(startTime, { nearestTo: 15 })
+	endTime = roundToNearestMinutes(endDate, { nearestTo: 15 })
+
+	return { start: startTime, end: endTime }
 }

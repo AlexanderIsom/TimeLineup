@@ -6,11 +6,9 @@
   --complimentary1: hsl(var(--hue-complimentary1), 95%, 50%);
   --complimentary2: hsl(var(--hue-complimentary2), 95%, 50%);
 
-  --bg-gradient: linear-gradient(
-    to bottom,
-    hsl(var(--hue), 95%, 99%),
-    hsl(var(--hue), 95%, 84%)
-  );
+  --bg-gradient: linear-gradient(to bottom,
+      hsl(var(--hue), 95%, 99%),
+      hsl(var(--hue), 95%, 84%));
 
   box-sizing: border-box;
 
@@ -119,11 +117,6 @@
 
     &.discord {
       background-color: #5865f2;
-      color: rgba(0, 0, 0, 0);
-      background-image: url("/providerLogos/discord.svg");
-      background-size: 60%;
-      background-repeat: no-repeat;
-      background-position: 50%;
     }
 
     &:hover {
@@ -145,11 +138,9 @@
 }
 
 .textGradient {
-  background-image: linear-gradient(
-    45deg,
-    var(--base) 25%,
-    var(--complimentary2)
-  );
+  background-image: linear-gradient(45deg,
+      var(--base) 25%,
+      var(--complimentary2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -moz-background-clip: text;

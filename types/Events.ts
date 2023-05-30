@@ -9,7 +9,7 @@ export interface Event {
 	agenda: AgendaItem[],
 }
 
-interface AgendaItem {
+export interface AgendaItem {
 	start: Date,
 	end: Date,
 	description: string

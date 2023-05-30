@@ -7,10 +7,7 @@ import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import StaticTimeCard from "components/StaticTimeCard";
-import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
@@ -26,7 +23,6 @@ import EventDetails from "components/EventDetails";
 interface EventProps {
 	event: Event
 	userResponses: EventResponse[];
-	localResponse: EventResponse;
 }
 
 class EnumX {
@@ -55,13 +51,12 @@ interface menu {
 
 const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
 
-export default function ViewEvent({ event, userResponses, localResponse }: EventProps) {
+export default function ViewEvent({ event, userResponses }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
 	console.log(event.userId, event.user)
 	const router = useRouter();
-	const { data: session } = useSession();
-	const [scheduleState, setScheduleState] = useState(localResponse.schedule)
+	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
 
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
@@ -70,32 +65,32 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 	const containerRef = useRef<HTMLDivElement>(null);
 	const userContainerRef = useRef<HTMLDivElement>(null);
 
-
 	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
-	const handleSave = useCallback(async () => {
-		//TODO save on page reload / page transition
-		try {
-			let response = await fetch("http://localhost:3000/api/updateEventResponses", {
-				method: "POST",
-				body: JSON.stringify({
-					schedule: scheduleState,
-					responseId: localResponse.id,
-					eventId: event.id,
-					userId: session?.user.id
-				}),
-				headers: {
-					Accept: "application/json, text/plaion, */*",
-					"Content-Type": "application/json",
-				},
-			});
-			response = await response.json();
-		} catch (errorMessage: any) {
-			console.log(errorMessage);
-		}
-	}, [event, scheduleState, session, localResponse])
+	const handleSave = () => { console.log("todo") }
+	// useCallback(async () => {
+	// 	//TODO save on page reload / page transition
+	// 	try {
+	// 		let response = await fetch("http://localhost:3000/api/updateEventResponses", {
+	// 			method: "POST",
+	// 			body: JSON.stringify({
+	// 				schedule: scheduleState,
+	// 				responseId: localResponse.id,
+	// 				eventId: event.id,
+	// 				userId: session?.user.id
+	// 			}),
+	// 			headers: {
+	// 				Accept: "application/json, text/plaion, */*",
+	// 				"Content-Type": "application/json",
+	// 			},
+	// 		});
+	// 		response = await response.json();
+	// 	} catch (errorMessage: any) {
+	// 		console.log(errorMessage);
+	// 	}
+	// }, [event, scheduleState, session, localResponse])
 
 	useEffect(() => {
 		function handleUnload(e: BeforeUnloadEvent) {
@@ -220,13 +215,13 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 			<div className={styles.scrollable}>
 				<div className={styles.userContainer} ref={userContainerRef}>
 					<div className={styles.userItem}>
-						<Avatar.Root key={session?.user.id} className={styles.avatarRoot} >
-							<Avatar.Image src={session?.user.image} alt={session?.user.name} className={styles.userAvatar} />
+						<Avatar.Root className={styles.avatarRoot} >
+							<Avatar.Image src={"https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png"} alt={"demo user"} className={styles.userAvatar} />
 							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-								{session?.user.name.slice(0, 2)}
+								{"De"}
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<div className={`${styles.userName} ${inter.className}`}>{session?.user.name}</div>
+						<div className={`${styles.userName} ${inter.className}`}>Demo user</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
@@ -234,7 +229,7 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 							<Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={eventResponse.user.image} alt={eventResponse.user.name} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-									{session?.user.name.slice(0, 2)}
+									{eventResponse.user.name.slice(0, 2)}
 								</Avatar.Fallback>
 							</Avatar.Root>
 							<div className={`${styles.userName} ${inter.className}`}>{eventResponse.user.name}</div>
@@ -323,7 +318,6 @@ export default function ViewEvent({ event, userResponses, localResponse }: Event
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 	try {
-		const session = await getServerSession(context.req, context.res, authOptions);
 		const { params } = context;
 
 		if (!params || typeof params.id != "string") {
@@ -342,24 +336,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		const userResponses = await prisma.eventResponse.findMany({
 			where: {
 				eventId: params.id,
-				NOT: {
-					userId: session?.user.id
-				}
 			},
 			include: {
 				user: true,
 			}
 		})
 
-		const localUserResponse = await prisma.eventResponse.findFirst({
-			where: {
-				eventId: params.id,
-				userId: session?.user.id,
-			}
-		})
-
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[], localResponse: JSON.parse(JSON.stringify(localUserResponse)) as EventResponse },
+			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);
