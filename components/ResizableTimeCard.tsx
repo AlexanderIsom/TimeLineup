@@ -4,11 +4,14 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable'
 import { Resizable, ResizeCallbackData } from 'react-resizable'
 import { TimelineUtils } from 'utils/TimelineUtils'
 import {
+	addMinutes,
 	addSeconds,
 	clamp,
 	differenceInSeconds,
 	format,
 	roundToNearestMinutes,
+	subMinutes,
+	subSeconds,
 } from 'date-fns'
 import styles from 'styles/Components/TimelineCard.module.scss'
 
@@ -31,27 +34,27 @@ export default function ResizableTimeCard({
 	const [endTime, setEndTime] = useState(new Date(schedule.end))
 	const [inUse, setInUse] = useState(false);
 
-	const startX = timeline.toX(startTime)
-	const endX = timeline.toX(endTime)
+	let startX = timeline.toX(startTime)
+	let endX = timeline.toX(endTime)
 
 	const [duration, setDuration] = useState(
 		differenceInSeconds(endTime, startTime)
 	)
 
-	function clampDateWithinBounds(date: Date): Date {
-		return clamp(date, { start: bounds.start, end: bounds.end });
+	function clampDateWithinBounds(date: Date, start: Date, end: Date): Date {
+		return clamp(date, { start: start, end: end });
 	}
 
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
 		setInUse(true);
 
 		if (handle === 'w') {
-			setStartTime(clampDateWithinBounds(timeline.toDate(endX - size.width)))
+			setStartTime(clampDateWithinBounds(timeline.toDate(endX - size.width), bounds.start, subMinutes(endTime, 30)))
 			return;
 		}
 
 		if (handle === 'e') {
-			setEndTime(clampDateWithinBounds(timeline.toDate(startX + size.width)))
+			setEndTime(clampDateWithinBounds(timeline.toDate(startX + size.width), addMinutes(startTime, 30), bounds.end))
 			return;
 		}
 	}
@@ -72,11 +75,16 @@ export default function ResizableTimeCard({
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
 		setInUse(true);
-
-		const newStartTime = timeline.toDate(ui.x)
+		const newStartTime = timeline.toDate(ui.x);
 		const newEndTime = addSeconds(newStartTime, duration)
+
+		if (newEndTime > bounds.end) {
+			return;
+		}
+
 		setStartTime(newStartTime)
 		setEndTime(newEndTime)
+
 	}
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
@@ -93,43 +101,43 @@ export default function ResizableTimeCard({
 	}
 
 	return (
-
 		<Draggable
-			handle='.dragHandle'
 			axis='x'
 			position={{ x: startX, y: 0 }}
+			handle='.dragHandle'
 			onDrag={onDrag}
 			onStop={onDragStopped}
-			bounds={"parent"}
+			bounds={{ left: 0, right: timeline.toX(subSeconds(bounds.end, duration)) }}
 		>
-			<Resizable
-				className={styles.container}
-				width={endX - startX}
-				height={0}
-				resizeHandles={['e', 'w']}
-				onResize={onResize}
-				onResizeStop={onResizeStop}
-			>
-				<div style={{ width: `${endX - startX}px` }}>
-					<div className={`dragHandle ${styles.timeContainer}`} >
+			<div className={styles.container} style={{ width: `${endX - startX}px` }}>hello
+				<Resizable
+					className={styles.container}
+					width={endX - startX}
+					height={0}
+					resizeHandles={['e', 'w']}
+					onResize={onResize}
+					onResizeStop={onResizeStop}
+				>
+					<div style={{ width: `${endX - startX}px` }}>
+						<div className={`dragHandle ${styles.timeContainer}`} >
 
-						<span className={styles.timeCue}>
-							{format(
-								roundToNearestMinutes(startTime, { nearestTo: 15 }),
-								'HH:mm'
-							)}
-						</span>
-						<span className={styles.timeCue}>
-							{format(
-								roundToNearestMinutes(endTime, { nearestTo: 15 }),
-								'HH:mm'
-							)}
-						</span>
+							<span className={styles.timeCue}>
+								{format(
+									roundToNearestMinutes(startTime, { nearestTo: 15 }),
+									'HH:mm'
+								)}
+							</span>
+							<span className={styles.timeCue}>
+								{format(
+									roundToNearestMinutes(endTime, { nearestTo: 15 }),
+									'HH:mm'
+								)}
+							</span>
 
+						</div>
 					</div>
-				</div>
-			</Resizable>
+				</Resizable>
+			</div>
 		</Draggable >
-
 	)
 }

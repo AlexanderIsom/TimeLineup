@@ -54,7 +54,6 @@ const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', 
 export default function ViewEvent({ event, userResponses }: EventProps) {
 	event.startDateTime = new Date(event.startDateTime);
 	event.endDateTime = new Date(event.endDateTime);
-	console.log(event.userId, event.user)
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
 
@@ -69,7 +68,10 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
-	const handleSave = () => { console.log("todo") }
+	const handleSave = () => {
+		console.log("implement save")
+		//TODO implement local save
+	}
 	// useCallback(async () => {
 	// 	//TODO save on page reload / page transition
 	// 	try {
@@ -215,23 +217,24 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			<div className={styles.scrollable}>
 				<div className={styles.userContainer} ref={userContainerRef}>
 					<div className={styles.userItem}>
-						<Avatar.Root className={styles.avatarRoot} >
+						{/* <Avatar.Root className={styles.avatarRoot} >
 							<Avatar.Image src={"https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png"} alt={"demo user"} className={styles.userAvatar} />
 							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
 								{"De"}
 							</Avatar.Fallback>
-						</Avatar.Root>
+						</Avatar.Root> */}
 						<div className={`${styles.userName} ${inter.className}`}>Demo user</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
+						//TOOD change icons to load from file system
 						return <div key={eventResponse.user.id} className={styles.userItem}>
-							<Avatar.Root className={styles.avatarRoot} >
+							{/* <Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={eventResponse.user.image} alt={eventResponse.user.name} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
 									{eventResponse.user.name.slice(0, 2)}
 								</Avatar.Fallback>
-							</Avatar.Root>
+							</Avatar.Root> */}
 							<div className={`${styles.userName} ${inter.className}`}>{eventResponse.user.name}</div>
 						</div>
 					})}
@@ -347,5 +350,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		};
 	} catch (e) {
 		console.error(e);
+		return {
+			props: { event: [] }
+		}
 	}
 }

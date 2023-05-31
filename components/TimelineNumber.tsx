@@ -1,4 +1,4 @@
-import { eachHourOfInterval } from "date-fns";
+import { eachHourOfInterval, subMinutes } from "date-fns";
 import styles from "styles/Components/TimelineHours.module.scss"
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function TimelineNumbers({ start, end }: Props) {
-	const numberList: Array<Date> = eachHourOfInterval({ start: start, end: end });
+	const numberList: Array<Date> = eachHourOfInterval({ start: start, end: subMinutes(end, 1) });
 
 	return (<div className={styles.pagination}>
 		{
