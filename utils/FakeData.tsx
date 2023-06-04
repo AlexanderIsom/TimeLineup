@@ -1,4 +1,5 @@
-import { addDays, endOfMonth, max, min, roundToNearestMinutes, startOfMonth } from "date-fns";
+import { addDays, addMinutes, endOfMonth, max, min, roundToNearestMinutes, startOfMonth, subMinutes } from "date-fns";
+import { start } from "repl";
 import { Event, User, AgendaItem } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
 import eventData = require("./Titles.json")
@@ -23,7 +24,7 @@ interface CustomEvent {
 	agenda: any[],
 }
 
-export function generateEvents() {
+export function generateEvents(users: User[]) {
 	const clonedEvents: jsonEvent[] = [];
 	eventData.forEach(event => clonedEvents.push(Object.assign({}, event)));
 
@@ -32,7 +33,7 @@ export function generateEvents() {
 	for (let index = 0; index < 50; index++) {
 		var randomEvent = getRandomEvent(clonedEvents);
 		const newAgenda = convertJsonAgenda(randomEvent.agenda);
-		const user = getRandomUser()
+		const user = users[Math.floor(Math.random() * users.length)];
 		const newEvent = {
 			userId: user.id, title: randomEvent.title,
 			startDateTime: { $date: newAgenda.range.start },
@@ -67,6 +68,69 @@ function convertJsonAgenda(agenada: JsonAgenda[]) {
 	return {
 		agenda: convertedAgenda, range: { start: first, end: last }
 	};
+}
+
+interface Thing {
+	eventId: string;
+	userId: string;
+	schedule: otherThing[];
+	declined: boolean;
+}
+
+export function generateRandomAttendingTimes(events: Event[], users: User[]) {
+	const responses: Thing[] = [];
+
+	events.forEach(event => {
+		users.forEach((user) => {
+			if (user.id !== event.userId && user.id !== "647c821293f33f0dca004c4d") {
+				const newResponse: Thing = {
+					eventId: event.id,
+					userId: user.id,
+					schedule: generateRandomSchedule(event),
+					declined: false,
+				}
+				responses.push(newResponse);
+			};
+		});
+	});
+
+
+	console.log(JSON.stringify(responses));
+}
+
+interface otherThing {
+	id: string;
+	start: {
+		$date: Date;
+	};
+	end: {
+		$date: Date;
+	};
+}
+
+function generateRandomSchedule(event: Event) {
+	const slots = getRandomInt(1, 2);
+	const schedule: otherThing[] = [];
+	let latestDate = new Date(event.startDateTime)
+	const endAsDate = new Date(event.endDateTime);
+	for (let index = 0; index < slots; index++) {
+		const startDate = roundToNearestMinutes(randomDate(latestDate, subMinutes(endAsDate, 60)), { nearestTo: 15 })
+		const endDate = roundToNearestMinutes(randomDate(addMinutes(startDate, 30), endAsDate), { nearestTo: 15 })
+		latestDate = endDate;
+
+		const element: otherThing = {
+			id: uuidv4(),
+			start: {
+				$date: startDate
+			},
+			end: {
+				$date: endDate
+			}
+		};
+
+		schedule.push(element);
+	}
+	return schedule;
 }
 
 function getRandomUser() {

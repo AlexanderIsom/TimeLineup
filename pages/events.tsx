@@ -4,13 +4,18 @@ import { Event } from "../types"
 import EventBanner from "../components/EventBanner";
 
 import { prisma } from "../lib/db";
-import { generateEvents } from "utils/FakeData";
+import { generateRandomAttendingTimes, generateEvents } from "utils/FakeData";
+import { User } from "types/Events";
 
 type Props = {
   events: Event[]
+  users: User[]
 }
 
-export default function Home({ events }: Props) {
+export default function Home({ events, users }: Props) {
+  // generateRandomAttendingTimes(events, users);
+  // console.log(JSON.stringify(generateEvents(users)))
+
   return (
     <>
       <Header />
@@ -31,8 +36,10 @@ export async function getServerSideProps() {
       }
     });
 
+    const users = await prisma.user.findMany();
+
     return {
-      props: { events: JSON.parse(JSON.stringify(events)) as Event[] },
+      props: { events: JSON.parse(JSON.stringify(events)) as Event[], users: JSON.parse(JSON.stringify(users)) as User[] },
     };
   } catch (e) {
     console.error(e);
