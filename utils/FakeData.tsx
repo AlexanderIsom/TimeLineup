@@ -1,9 +1,8 @@
-import { addDays, addMinutes, endOfMonth, max, min, roundToNearestMinutes, startOfMonth, subMinutes } from "date-fns";
-import { start } from "repl";
-import { Event, User, AgendaItem } from "types/Events";
+import { addMinutes, max, min, roundToNearestMinutes, startOfMonth, subMinutes } from "date-fns";
+import { Event, User } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
-import eventData = require("./Titles.json")
-import userData = require("./Users.json")
+import * as eventData from "./Titles.json"
+import * as userData from "./Users.json"
 
 interface JsonAgenda {
 	start: string,

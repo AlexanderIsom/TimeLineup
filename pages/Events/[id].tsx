@@ -68,10 +68,10 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
-	const handleSave = () => {
+	const handleSave = useCallback(async () => {
 		console.log("implement save")
 		//TODO implement local save
-	}
+	}, [])
 	// useCallback(async () => {
 	// 	//TODO save on page reload / page transition
 	// 	try {
