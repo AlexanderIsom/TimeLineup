@@ -69,30 +69,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
-		console.log("implement save")
-		//TODO implement local save
-	}, [])
-	// useCallback(async () => {
-	// 	//TODO save on page reload / page transition
-	// 	try {
-	// 		let response = await fetch("http://localhost:3000/api/updateEventResponses", {
-	// 			method: "POST",
-	// 			body: JSON.stringify({
-	// 				schedule: scheduleState,
-	// 				responseId: localResponse.id,
-	// 				eventId: event.id,
-	// 				userId: session?.user.id
-	// 			}),
-	// 			headers: {
-	// 				Accept: "application/json, text/plaion, */*",
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 		});
-	// 		response = await response.json();
-	// 	} catch (errorMessage: any) {
-	// 		console.log(errorMessage);
-	// 	}
-	// }, [event, scheduleState, session, localResponse])
+		localStorage.setItem(event.id, JSON.stringify(scheduleState))
+	}, [event, scheduleState])
 
 	useEffect(() => {
 		function handleUnload(e: BeforeUnloadEvent) {
@@ -103,12 +81,18 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		window.addEventListener("beforeunload", handleUnload)
 		router.events.on('routeChangeStart', handleSave)
 
+		const scheduleString = localStorage.getItem(event.id)
+		const schedule = scheduleString ? JSON.parse(scheduleString) : [];
+
+		if (scheduleState.length === 0) {
+			setScheduleState(schedule)
+		}
+
 		return () => {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
-
 		}
-	}, [showMenu, router, handleSave])
+	}, [showMenu, router, handleSave, event, setScheduleState, scheduleState])
 
 
 	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
@@ -223,10 +207,11 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 								{"De"}
 							</Avatar.Fallback>
 						</Avatar.Root> */}
-						<div className={`${styles.userName} ${inter.className}`}>Demo user</div>
+						<div className={styles.userName}>Demo user</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
+						console.log(eventResponse.user.id)
 						//TOOD change icons to load from file system
 						return <div key={eventResponse.user.id} className={styles.userItem}>
 							{/* <Avatar.Root className={styles.avatarRoot} >
@@ -235,7 +220,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 									{eventResponse.user.name.slice(0, 2)}
 								</Avatar.Fallback>
 							</Avatar.Root> */}
-							<div className={`${styles.userName} ${inter.className}`}>{eventResponse.user.name}</div>
+							<div className={styles.userName}>{eventResponse.user.name}</div>
 						</div>
 					})}
 				</div>
