@@ -38,7 +38,8 @@ export function generateEvents(users: User[]) {
 			startDateTime: { $date: newAgenda.range.start },
 			endDateTime: { $date: newAgenda.range.end },
 			description: randomEvent.description,
-			agenda: newAgenda.agenda
+			agenda: newAgenda.agenda,
+			color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
 		}
 		events.push(newEvent);
 	}
@@ -86,7 +87,7 @@ export function generateRandomAttendingTimes(events: Event[], users: User[]) {
 					eventId: event.id,
 					userId: user.id,
 					schedule: generateRandomSchedule(event),
-					declined: false,
+					declined: Math.random() * 10 <= 1 ? true : false,
 				}
 				responses.push(newResponse);
 			};
@@ -108,7 +109,9 @@ interface otherThing {
 }
 
 function generateRandomSchedule(event: Event) {
-	const slots = getRandomInt(1, 2);
+
+	let slots = getRandomInt(1, 2);
+	slots = Math.random() * 10 < 1 ? 0 : slots
 	const schedule: otherThing[] = [];
 	let latestDate = new Date(event.startDateTime)
 	const endAsDate = new Date(event.endDateTime);

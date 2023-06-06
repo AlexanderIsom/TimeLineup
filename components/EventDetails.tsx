@@ -19,12 +19,12 @@ export default function EventDetails({ event }: Props) {
 					{event.title}
 				</div>
 				<div className={eventDetailStyle.eventHostInformation}>
-					{/* <Avatar.Root className={eventDetailStyle.avatarRoot} >
-						<Avatar.Image src={event.user.image} alt={event.user.name} className={eventDetailStyle.userAvatar} />
+					<Avatar.Root className={eventDetailStyle.avatarRoot} >
+						<Avatar.Image src={`/UserIcons/${event.user.image}.png`} alt={event.user.name} className={eventDetailStyle.userAvatar} />
 						<Avatar.Fallback className={eventDetailStyle.avatarFallback} delayMs={600}>
 							{event.user.name.slice(0, 2)}
 						</Avatar.Fallback>
-					</Avatar.Root> */}
+					</Avatar.Root>
 					{event.user.name}
 				</div>
 			</div>

@@ -20,6 +20,9 @@ import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
 
 
+
+
+
 interface EventProps {
 	event: Event
 	userResponses: EventResponse[];
@@ -56,6 +59,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	event.endDateTime = new Date(event.endDateTime);
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
+	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
@@ -72,6 +76,9 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		localStorage.setItem(event.id, JSON.stringify(scheduleState))
 	}, [event, scheduleState])
 
+
+
+
 	useEffect(() => {
 		function handleUnload(e: BeforeUnloadEvent) {
 			e.preventDefault();
@@ -82,9 +89,10 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		router.events.on('routeChangeStart', handleSave)
 
 		const scheduleString = localStorage.getItem(event.id)
-		const schedule = scheduleString ? JSON.parse(scheduleString) : [];
+		const schedule = scheduleString !== null ? JSON.parse(scheduleString) : [];
 
-		if (scheduleState.length === 0) {
+		if (scheduleState.length === 0 && !hasLoaded && schedule.length !== 0) {
+			setHasLoaded(true)
 			setScheduleState(schedule)
 		}
 
@@ -92,7 +100,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 		}
-	}, [showMenu, router, handleSave, event, setScheduleState, scheduleState])
+	}, [showMenu, router, handleSave, event, setScheduleState, scheduleState, hasLoaded, setHasLoaded])
 
 
 	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
@@ -194,32 +202,28 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		}
 	}
 
-
-
 	return (<>
 		<div className={styles.wrapper}>
 			<div className={styles.scrollable}>
 				<div className={styles.userContainer} ref={userContainerRef}>
 					<div className={styles.userItem}>
-						{/* <Avatar.Root className={styles.avatarRoot} >
-							<Avatar.Image src={"https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png"} alt={"demo user"} className={styles.userAvatar} />
+						<Avatar.Root className={styles.avatarRoot} >
+							<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
 							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
 								{"De"}
 							</Avatar.Fallback>
-						</Avatar.Root> */}
+						</Avatar.Root>
 						<div className={styles.userName}>Demo user</div>
 					</div>
 
 					{userResponses.map((eventResponse: EventResponse, index: number) => {
-						console.log(eventResponse.user.id)
-						//TOOD change icons to load from file system
 						return <div key={eventResponse.user.id} className={styles.userItem}>
-							{/* <Avatar.Root className={styles.avatarRoot} >
-								<Avatar.Image src={eventResponse.user.image} alt={eventResponse.user.name} className={styles.userAvatar} />
+							<Avatar.Root className={styles.avatarRoot} >
+								<Avatar.Image src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
 									{eventResponse.user.name.slice(0, 2)}
 								</Avatar.Fallback>
-							</Avatar.Root> */}
+							</Avatar.Root>
 							<div className={styles.userName}>{eventResponse.user.name}</div>
 						</div>
 					})}
