@@ -27,8 +27,8 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 	})
 
 	var attendingCount = attendingUsers.length;
-	var invitedCount = attendingUsers.length;
-	var declinedCount = attendingUsers.length;
+	var invitedCount = invitedUsers.length;
+	var declinedCount = declinedUsers.length;
 
 	if (localResponse.length > 0) {
 		attendingCount += 1;
@@ -88,15 +88,15 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 					<Tabs.List className={styles.tabContainer}>
 						<Tabs.Trigger className={styles.tab} value="tab1">
 							Attending
-							<div className={styles.attendingCount}>{attendingUsers.length}</div>
+							<div className={styles.attendingCount}>{attendingCount}</div>
 						</Tabs.Trigger>
 						<Tabs.Trigger className={styles.tab} value="tab2">
 							Invited
-							<div className={styles.inviteCount}>{invitedUsers.length}</div>
+							<div className={styles.inviteCount}>{invitedCount}</div>
 						</Tabs.Trigger>
 						<Tabs.Trigger className={styles.tab} value="tab3">
 							Declined
-							<div className={styles.declinedCount}>{declinedUsers.length}</div>
+							<div className={styles.declinedCount}>{declinedCount}</div>
 						</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="tab1">

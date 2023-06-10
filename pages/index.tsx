@@ -36,7 +36,7 @@ export default function SignIn({ providers }: any) {
             </p>
 
             <div className={styles.btns}>
-              <Link className={classNames(styles.btn, styles.discord)} href={"./events"}><span>Continue here</span></Link>
+              <Link className={classNames(styles.btn, styles.discord)} href={"./Events"}><span>Continue here</span></Link>
 
               <button
                 id="ColorsButton"
