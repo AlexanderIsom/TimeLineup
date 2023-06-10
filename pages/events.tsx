@@ -4,7 +4,7 @@ import { Event } from "../types"
 import EventBanner from "../components/EventBanner";
 
 import { prisma } from "../lib/db";
-import { generateRandomAttendingTimes, generateEvents } from "utils/FakeData";
+// import { generateRandomAttendingTimes, generateEvents } from "utils/FakeData";
 import { User } from "types/Events";
 
 type Props = {

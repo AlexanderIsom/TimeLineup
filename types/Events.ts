@@ -35,4 +35,5 @@ export interface EventResponse {
 	userId: string,
 	user: User,
 	schedule: Array<TimePair>
+	declined: boolean
 }

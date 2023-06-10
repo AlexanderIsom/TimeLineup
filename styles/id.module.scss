@@ -23,6 +23,7 @@
 	width: 100%;
 	padding-left: 50px;
 	height: Variables.$cardHeight;
+	font-family: Inter;
 
 	&:first-child {
 		border-top: Variables.$gridColor 1px solid;
@@ -156,26 +157,26 @@
 .avatarRoot {
 	margin-right: 10px;
 	border-radius: 100%;
-	$size: 50px;
+	overflow: hidden;
+	$size: 40px;
 	width: $size;
 	height: $size;
 	display: flex;
+	background-color: #cfcfcf;
 }
-
 
 .userAvatar {
 	width: 100%;
 	height: 100%;
-	border-radius: inherit;
+	object-fit: cover;
 }
 
 .userName {
 	flex: 1 1 0%;
-	font-family: Inter;
 	font-weight: 500;
 }
 
 .avatarFallback {
-	width: 100%;
-	height: 100%;
+	margin: auto;
+	text-align: center;
 }

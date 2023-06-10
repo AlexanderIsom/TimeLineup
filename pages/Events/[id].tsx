@@ -19,10 +19,6 @@ import { Inter } from "@next/font/google";
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
 
-
-
-
-
 interface EventProps {
 	event: Event
 	userResponses: EventResponse[];
@@ -76,7 +72,9 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		localStorage.setItem(event.id, JSON.stringify(scheduleState))
 	}, [event, scheduleState])
 
-
+	const attendingUsers = userResponses.filter((response) => {
+		return response.schedule.length > 0;
+	})
 
 
 	useEffect(() => {
@@ -210,13 +208,13 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 						<Avatar.Root className={styles.avatarRoot} >
 							<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
 							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-								{"De"}
+								{"DE"}
 							</Avatar.Fallback>
 						</Avatar.Root>
 						<div className={styles.userName}>Demo user</div>
 					</div>
 
-					{userResponses.map((eventResponse: EventResponse, index: number) => {
+					{attendingUsers.map((eventResponse: EventResponse, index: number) => {
 						return <div key={eventResponse.user.id} className={styles.userItem}>
 							<Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} className={styles.userAvatar} />
@@ -257,7 +255,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 								})}
 							</div>
 							<div className={styles.userResponses}>
-								{userResponses.map((eventResponse: EventResponse, index: number) => {
+								{attendingUsers.map((eventResponse: EventResponse, index: number) => {
 									return <div key={index} className={styles.staticRow}>{
 										eventResponse.schedule.map((sch: TimePair) => {
 											return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
@@ -269,7 +267,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					</div>
 				</div>
 			</div>
-			<EventDetails event={event} />
+			<EventDetails event={event} userResponses={userResponses} localResponse={scheduleState} />
 		</div>
 
 		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
