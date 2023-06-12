@@ -1,0 +1,52 @@
+.wrapper {
+  display: grid;
+  grid-template-rows: .2fr 1fr;
+}
+
+.tools {
+  grid-row: 1;
+  display: flex;
+}
+
+.weekGrid {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 1/7fr;
+  padding-right: 25%;
+
+  $n: 7;
+
+  @for $i from 1 through $n {
+    :nth-child(#{$i}) {
+      $color: $i * 30;
+
+      background-color: rgb($color, $color, $color);
+      grid-column: $i;
+      padding-top: 10px;
+      text-align: center;
+      font-family: Inter;
+      font-weight: 500;
+      font-size: x-large;
+    }
+  }
+}
+
+.button {
+  display: flex;
+  font-family: Inter;
+  font-weight: 600;
+  width: 200px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+.next {
+  @extend .button;
+  background-color: blue;
+}
+
+.previous {
+  @extend .button;
+  background-color: red;
+}

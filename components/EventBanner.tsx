@@ -11,7 +11,7 @@ interface Props {
 
 export default function EventBanner({ event }: Props) {
   return (
-    <Link href={'/Events/' + event.id} className={styles.card}>
+    <Link href={'/Events/id/' + event.id} className={styles.card}>
       <div className={styles.wrapper}>
         <div className={styles.colorStrip} style={{ backgroundColor: `${event.color}` }} />
         <div className={styles.informationContainer}>
