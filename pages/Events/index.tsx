@@ -28,25 +28,25 @@ export default function Home({ events, users, dateRange }: Props) {
   const startDay = new Date(dateRange.start)
   const endDay = new Date(dateRange.end)
 
-  // const days = eachDayOfInterval({ start: startDay, end: endDay })
-  const days: Date[] = []
+  const days = eachDayOfInterval({ start: startDay, end: endDay })
+  // const days: Date[] = []
 
   return (
     <>
       <Header />
       <div className={styles.wrapper}>
         <div className={styles.tools}>
-          <Link href={"/Events/" + subWeeks(startDay, 2)} className={styles.next}>previous</Link>
-          <Link href={"/Events/" + addWeeks(startDay, 1)} className={styles.previous}>next</Link>
+          <Link href={{ pathname: "/Events", query: { start: subWeeks(startDay, 1).toDateString(), end: subWeeks(endDay, 1).toDateString() } }} className={styles.next}>previous</Link>
+          <Link href={{ pathname: "/Events", query: { start: addWeeks(startDay, 1).toDateString(), end: addWeeks(endDay, 1).toDateString() } }} className={styles.previous}>next</Link>
         </div>
         <div className={styles.weekGrid}>
           {days.map((day: Date, index) => {
             return <div key={index}>{format(day, "E do")}</div>
           })}
         </div>
-        {events.map((event: Event, index: number) => {
+        {/* {events.map((event: Event, index: number) => {
           return <EventBanner key={index} event={event} />
-        })}
+        })} */}
       </div>
     </>
   );
@@ -54,8 +54,7 @@ export default function Home({ events, users, dateRange }: Props) {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
-    const { params } = context;
-    console.log("params:" + params);
+    const { params, query } = context;
     const events = await prisma.event.findMany({
       include: {
         user: true,
@@ -67,13 +66,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     var weekStart;
     var weekEnd;
 
-    if (!params) {
+    if (!query || typeof query.start != "string" || typeof query.end != "string") {
       weekStart = startOfWeek(today);
       weekEnd = endOfWeek(today);
     } else {
-      console.log("start:" + params.start)
+      weekStart = startOfWeek(new Date(query.start));
+      weekEnd = endOfWeek(new Date(query.end));
     }
-
 
     const users = await prisma.user.findMany();
 
