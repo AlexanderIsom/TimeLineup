@@ -1,9 +1,7 @@
 import { Event } from '../types'
 import styles from '../styles/Components/EventBanner.module.scss'
 import Link from 'next/link'
-import { format } from 'date-fns'
 import { formatDateRange } from "utils/TimeUtils"
-import { useEffect } from 'react'
 
 interface Props {
   event: Event

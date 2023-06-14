@@ -2,7 +2,7 @@ import { prisma } from "lib/db";
 import { Event, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, isEqual, isWithinInterval, max, min, roundToNearestMinutes } from "date-fns";
+import { add, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -71,6 +71,23 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const handleSave = useCallback(async () => {
 		localStorage.setItem(event.id, JSON.stringify(scheduleState))
 	}, [event, scheduleState])
+
+
+	// for demo site use only
+	userResponses.forEach(response => {
+		response.schedule.forEach(item => {
+			item.start = new Date(item.start)
+			item.end = new Date(item.end)
+
+			item.start.setDate(event.startDateTime.getDate())
+			item.start.setMonth(event.startDateTime.getMonth())
+			item.start.setFullYear(event.startDateTime.getFullYear())
+
+			item.end.setMonth(event.startDateTime.getMonth())
+			item.end.setDate(event.startDateTime.getDate())
+			item.end.setFullYear(event.startDateTime.getFullYear())
+		});
+	});
 
 	const attendingUsers = userResponses.filter((response) => {
 		return response.schedule.length > 0;

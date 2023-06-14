@@ -7,7 +7,9 @@ export interface Event {
 	user: User,
 	description: string,
 	agenda: AgendaItem[],
-	color: string
+	color: string,
+	weekOffset: number,
+	day: number
 }
 
 export interface AgendaItem {

@@ -1,6 +1,8 @@
+@use "styles/Variables.scss";
+
 .wrapper {
   display: grid;
-  grid-template-rows: .2fr 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .tools {
@@ -14,21 +16,20 @@
   grid-template-columns: 1/7fr;
   padding-right: 25%;
 
-  $n: 7;
+  font-family: Inter;
+  font-weight: 400;
+}
 
-  @for $i from 1 through $n {
-    :nth-child(#{$i}) {
-      $color: $i * 30;
+.weekTile {
+  border: Variables.$gridColor 1px solid;
+}
 
-      background-color: rgb($color, $color, $color);
-      grid-column: $i;
-      padding-top: 10px;
-      text-align: center;
-      font-family: Inter;
-      font-weight: 500;
-      font-size: x-large;
-    }
-  }
+.dayHeading {
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .button {
@@ -49,4 +50,8 @@
 .previous {
   @extend .button;
   background-color: red;
+}
+
+.eventCard {
+  grid-column: 2;
 }

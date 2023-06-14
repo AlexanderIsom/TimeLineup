@@ -40,8 +40,11 @@ export function generateEvents(users: User[]) {
 			description: randomEvent.description,
 			agenda: newAgenda.agenda,
 			color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+			weekOffset: Math.round((Math.random() - 0.5) * 2),
+			day: Math.floor(Math.random() * 7),
 		}
 		events.push(newEvent);
+
 	}
 
 	return events

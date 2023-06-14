@@ -7,7 +7,7 @@ import { GetServerSidePropsContext } from "next";
 import { prisma } from "lib/db";
 // import { generateRandomAttendingTimes, generateEvents } from "utils/FakeData";
 import { User } from "types/Events";
-import { addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
+import { addWeeks, eachDayOfInterval, endOfWeek, format, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 
 interface DateRange {
@@ -29,7 +29,6 @@ export default function Home({ events, users, dateRange }: Props) {
   const endDay = new Date(dateRange.end)
 
   const days = eachDayOfInterval({ start: startDay, end: endDay })
-  // const days: Date[] = []
 
   return (
     <>
@@ -41,12 +40,18 @@ export default function Home({ events, users, dateRange }: Props) {
         </div>
         <div className={styles.weekGrid}>
           {days.map((day: Date, index) => {
-            return <div key={index}>{format(day, "E do")}</div>
+            return <div key={index} className={styles.weekTile} style={{ gridColumn: index + 1 }}>
+              <div className={styles.dayHeading}>{format(day, "cccc do")}</div>
+              <div className={styles.eventList}>
+                {events.filter((eventCard) => {
+                  return eventCard.day === index
+                }).map((filteredEvent, eIndex) => {
+                  return <EventBanner key={eIndex} event={filteredEvent} />
+                })}
+              </div>
+            </div>
           })}
         </div>
-        {/* {events.map((event: Event, index: number) => {
-          return <EventBanner key={index} event={event} />
-        })} */}
       </div>
     </>
   );
@@ -55,7 +60,7 @@ export default function Home({ events, users, dateRange }: Props) {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const { params, query } = context;
-    const events = await prisma.event.findMany({
+    const allEvents = await prisma.event.findMany({
       include: {
         user: true,
       }
@@ -63,8 +68,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     var today = new Date();
 
-    var weekStart;
-    var weekEnd;
+    allEvents.forEach(element => {
+      const newDay = setDay(addWeeks(today, element.weekOffset!), element.day!)
+      element.startDateTime.setDate(newDay.getDate())
+      element.endDateTime.setDate(newDay.getDate())
+
+      element.startDateTime.setMonth(newDay.getMonth())
+      element.endDateTime.setMonth(newDay.getMonth())
+
+      element.startDateTime.setFullYear(newDay.getFullYear())
+      element.endDateTime.setFullYear(newDay.getFullYear())
+    });
+
+    var weekStart: Date;
+    var weekEnd: Date;
 
     if (!query || typeof query.start != "string" || typeof query.end != "string") {
       weekStart = startOfWeek(today);
@@ -73,6 +90,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       weekStart = startOfWeek(new Date(query.start));
       weekEnd = endOfWeek(new Date(query.end));
     }
+
+    const events = allEvents.filter((event) => {
+      return isWithinInterval(event.startDateTime, { start: weekStart, end: weekEnd })
+    })
 
     const users = await prisma.user.findMany();
 
