@@ -35,8 +35,11 @@ export default function Home({ events, users, dateRange }: Props) {
       <Header />
       <div className={styles.wrapper}>
         <div className={styles.tools}>
-          <Link href={{ pathname: "/Events", query: { start: subWeeks(startDay, 1).toDateString(), end: subWeeks(endDay, 1).toDateString() } }} className={styles.next}>previous</Link>
-          <Link href={{ pathname: "/Events", query: { start: addWeeks(startDay, 1).toDateString(), end: addWeeks(endDay, 1).toDateString() } }} className={styles.previous}>next</Link>
+          <Link href={{ pathname: "/Events", query: { start: subWeeks(startDay, 1).toDateString(), end: subWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❮</Link>
+          <Link href={{ pathname: "/Events", query: { start: addWeeks(startDay, 1).toDateString(), end: addWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❯</Link>
+          <div className={styles.weekHeader}>
+            {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
+          </div>
         </div>
         <div className={styles.weekGrid}>
           {days.map((day: Date, index) => {

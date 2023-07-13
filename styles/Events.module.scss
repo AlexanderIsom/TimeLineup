@@ -20,6 +20,30 @@
   font-weight: 400;
 }
 
+.pagenation {
+  display: flex;
+  font-family: Inter;
+  font-weight: 600;
+  width: 50px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+  border-radius: 5px;
+  margin: 10px;
+
+  &:hover {
+    background-color: darkgray;
+  }
+}
+
+.weekHeader {
+  grid-row: 1;
+  display: flex;
+  font-family: Inter;
+  margin: auto;
+}
+
 .weekTile {
   border: Variables.$gridColor 1px solid;
 }
@@ -32,15 +56,7 @@
   padding-bottom: 5px;
 }
 
-.button {
-  display: flex;
-  font-family: Inter;
-  font-weight: 600;
-  width: 200px;
-  height: 50px;
-  justify-content: center;
-  align-items: center;
-}
+.button {}
 
 .next {
   @extend .button;
