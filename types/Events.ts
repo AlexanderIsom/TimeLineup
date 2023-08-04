@@ -1,9 +1,11 @@
-export interface Event {
+import { Timestamp } from "firebase/firestore";
+
+export interface EventData {
 	id: string,
 	userId: string,
 	title: string,
-	startDateTime: Date,
-	endDateTime: Date,
+	startTimestamp: Timestamp,
+	endTimestamp: Timestamp,
 	user: User,
 	description: string,
 	agenda: AgendaItem[],

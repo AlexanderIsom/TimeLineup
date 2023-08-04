@@ -1,8 +1,6 @@
-import { signIn, getProviders } from "next-auth/react";
+import { getProviders } from "next-auth/react";
 import Header from "../components/Header";
 import { Nunito } from "@next/font/google";
-
-import AnimateSphereBackground from "../components/AnimateSpheres";
 
 import styles from "../styles/Signin.module.scss";
 import Link from "next/link";
@@ -16,16 +14,12 @@ export default function SignIn({ providers }: any) {
   return (
     <>
       <Header title="Login" />
-
       <div className={styles.wrapper}>
         <div className={styles.background} />
-        <div className={styles.orbCanvas}>
-          <AnimateSphereBackground />
-        </div>
         <div className={classNames(nunito.className, styles.overlay)}>
           <div className={styles.inner}>
             <h1 className={styles.title}>
-              Welcome, <span className={styles.textGradient}> TimeLineup </span>
+              Welcome, TimeLineup
               the app making event planning around the world simpler!
             </h1>
 
@@ -37,14 +31,6 @@ export default function SignIn({ providers }: any) {
 
             <div className={styles.btns}>
               <Link className={classNames(styles.btn, styles.discord)} href={"./Events"}><span>Continue here</span></Link>
-
-              <button
-                id="ColorsButton"
-                className={classNames(styles.btn, styles.colors)}
-              >
-                <span>Randomise Colors</span>
-                <span className={styles.emoji}>🎨</span>
-              </button>
             </div>
           </div>
         </div>

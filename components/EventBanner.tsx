@@ -1,10 +1,10 @@
-import { Event } from '../types'
+import { EventData } from '../types'
 import styles from '../styles/Components/EventBanner.module.scss'
 import Link from 'next/link'
 import { formatDateRange } from "utils/TimeUtils"
 
 interface Props {
-  event: Event
+  event: EventData
 }
 
 export default function EventBanner({ event }: Props) {
@@ -20,7 +20,7 @@ export default function EventBanner({ event }: Props) {
             {event.user.name}
           </div>
           <div className={styles.time}>
-            {formatDateRange(new Date(event.startDateTime), new Date(event.endDateTime))}
+            {formatDateRange(new Date(event.startTimestamp.seconds * 1000), new Date(event.endTimestamp.seconds * 1000))}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { addMinutes, max, min, roundToNearestMinutes, startOfMonth, subMinutes } from "date-fns";
-import { Event, User } from "types/Events";
+import { EventData, User } from "types/Events";
 import { v4 as uuidv4 } from "uuid"
 import * as eventData from "./Titles.json"
 import * as userData from "./Users.json"
@@ -80,7 +80,7 @@ interface Thing {
 	declined: boolean;
 }
 
-export function generateRandomAttendingTimes(events: Event[], users: User[]) {
+export function generateRandomAttendingTimes(events: EventData[], users: User[]) {
 	const responses: Thing[] = [];
 
 	events.forEach(event => {
@@ -111,13 +111,13 @@ interface otherThing {
 	};
 }
 
-function generateRandomSchedule(event: Event) {
+function generateRandomSchedule(event: EventData) {
 
 	let slots = getRandomInt(1, 2);
 	slots = Math.random() * 10 < 1 ? 0 : slots
 	const schedule: otherThing[] = [];
-	let latestDate = new Date(event.startDateTime)
-	const endAsDate = new Date(event.endDateTime);
+	let latestDate = new Date(event.startTimestamp)
+	const endAsDate = new Date(event.endTimestamp);
 	for (let index = 0; index < slots; index++) {
 		const startDate = roundToNearestMinutes(randomDate(latestDate, subMinutes(endAsDate, 60)), { nearestTo: 15 })
 		const endDate = roundToNearestMinutes(randomDate(addMinutes(startDate, 30), endAsDate), { nearestTo: 15 })

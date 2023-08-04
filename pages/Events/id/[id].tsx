@@ -1,5 +1,4 @@
-import { prisma } from "lib/db";
-import { Event, EventResponse, TimePair } from "types/Events"
+import { EventData, EventResponse, TimePair } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
 import { add, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
@@ -20,7 +19,7 @@ import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
 
 interface EventProps {
-	event: Event
+	event: EventData
 	userResponses: EventResponse[];
 }
 
@@ -51,8 +50,8 @@ interface menu {
 const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
 
 export default function ViewEvent({ event, userResponses }: EventProps) {
-	event.startDateTime = new Date(event.startDateTime);
-	event.endDateTime = new Date(event.endDateTime);
+	event.startTimestamp = new Date(event.startTimestamp);
+	event.endTimestamp = new Date(event.endTimestamp);
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
@@ -64,8 +63,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const userContainerRef = useRef<HTMLDivElement>(null);
 
-	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
-	const bounds = { start: new Date(event.startDateTime), end: new Date(event.endDateTime) }
+	const timeline = CreateTimeline({ start: event.startTimestamp, end: event.endTimestamp, ref: containerRef })
+	const bounds = { start: new Date(event.startTimestamp), end: new Date(event.endTimestamp) }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
@@ -79,13 +78,13 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			item.start = new Date(item.start)
 			item.end = new Date(item.end)
 
-			item.start.setDate(event.startDateTime.getDate())
-			item.start.setMonth(event.startDateTime.getMonth())
-			item.start.setFullYear(event.startDateTime.getFullYear())
+			item.start.setDate(event.startTimestamp.getDate())
+			item.start.setMonth(event.startTimestamp.getMonth())
+			item.start.setFullYear(event.startTimestamp.getFullYear())
 
-			item.end.setMonth(event.startDateTime.getMonth())
-			item.end.setDate(event.startDateTime.getDate())
-			item.end.setFullYear(event.startDateTime.getFullYear())
+			item.end.setMonth(event.startTimestamp.getMonth())
+			item.end.setDate(event.startTimestamp.getDate())
+			item.end.setFullYear(event.startTimestamp.getFullYear())
 		});
 	});
 
@@ -258,7 +257,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 							width: designWidth,
 							backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
 						}} ref={containerRef} >
-							<TimelineNumbers start={event.startDateTime} end={event.endDateTime} />
+							<TimelineNumbers start={event.startTimestamp} end={event.endTimestamp} />
 							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
 								{scheduleState.map((schedule: TimePair) => {
 									return <ResizableTimeCard
@@ -350,7 +349,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		})
 
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as Event, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);

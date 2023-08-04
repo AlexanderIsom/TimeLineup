@@ -1,19 +1,6 @@
 .wrapper {
   position: fixed;
-  --dark-color: hsl(var(--hue), 100%, 9%);
-  --light-color: hsl(var(--hue), 95%, 98%);
-  --base: hsl(var(--hue), 95%, 50%);
-  --complimentary1: hsl(var(--hue-complimentary1), 95%, 50%);
-  --complimentary2: hsl(var(--hue-complimentary2), 95%, 50%);
-
-  --bg-gradient: linear-gradient(to bottom,
-      hsl(var(--hue), 95%, 99%),
-      hsl(var(--hue), 95%, 84%));
-
   box-sizing: border-box;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
   width: 100%;
   height: 100vh;

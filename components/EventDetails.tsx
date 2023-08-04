@@ -3,12 +3,12 @@ import { formatDateRange } from "utils/TimeUtils"
 import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
-import { Event, EventResponse, TimePair } from "types/Events"
+import { EventData, EventResponse, TimePair } from "types/Events"
 import * as Avatar from "@radix-ui/react-avatar"
 import React from "react";
 import { format } from "date-fns";
 interface Props {
-	event: Event
+	event: EventData
 	userResponses: EventResponse[];
 	localResponse: TimePair[];
 }
@@ -57,7 +57,7 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 			<Separator.Root className={styles.separator} />
 			<div className={styles.eventDate}>
 				<BsCalendar4Week className={styles.calendarIcon} />
-				{formatDateRange(event.startDateTime, event.endDateTime)}
+				{formatDateRange(event.startTimestamp, event.endTimestamp)}
 			</div>
 
 			<div className={styles.eventDescription}>

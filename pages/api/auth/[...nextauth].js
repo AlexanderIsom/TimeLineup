@@ -1,12 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "../../../lib/db";
-import TimeLineUpPrismaAdapter from './TimelineUpPrismaAdapter'
-import { v4 as uuidv4 } from 'uuid';
-import { addDays } from 'date-fns';
 
 export const authOptions = {
-  adapter: TimeLineUpPrismaAdapter(prisma),
   secret: process.env.SECRET,
   providers: [
     CredentialsProvider({
