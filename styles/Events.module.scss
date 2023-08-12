@@ -4,7 +4,8 @@
 .wrapper {
   display: grid;
   grid-template-rows: 1fr;
-  font-family: Nunito;
+  font-display: swap;
+  font-style: medium;
 }
 
 .tools {
@@ -15,7 +16,7 @@
 .weekGrid {
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(7, 300px);
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .pagenation {
@@ -38,7 +39,6 @@
   grid-row: 1;
   display: flex;
   margin: auto;
-  font-size: 32px;
 }
 
 .weekTile {

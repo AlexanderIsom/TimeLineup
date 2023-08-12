@@ -8,7 +8,6 @@
 	flex-direction: column;
 	gap: 5px;
 	padding: 5px;
-	font-family: Inter;
 	z-index: 10;
 }
 
@@ -119,7 +118,6 @@
 		margin-top: 10px;
 	}
 
-	font-family: Inter;
 }
 
 .calendarIcon {
@@ -190,7 +188,6 @@
 	align-items: center;
 	padding: 5px 0px;
 	font-size: 12px;
-	font-family: Inter;
 
 	&:not(:active):hover {
 		color: black;
