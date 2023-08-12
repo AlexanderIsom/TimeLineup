@@ -54,34 +54,6 @@ export default function Home({ events, users, dateRange }: Props) {
     }));
   }, [events])
 
-
-
-
-  // if (typeof window !== 'undefined') {
-  //   debugger;
-  //   events.forEach((event) => {
-  //     const localDataString = localStorage.getItem(event._id.toString())
-  //     if (localDataString !== null) {
-
-  //       const localData: LocalDataObject = JSON.parse(localDataString);
-
-  //       if (localData.rejected) {
-  //         event.status = "rejected"
-  //       } else {
-  //         if (localData.schedule === undefined || (localData.schedule !== undefined && localData.schedule.length === 0)) {
-  //           event.status = "invited"
-  //         } else if (localData.schedule.length > 0) {
-  //           event.status = "attending"
-  //         }
-  //       }
-
-  //     } else {
-  //       event.status = "invited"
-  //     }
-  //   })
-  // }
-
-
   return (
     <>
       <Header />
