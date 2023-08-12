@@ -1,17 +1,18 @@
-import { Timestamp } from "firebase/firestore";
+import { ObjectId } from "mongodb";
 
 export interface EventData {
-	id: string,
-	userId: string,
+	_id: ObjectId,
+	userId: ObjectId,
 	title: string,
-	startTimestamp: Timestamp,
-	endTimestamp: Timestamp,
+	startDateTime: Date,
+	endDateTime: Date,
 	user: User,
 	description: string,
 	agenda: AgendaItem[],
 	color: string,
 	weekOffset: number,
 	day: number
+	status: string;
 }
 
 export interface AgendaItem {

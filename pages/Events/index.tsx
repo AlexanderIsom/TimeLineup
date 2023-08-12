@@ -1,13 +1,14 @@
 import Header from "components/Header";
 import styles from "styles/Events.module.scss";
 import { EventData } from "types"
-import { db } from "firestore";
-import { collection, getDocs, query as firestoreQuery, where } from "firebase/firestore";
-import EventBanner from "components/EventBanner";
+import EventCard from "components/EventCard";
 import { GetServerSidePropsContext } from "next";
 import { User } from "types/Events";
-import { addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
+import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
+import clientPromise from "lib/mongodb";
+import { LocalDataObject } from "./[id]";
+import { useEffect, useState } from "react";
 
 interface DateRange {
   start: Date;
@@ -25,6 +26,62 @@ export default function Home({ events, users, dateRange }: Props) {
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
 
+
+  const [demoEvents, setDemoEvents] = useState<EventData[]>([]);
+
+  useEffect(() => {
+    setDemoEvents(events.map((event) => {
+      const localDataString = localStorage.getItem(event._id.toString())
+      if (localDataString !== null) {
+
+        const localData: LocalDataObject = JSON.parse(localDataString);
+
+        if (localData.rejected) {
+          event.status = "rejected"
+        } else {
+          if (localData.schedule === undefined || (localData.schedule !== undefined && localData.schedule.length === 0)) {
+            event.status = "invited"
+          } else if (localData.schedule.length > 0) {
+            event.status = "attending"
+          }
+        }
+
+      } else {
+        event.status = "invited"
+      }
+
+      return event;
+    }));
+  }, [events])
+
+
+
+
+  // if (typeof window !== 'undefined') {
+  //   debugger;
+  //   events.forEach((event) => {
+  //     const localDataString = localStorage.getItem(event._id.toString())
+  //     if (localDataString !== null) {
+
+  //       const localData: LocalDataObject = JSON.parse(localDataString);
+
+  //       if (localData.rejected) {
+  //         event.status = "rejected"
+  //       } else {
+  //         if (localData.schedule === undefined || (localData.schedule !== undefined && localData.schedule.length === 0)) {
+  //           event.status = "invited"
+  //         } else if (localData.schedule.length > 0) {
+  //           event.status = "attending"
+  //         }
+  //       }
+
+  //     } else {
+  //       event.status = "invited"
+  //     }
+  //   })
+  // }
+
+
   return (
     <>
       <Header />
@@ -38,13 +95,14 @@ export default function Home({ events, users, dateRange }: Props) {
         </div>
         <div className={styles.weekGrid}>
           {days.map((day: Date, index) => {
-            return <div key={index} className={styles.weekTile} style={{ gridColumn: index + 1 }}>
-              <div className={styles.dayHeading}>{format(day, "cccc do")}</div>
+            return <div key={index} className={`${isSameDay(day, new Date()) ? styles.today : ""} ${styles.weekTile}`} style={{ gridColumn: index + 1 }
+            }>
+              <div className={styles.dayHeading}>{format(day, "ccc do")}</div>
               <div className={styles.eventList}>
-                {events.filter((eventCard) => {
+                {demoEvents.filter((eventCard) => {
                   return eventCard.day === index
                 }).map((filteredEvent, eIndex) => {
-                  return <EventBanner key={eIndex} event={filteredEvent} />
+                  return <EventCard key={eIndex} event={filteredEvent} />
                 })}
               </div>
             </div>
@@ -72,16 +130,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
 
     const weekOffset = differenceInWeeks(weekStart, startOfWeek(today))
-    const events: EventData[] = [];
 
-    const q = firestoreQuery(collection(db, "event"), where("weekOffset", "==", weekOffset.toString()));
-    const querySnapshot = await getDocs(q);
+    const client = await clientPromise
+    const db = client.db("TimeLineupDemo")
 
-    querySnapshot.forEach((doc) => {
-      const newData = doc.data() as EventData;
-      newData.id = doc.id;
-      events.push(newData);
-    });
+    const events = await db.collection("Event").aggregate([{ $match: { weekOffset: weekOffset } }, {
+      $lookup: {
+        from: 'User', // The collection to perform the join with
+        localField: 'userId', // The field from the posts collection
+        foreignField: '_id', // The field from the users collection
+        as: 'user' // The field where the joined document will be stored
+      }
+    }]).toArray()
+
+    const responses = await db.collection("EventResponses").find({})
 
     // allEvents.forEach(element => {
     //   const newDay = setDay(addWeeks(today, element.weekOffset!), element.day!)
@@ -110,7 +172,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   } catch (e) {
     console.error(e);
     return {
-      props: { events: [] },
+      props: { events: [], users: [], dateRange: JSON.parse(JSON.stringify({ start: new Date(), end: addDays(new Date(), 7) })) },
     };
   }
 }

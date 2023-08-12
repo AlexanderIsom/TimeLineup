@@ -1,8 +1,10 @@
 @use "styles/Variables.scss";
+@import "fonts.scss";
 
 .wrapper {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
+  font-family: Nunito;
 }
 
 .tools {
@@ -13,11 +15,7 @@
 .weekGrid {
   grid-row: 2;
   display: grid;
-  grid-template-columns: 1/7fr;
-  padding-right: 25%;
-
-  font-family: Inter;
-  font-weight: 400;
+  grid-template-columns: repeat(7, 300px);
 }
 
 .pagenation {
@@ -46,6 +44,10 @@
 
 .weekTile {
   border: Variables.$gridColor 1px solid;
+
+  &.today {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 }
 
 .dayHeading {
@@ -56,15 +58,11 @@
   padding-bottom: 5px;
 }
 
-.button {}
-
 .next {
-  @extend .button;
   background-color: blue;
 }
 
 .previous {
-  @extend .button;
   background-color: red;
 }
 

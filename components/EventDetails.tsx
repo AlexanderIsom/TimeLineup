@@ -3,17 +3,19 @@ import { formatDateRange } from "utils/TimeUtils"
 import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
-import { EventData, EventResponse, TimePair } from "types/Events"
+import { AgendaItem, EventData, EventResponse, TimePair } from "types/Events"
 import * as Avatar from "@radix-ui/react-avatar"
 import React from "react";
 import { format } from "date-fns";
+
 interface Props {
 	event: EventData
 	userResponses: EventResponse[];
 	localResponse: TimePair[];
+	localRejected?: boolean;
 }
 
-export default function EventDetails({ event, userResponses, localResponse }: Props) {
+export default function EventDetails({ event, userResponses, localResponse, localRejected }: Props) {
 	const declinedUsers = userResponses.filter((reponse) => {
 		return reponse.declined === true;
 	})
@@ -30,13 +32,19 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 	var invitedCount = invitedUsers.length;
 	var declinedCount = declinedUsers.length;
 
-	if (localResponse.length > 0) {
-		attendingCount += 1;
+	if (localRejected) {
+		declinedCount += 1;
+	} else {
+
+		if (localResponse.length > 0) {
+			attendingCount += 1;
+		}
+
+		if (localResponse.length === 0) {
+			invitedCount += 1;
+		}
 	}
 
-	if (localResponse.length === 0) {
-		invitedCount += 1;
-	}
 
 	return (
 		<div className={styles.container} >
@@ -57,7 +65,7 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 			<Separator.Root className={styles.separator} />
 			<div className={styles.eventDate}>
 				<BsCalendar4Week className={styles.calendarIcon} />
-				{formatDateRange(event.startTimestamp, event.endTimestamp)}
+				{formatDateRange(new Date(event.startDateTime), new Date(event.endDateTime))}
 			</div>
 
 			<div className={styles.eventDescription}>
@@ -69,7 +77,7 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 			<div className={styles.agenda}>
 				<div className={styles.sectionHeading}>Agenda</div>
 				<div className={styles.agendaContent}>
-					{event.agenda.map((e, index) => {
+					{event.agenda.map((e: AgendaItem, index) => {
 						return (
 							<React.Fragment key={index}>
 								<div style={{ gridRow: index + 1, gridColumn: 1 }}>{`${format(new Date(e.start), "h:mmaaa")} - ${format(new Date(e.end), "h:mmaaa")}`}</div>
@@ -100,7 +108,7 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 						</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="tab1">
-						{localResponse.length > 0 && <div className={styles.userItem}>
+						{localResponse.length > 0 && !localRejected && <div className={styles.userItem}>
 							<Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
@@ -123,7 +131,7 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab2">
-						{localResponse.length === 0 && <div className={styles.userItem}>
+						{localResponse.length === 0 && !localRejected && <div className={styles.userItem}>
 							<Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
@@ -146,6 +154,16 @@ export default function EventDetails({ event, userResponses, localResponse }: Pr
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab3">
+						{localRejected && <div className={styles.userItem}>
+							<Avatar.Root className={styles.avatarRoot} >
+								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
+								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
+									{"DE"}
+								</Avatar.Fallback>
+							</Avatar.Root>
+							<div className={styles.userName}>Demo user</div>
+						</div>
+						}
 						{declinedUsers.map((response) => {
 							return <div key={response.user.id} className={styles.userItem}>
 								<Avatar.Root className={styles.avatarRoot} >

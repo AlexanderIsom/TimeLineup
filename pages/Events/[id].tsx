@@ -17,10 +17,17 @@ import { TbTrashX } from "react-icons/tb"
 import { Inter } from "@next/font/google";
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
+import clientPromise from "lib/mongodb";
+import { ObjectId } from "mongodb";
 
 interface EventProps {
 	event: EventData
 	userResponses: EventResponse[];
+}
+
+export interface LocalDataObject {
+	rejected: boolean,
+	schedule: TimePair[]
 }
 
 class EnumX {
@@ -50,10 +57,13 @@ interface menu {
 const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
 
 export default function ViewEvent({ event, userResponses }: EventProps) {
-	event.startTimestamp = new Date(event.startTimestamp);
-	event.endTimestamp = new Date(event.endTimestamp);
+	if (userResponses === undefined) {
+		userResponses = []
+	}
+
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
+	const [rejected, setRejected] = useState<boolean>();
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 
 	const designSize = 1920
@@ -63,14 +73,15 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const userContainerRef = useRef<HTMLDivElement>(null);
 
-	const timeline = CreateTimeline({ start: event.startTimestamp, end: event.endTimestamp, ref: containerRef })
-	const bounds = { start: new Date(event.startTimestamp), end: new Date(event.endTimestamp) }
+	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
+	const bounds = { start: event.startDateTime, end: event.endDateTime }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
-		localStorage.setItem(event.id, JSON.stringify(scheduleState))
-	}, [event, scheduleState])
+		localStorage.setItem(event._id.toString(), JSON.stringify({ rejected: rejected, schedule: scheduleState }))
+	}, [event, scheduleState, rejected])
 
+	userResponses = []
 
 	// for demo site use only
 	userResponses.forEach(response => {
@@ -78,13 +89,13 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			item.start = new Date(item.start)
 			item.end = new Date(item.end)
 
-			item.start.setDate(event.startTimestamp.getDate())
-			item.start.setMonth(event.startTimestamp.getMonth())
-			item.start.setFullYear(event.startTimestamp.getFullYear())
+			item.start.setDate(event.startDateTime.getDate())
+			item.start.setMonth(event.startDateTime.getMonth())
+			item.start.setFullYear(event.startDateTime.getFullYear())
 
-			item.end.setMonth(event.startTimestamp.getMonth())
-			item.end.setDate(event.startTimestamp.getDate())
-			item.end.setFullYear(event.startTimestamp.getFullYear())
+			item.end.setMonth(event.endDateTime.getMonth())
+			item.end.setDate(event.endDateTime.getDate())
+			item.end.setFullYear(event.endDateTime.getFullYear())
 		});
 	});
 
@@ -102,19 +113,29 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		window.addEventListener("beforeunload", handleUnload)
 		router.events.on('routeChangeStart', handleSave)
 
-		const scheduleString = localStorage.getItem(event.id)
-		const schedule = scheduleString !== null ? JSON.parse(scheduleString) : [];
 
-		if (scheduleState.length === 0 && !hasLoaded && schedule.length !== 0) {
+		const localDataString = localStorage.getItem(event._id.toString());
+
+		const localData: LocalDataObject = localDataString !== null ? JSON.parse(localDataString) : {};
+		const schedule = localData.schedule !== undefined ? localData.schedule : [];
+		const rejected = localData.rejected;
+
+		if (!hasLoaded) {
+			if (scheduleState.length === 0 && schedule.length !== 0) {
+				setScheduleState(schedule)
+			}
+			if (rejected) {
+				setRejected(localData.rejected)
+			}
 			setHasLoaded(true)
-			setScheduleState(schedule)
 		}
+
 
 		return () => {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 		}
-	}, [showMenu, router, handleSave, event, setScheduleState, scheduleState, hasLoaded, setHasLoaded])
+	}, [setRejected, showMenu, router, handleSave, event, setScheduleState, scheduleState, hasLoaded, setHasLoaded])
 
 
 	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
@@ -209,6 +230,10 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		}
 	}
 
+	const handleToggleReject = () => {
+		setRejected(!rejected);
+	}
+
 	const onContentScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
 		if (e.currentTarget.scrollTop !== contentLastScroll) {
 			userContainerRef.current!.scrollTop = e.currentTarget.scrollTop;
@@ -249,6 +274,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.icon} /></div>
 								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.icon} /></div>
 							</div>
+							<div><button onClick={handleToggleReject}>reject</button></div>
 						</div>
 					</div>
 					<div className={styles.timelineContent} onScroll={onContentScroll} >
@@ -257,7 +283,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 							width: designWidth,
 							backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
 						}} ref={containerRef} >
-							<TimelineNumbers start={event.startTimestamp} end={event.endTimestamp} />
+							<TimelineNumbers start={new Date(event.startDateTime)} end={new Date(event.endDateTime)} />
 							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
 								{scheduleState.map((schedule: TimePair) => {
 									return <ResizableTimeCard
@@ -283,7 +309,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					</div>
 				</div>
 			</div>
-			<EventDetails event={event} userResponses={userResponses} localResponse={scheduleState} />
+			<EventDetails event={event} userResponses={userResponses} localResponse={scheduleState} localRejected={rejected} />
 		</div>
 
 		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
@@ -330,26 +356,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 			throw new Error("no paramters passed")
 		}
 
-		const event = await prisma.event.findUnique({
-			where: {
-				id: params.id
-			},
-			include: {
-				user: true,
-			}
-		});
+		const client = await clientPromise
+		const db = client.db("TimeLineupDemo")
 
-		const userResponses = await prisma.eventResponse.findMany({
-			where: {
-				eventId: params.id,
-			},
-			include: {
-				user: true,
-			}
-		})
+		const eventData = await db.collection("Event").aggregate([
+			{ $match: { _id: new ObjectId(params.id) } }, {
+				$lookup: {
+					from: 'User', // The collection to perform the join with
+					localField: 'userId', // The field from the posts collection
+					foreignField: '_id', // The field from the users collection
+					as: 'user' // The field where the joined document will be stored
+				},
+			}, { $unwind: "$user" }]).toArray()
+
+		const userResponses = {};
 
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(eventData[0])) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);
