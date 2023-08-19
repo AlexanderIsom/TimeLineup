@@ -3,7 +3,7 @@ import { formatDateRange } from "utils/TimeUtils"
 import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
-import { AgendaItem, EventData, EventResponse, TimePair } from "types/Events"
+import { AgendaItem, EventData, EventResponse, TimeDuration } from "types/Events"
 import * as Avatar from "@radix-ui/react-avatar"
 import React from "react";
 import { format } from "date-fns";
@@ -11,7 +11,7 @@ import { format } from "date-fns";
 interface Props {
 	event: EventData
 	userResponses: EventResponse[];
-	localResponse: TimePair[];
+	localResponse: TimeDuration[];
 	localRejected?: boolean;
 }
 
@@ -118,8 +118,8 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 							<div className={styles.userName}>Demo user</div>
 						</div>
 						}
-						{attendingUsers.map((response) => {
-							return <div key={response.user.id} className={styles.userItem}>
+						{attendingUsers.map((response, index) => {
+							return <div key={response.user._id} className={styles.userItem}>
 								<Avatar.Root className={styles.avatarRoot} >
 									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
 									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
@@ -142,7 +142,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 						</div>
 						}
 						{invitedUsers.map((response) => {
-							return <div key={response.user.id} className={styles.userItem}>
+							return <div key={response.user._id} className={styles.userItem}>
 								<Avatar.Root className={styles.avatarRoot} >
 									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
 									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
@@ -165,7 +165,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 						</div>
 						}
 						{declinedUsers.map((response) => {
-							return <div key={response.user.id} className={styles.userItem}>
+							return <div key={response.user._id} className={styles.userItem}>
 								<Avatar.Root className={styles.avatarRoot} >
 									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
 									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>

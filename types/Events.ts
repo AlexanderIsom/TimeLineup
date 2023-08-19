@@ -21,16 +21,16 @@ export interface AgendaItem {
 	description: string
 }
 
-export interface TimePair {
+export interface TimeDuration {
 	id: string,
 	start: Date,
-	end: Date
+	duration: number,
 }
 
 export interface User {
 	emailVerified: Date,
 	name: string,
-	id: string,
+	_id: string,
 	image: string
 }
 
@@ -39,6 +39,6 @@ export interface EventResponse {
 	eventId: string,
 	userId: string,
 	user: User,
-	schedule: Array<TimePair>
+	schedule: Array<TimeDuration>
 	declined: boolean
 }

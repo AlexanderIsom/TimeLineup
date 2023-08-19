@@ -1,10 +1,11 @@
-import { addHours, addSeconds, closestTo, differenceInSeconds, eachHourOfInterval, endOfHour } from "date-fns";
+import { addHours, addSeconds, differenceInSeconds, eachHourOfInterval, minutesToSeconds } from "date-fns";
 import { RefObject, useEffect, useState } from "react";
 
 export interface TimelineUtils {
 	toX: (from: any) => number;
 	toDate: (x: number) => Date;
 	getWidth: () => number;
+	widthFromMinutes: (minute: number) => number;
 	hoursCount: number;
 }
 
@@ -43,8 +44,18 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 	const duration = differenceInSeconds(endTime, startTime)
 
 	const toX = (from: Date) => {
+		from = new Date(from);
 		const value = (differenceInSeconds(from, startTime)) / duration
 		return Math.round(value * width)
+	}
+
+	const widthFromMinutes = (minute: number) => {
+		const value = minutesToSeconds(minute) / duration
+		return Math.round(value * width);
+	}
+
+	const minutesfromWidth = (width: number) => {
+
 	}
 
 	const toDate = (x: number) => {
@@ -56,6 +67,6 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		return width;
 	}
 
-	return { toX, toDate, getWidth, hoursCount }
+	return { toX, toDate, getWidth, widthFromMinutes, hoursCount }
 }
 

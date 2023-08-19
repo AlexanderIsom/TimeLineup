@@ -1,7 +1,7 @@
-import { EventData, EventResponse, TimePair } from "types/Events"
+import { EventData, EventResponse, TimeDuration } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
+import { add, addMinutes, differenceInMinutes, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
 import CreateTimeline from "utils/TimelineUtils"
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -14,7 +14,6 @@ import * as Avatar from "@radix-ui/react-avatar"
 import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
 
-import { Inter } from "@next/font/google";
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
 import clientPromise from "lib/mongodb";
@@ -27,7 +26,7 @@ interface EventProps {
 
 export interface LocalDataObject {
 	rejected: boolean,
-	schedule: TimePair[]
+	schedule: TimeDuration[]
 }
 
 class EnumX {
@@ -54,15 +53,17 @@ interface menu {
 	currentId?: string
 }
 
-const inter = Inter({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
 
 export default function ViewEvent({ event, userResponses }: EventProps) {
 	if (userResponses === undefined) {
 		userResponses = []
 	}
 
+	const startDate = new Date(event.startDateTime)
+	const endDate = new Date(event.endDateTime)
+
 	const router = useRouter();
-	const [scheduleState, setScheduleState] = useState<TimePair[]>([])
+	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
 	const [rejected, setRejected] = useState<boolean>();
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 
@@ -81,21 +82,15 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		localStorage.setItem(event._id.toString(), JSON.stringify({ rejected: rejected, schedule: scheduleState }))
 	}, [event, scheduleState, rejected])
 
-	userResponses = []
-
 	// for demo site use only
 	userResponses.forEach(response => {
 		response.schedule.forEach(item => {
 			item.start = new Date(item.start)
-			item.end = new Date(item.end)
 
-			item.start.setDate(event.startDateTime.getDate())
-			item.start.setMonth(event.startDateTime.getMonth())
-			item.start.setFullYear(event.startDateTime.getFullYear())
+			item.start.setDate(startDate.getDate())
+			item.start.setMonth(startDate.getMonth())
+			item.start.setFullYear(startDate.getFullYear())
 
-			item.end.setMonth(event.endDateTime.getMonth())
-			item.end.setDate(event.endDateTime.getDate())
-			item.end.setFullYear(event.endDateTime.getFullYear())
 		});
 	});
 
@@ -138,39 +133,41 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	}, [setRejected, showMenu, router, handleSave, event, setScheduleState, scheduleState, hasLoaded, setHasLoaded])
 
 
-	function handleCreate(start: Date, end: Date, table: TimePair[]): TimePair[] {
+	function handleCreate(start: Date, duration: number, table: TimeDuration[]): TimeDuration[] {
 		const newSchedule = Array.from(table);
-		newSchedule.push({ start: start, end: end, id: uuidv4() })
+		newSchedule.push({ start: start, duration: duration, id: uuidv4() })
 		return newSchedule;
 	}
 
-	function handleDelete(idToDelete: string, table: TimePair[]): TimePair[] {
+	function handleDelete(idToDelete: string, table: TimeDuration[]): TimeDuration[] {
 		return table.filter(r => r.id !== idToDelete);
 	}
 
-	function handleSplit(idToSplit: string, splitAtX: number, table: TimePair[]): TimePair[] {
+	function handleSplit(idToSplit: string, splitAtX: number, table: TimeDuration[]): TimeDuration[] {
 		var bounds = containerRef.current!.getBoundingClientRect();
-		const currentTimePair = table.find(r => r.id === idToSplit)
-		if (currentTimePair) {
-			const startTime = currentTimePair.start;
-			const endTime = currentTimePair.end
+		const currentTimeDuration = table.find(r => r.id === idToSplit)
+		if (currentTimeDuration) {
+			const startTime = currentTimeDuration.start;
+			const endTime = addMinutes(startTime, currentTimeDuration.duration)
 			const midTime = roundToNearestMinutes(timeline.toDate(splitAtX - bounds.left), { nearestTo: 15 });
+			const midDuration = differenceInMinutes(midTime, startTime);
+			const endDuration = differenceInMinutes(endTime, midTime)
 
 			let newSchedule = handleDelete(idToSplit, table);
-			newSchedule = handleCreate(startTime, midTime, newSchedule);
-			newSchedule = handleCreate(midTime, endTime, newSchedule);
+			newSchedule = handleCreate(startTime, midDuration, newSchedule);
+			newSchedule = handleCreate(midTime, endDuration, newSchedule);
 			return newSchedule
 		}
 		return table
 	}
 
-	function checkForOverlap(table: Array<TimePair>, start: Date, end: Date): Array<TimePair> {
-		const overlappingResponses = table.filter(s => {
-			s.start = new Date(s.start);
-			s.end = new Date(s.end);
-			const isStartOverlapping = !isEqual(start, s.end) && isWithinInterval(start, { start: s.start, end: s.end })
-			const isEndOverlapping = !isEqual(end, s.start) && isWithinInterval(end, { start: s.start, end: s.end })
-			const isAllOverlapping = start < s.start && end > s.end;
+	function checkForOverlap(table: Array<TimeDuration>, start: Date, end: Date): Array<TimeDuration> {
+		const overlappingResponses = table.filter(schedule => {
+			schedule.start = new Date(schedule.start);
+			const scheduleEnd = addMinutes(schedule.start, schedule.duration);
+			const isStartOverlapping = !isEqual(start, scheduleEnd) && isWithinInterval(start, { start: schedule.start, end: scheduleEnd })
+			const isEndOverlapping = !isEqual(end, schedule.start) && isWithinInterval(end, { start: schedule.start, end: scheduleEnd })
+			const isAllOverlapping = start < schedule.start && end > scheduleEnd;
 
 			if (isStartOverlapping || isEndOverlapping || isAllOverlapping) {
 				return true;
@@ -179,23 +176,24 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		return overlappingResponses;
 	}
 
-	function handleUpdate(id: string, newStart: Date, newEnd: Date) {
+	function handleUpdate(id: string, newStart: Date, newDuration: number) {
 		let filteredUserResponses = scheduleState.filter(s => s.id !== id);
-		const overlappingEvents = checkForOverlap(filteredUserResponses, newStart, newEnd);
+		const overlappingEvents = checkForOverlap(filteredUserResponses, newStart, addMinutes(newStart, newDuration));
 
 		if (overlappingEvents.length > 0) {
 			const startTimes = overlappingEvents.map(e => e.start)
-			const endTimes = overlappingEvents.map(e => e.end)
+			const endingTimes = overlappingEvents.map(e => addMinutes(e.start, e.duration))
 			startTimes.push(newStart);
-			endTimes.push(newEnd);
+			endingTimes.push(addMinutes(newStart, newDuration))
 			const start = min(startTimes)
-			const end = max(endTimes)
+			const end = max(endingTimes)
+
 			overlappingEvents.forEach(event => {
 				filteredUserResponses = handleDelete(event.id, filteredUserResponses);
 			});
-			filteredUserResponses = handleCreate(start, end, filteredUserResponses)
+			filteredUserResponses = handleCreate(start, differenceInMinutes(end, start), filteredUserResponses)
 		} else {
-			filteredUserResponses.push({ id: id, start: newStart, end: newEnd })
+			filteredUserResponses.push({ id: id, start: newStart, duration: newDuration })
 		}
 
 		setScheduleState(filteredUserResponses);
@@ -225,7 +223,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		const endTime = add(startTime, { hours: 1 })
 
 		if (checkForOverlap(scheduleState, startTime, endTime).length == 0) {
-			const newSchedule = handleCreate(startTime, endTime, scheduleState)
+			const newSchedule = handleCreate(startTime, 60, scheduleState)
 			setScheduleState(newSchedule);
 		}
 	}
@@ -256,7 +254,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					</div>
 
 					{attendingUsers.map((eventResponse: EventResponse, index: number) => {
-						return <div key={eventResponse.user.id} className={styles.userItem}>
+						return <div key={eventResponse.user._id} className={styles.userItem}>
 							<Avatar.Root className={styles.avatarRoot} >
 								<Avatar.Image src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} className={styles.userAvatar} />
 								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
@@ -285,7 +283,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 						}} ref={containerRef} >
 							<TimelineNumbers start={new Date(event.startDateTime)} end={new Date(event.endDateTime)} />
 							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
-								{scheduleState.map((schedule: TimePair) => {
+								{scheduleState.map((schedule: TimeDuration) => {
 									return <ResizableTimeCard
 										key={schedule.id}
 										schedule={schedule}
@@ -299,7 +297,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 							<div className={styles.userResponses}>
 								{attendingUsers.map((eventResponse: EventResponse, index: number) => {
 									return <div key={index} className={styles.staticRow}>{
-										eventResponse.schedule.map((sch: TimePair) => {
+										eventResponse.schedule.map((sch: TimeDuration) => {
 											return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
 										})
 									}</div>
@@ -360,7 +358,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		const db = client.db("TimeLineupDemo")
 
 		const eventData = await db.collection("Event").aggregate([
-			{ $match: { _id: new ObjectId(params.id) } }, {
+			{ $match: { _id: new ObjectId(params.id) } }, { $limit: 1 }, {
 				$lookup: {
 					from: 'User', // The collection to perform the join with
 					localField: 'userId', // The field from the posts collection
@@ -369,7 +367,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				},
 			}, { $unwind: "$user" }]).toArray()
 
-		const userResponses = {};
+		const userResponses = await db.collection("EventResponse").aggregate([
+			{ $match: { eventId: new ObjectId(params.id) } }, {
+				$lookup: {
+					from: 'User', // The collection to perform the join with
+					localField: 'userId', // The field from the posts collection
+					foreignField: '_id', // The field from the users collection
+					as: 'user' // The field where the joined document will be stored
+				},
+			}, { $unwind: "$user" }]).toArray();
+
+		// console.log(userResponses);
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(eventData[0])) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
