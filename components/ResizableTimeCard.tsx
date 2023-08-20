@@ -10,7 +10,7 @@ interface Props {
 	schedule: TimeDuration
 	timeline: TimelineUtils
 	updateHandler: (id: string, start: Date, duration: number) => void
-	onClickHandler: (event: React.MouseEvent, pairId: string) => void;
+	onContext: (event: React.MouseEvent, pairId: string) => void;
 	bounds: { start: Date, end: Date };
 }
 
@@ -18,7 +18,7 @@ export default function ResizableTimeCard({
 	schedule,
 	timeline,
 	updateHandler,
-	onClickHandler,
+	onContext,
 	bounds
 }: Props) {
 	const [state, setState] = useState({
@@ -75,10 +75,10 @@ export default function ResizableTimeCard({
 	}
 
 	const onResizeStop = (e: SyntheticEvent | MouseEvent) => {
-		if (!inUse) {
-			onClickHandler(e as React.MouseEvent, schedule.id);
-			return;
-		}
+		// if (!inUse) {
+		// 	onClickHandler(e as React.MouseEvent, schedule.id);
+		// 	return;
+		// }
 		moveAndResizeToNearest15Minutes();
 		setInUse(false);
 	}
@@ -89,10 +89,10 @@ export default function ResizableTimeCard({
 	}
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
-		if (!inUse) {
-			onClickHandler(e as React.MouseEvent, schedule.id);
-			return;
-		}
+		// if (!inUse) {
+		// 	onClickHandler(e as React.MouseEvent, schedule.id);
+		// 	return;
+		// }
 		moveAndResizeToNearest15Minutes();
 		setInUse(false);
 	}
@@ -106,7 +106,7 @@ export default function ResizableTimeCard({
 			onStop={onDragStopped}
 			bounds={{ left: 0, right: timeline.toX(bounds.end) - state.width }}
 		>
-			<div className={styles.container} style={{ width: `${state.width}px` }}>
+			<div className={styles.container} style={{ width: `${state.width}px` }} onContextMenu={(e) => { onContext(e, schedule.id) }}>
 				<Resizable
 					className={styles.container}
 					width={state.width}

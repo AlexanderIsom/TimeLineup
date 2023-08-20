@@ -6,6 +6,7 @@ export interface TimelineUtils {
 	toDate: (x: number) => Date;
 	getWidth: () => number;
 	widthFromMinutes: (minute: number) => number;
+	pixelsToPercentage: (pixels: number) => number;
 	hoursCount: number;
 }
 
@@ -54,10 +55,6 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		return Math.round(value * width);
 	}
 
-	const minutesfromWidth = (width: number) => {
-
-	}
-
 	const toDate = (x: number) => {
 		const percentage = x / width // calculate percentage
 		return addSeconds(startTime, (percentage * duration))
@@ -67,6 +64,10 @@ export default function CreateTimeline({ start, end, ref }: props): TimelineUtil
 		return width;
 	}
 
-	return { toX, toDate, getWidth, widthFromMinutes, hoursCount }
+	const pixelsToPercentage = (pixel: number) => {
+		return (100 / width) * pixel;
+	}
+
+	return { toX, toDate, getWidth, widthFromMinutes, pixelsToPercentage, hoursCount }
 }
 

@@ -10,7 +10,6 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import * as Avatar from "@radix-ui/react-avatar"
 import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
 
@@ -18,6 +17,7 @@ import dropdownStyle from "styles/Components/Dropdown.module.scss"
 import EventDetails from "components/EventDetails";
 import clientPromise from "lib/mongodb";
 import { ObjectId } from "mongodb";
+import Image from "next/image";
 
 interface EventProps {
 	event: EventData
@@ -53,14 +53,7 @@ interface menu {
 	currentId?: string
 }
 
-
 export default function ViewEvent({ event, userResponses }: EventProps) {
-	if (userResponses === undefined) {
-		userResponses = []
-	}
-
-	const startDate = new Date(event.startDateTime)
-	const endDate = new Date(event.endDateTime)
 
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
@@ -81,18 +74,6 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const handleSave = useCallback(async () => {
 		localStorage.setItem(event._id.toString(), JSON.stringify({ rejected: rejected, schedule: scheduleState }))
 	}, [event, scheduleState, rejected])
-
-	// for demo site use only
-	userResponses.forEach(response => {
-		response.schedule.forEach(item => {
-			item.start = new Date(item.start)
-
-			item.start.setDate(startDate.getDate())
-			item.start.setMonth(startDate.getMonth())
-			item.start.setFullYear(startDate.getFullYear())
-
-		});
-	});
 
 	const attendingUsers = userResponses.filter((response) => {
 		return response.schedule.length > 0;
@@ -130,7 +111,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 		}
-	}, [setRejected, showMenu, router, handleSave, event, setScheduleState, scheduleState, hasLoaded, setHasLoaded])
+	}, [showMenu, router, handleSave, event, , scheduleState, hasLoaded,])
 
 
 	function handleCreate(start: Date, duration: number, table: TimeDuration[]): TimeDuration[] {
@@ -143,22 +124,17 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		return table.filter(r => r.id !== idToDelete);
 	}
 
-	function handleSplit(idToSplit: string, splitAtX: number, table: TimeDuration[]): TimeDuration[] {
-		var bounds = containerRef.current!.getBoundingClientRect();
-		const currentTimeDuration = table.find(r => r.id === idToSplit)
-		if (currentTimeDuration) {
-			const startTime = currentTimeDuration.start;
-			const endTime = addMinutes(startTime, currentTimeDuration.duration)
-			const midTime = roundToNearestMinutes(timeline.toDate(splitAtX - bounds.left), { nearestTo: 15 });
-			const midDuration = differenceInMinutes(midTime, startTime);
-			const endDuration = differenceInMinutes(endTime, midTime)
+	function handleSplit(idToSplit: string) {
+		const currentTimeDuration = scheduleState.find(r => r.id === idToSplit)
+		if (currentTimeDuration && currentTimeDuration.duration >= 60) {
+			const startTime = new Date(currentTimeDuration.start);
+			const midTime = roundToNearestMinutes(addMinutes(startTime, currentTimeDuration.duration / 2), { nearestTo: 15 });
 
-			let newSchedule = handleDelete(idToSplit, table);
-			newSchedule = handleCreate(startTime, midDuration, newSchedule);
-			newSchedule = handleCreate(midTime, endDuration, newSchedule);
-			return newSchedule
+			let newSchedule = handleDelete(idToSplit, scheduleState);
+			newSchedule = handleCreate(startTime, currentTimeDuration.duration / 2, newSchedule);
+			newSchedule = handleCreate(midTime, currentTimeDuration.duration / 2, newSchedule);
+			setScheduleState(newSchedule);
 		}
-		return table
 	}
 
 	function checkForOverlap(table: Array<TimeDuration>, start: Date, end: Date): Array<TimeDuration> {
@@ -199,7 +175,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		setScheduleState(filteredUserResponses);
 	}
 
-	function onClickHandler(e: React.MouseEvent, pairId: string) {
+	function onContext(e: React.MouseEvent, pairId: string) {
+		e.preventDefault();
 		setShowMenu({ x: e.clientX, y: e.clientY, showing: true, currentId: pairId })
 	}
 
@@ -244,23 +221,13 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			<div className={styles.scrollable}>
 				<div className={styles.userContainer} ref={userContainerRef}>
 					<div className={styles.userItem}>
-						<Avatar.Root className={styles.avatarRoot} >
-							<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
-							<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-								{"DE"}
-							</Avatar.Fallback>
-						</Avatar.Root>
+						<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 						<div className={styles.userName}>Demo user</div>
 					</div>
 
 					{attendingUsers.map((eventResponse: EventResponse, index: number) => {
 						return <div key={eventResponse.user._id} className={styles.userItem}>
-							<Avatar.Root className={styles.avatarRoot} >
-								<Avatar.Image src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} className={styles.userAvatar} />
-								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-									{eventResponse.user.name.slice(0, 2)}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<Image className={styles.avatarRoot} src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} width={500} height={500} />
 							<div className={styles.userName}>{eventResponse.user.name}</div>
 						</div>
 					})}
@@ -276,9 +243,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 						</div>
 					</div>
 					<div className={styles.timelineContent} onScroll={onContentScroll} >
-
 						<div className={`${styles.gridBackground} `} style={{
-							width: designWidth,
+							width: `${designWidth}px`,
 							backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
 						}} ref={containerRef} >
 							<TimelineNumbers start={new Date(event.startDateTime)} end={new Date(event.endDateTime)} />
@@ -289,7 +255,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 										schedule={schedule}
 										timeline={timeline}
 										updateHandler={handleUpdate}
-										onClickHandler={onClickHandler}
+										onContext={onContext}
 										bounds={bounds}
 									/>
 								})}
@@ -310,15 +276,14 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			<EventDetails event={event} userResponses={userResponses} localResponse={scheduleState} localRejected={rejected} />
 		</div>
 
-		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
+		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { console.log("context"); setShowMenu({ showing: open }) }}>
 			<DropdownMenu.Portal >
-				<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", }}>
+				<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", zIndex: 10 }}>
 					<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
 					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
 					<DropdownMenu.Group className={dropdownStyle.group}>
 						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
-							const newSchedule = handleSplit(showMenu.currentId!, showMenu.x!, scheduleState)
-							setScheduleState(newSchedule);
+							handleSplit(showMenu.currentId!)
 						}}>
 							<RxScissors className={dropdownStyle.icon} />
 							Split
@@ -365,7 +330,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 					foreignField: '_id', // The field from the users collection
 					as: 'user' // The field where the joined document will be stored
 				},
-			}, { $unwind: "$user" }]).toArray()
+			}, { $unwind: "$user" }]).toArray();
+
+		const event = eventData[0] as EventData;
 
 		const userResponses = await db.collection("EventResponse").aggregate([
 			{ $match: { eventId: new ObjectId(params.id) } }, {
@@ -375,12 +342,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 					foreignField: '_id', // The field from the users collection
 					as: 'user' // The field where the joined document will be stored
 				},
-			}, { $unwind: "$user" }]).toArray();
+			}, { $unwind: "$user" }]).toArray() as EventResponse[];
 
-		// console.log(userResponses);
+		const startDate = new Date(event.startDateTime);
+
+		// for demo site use only
+		userResponses.forEach(response => {
+			response.schedule.forEach(item => {
+				item.start = new Date(item.start)
+
+				item.start.setDate(startDate.getDate())
+				item.start.setMonth(startDate.getMonth())
+				item.start.setFullYear(startDate.getFullYear())
+
+			});
+		});
 
 		return {
-			props: { event: JSON.parse(JSON.stringify(eventData[0])) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
+			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
 		};
 	} catch (e) {
 		console.error(e);

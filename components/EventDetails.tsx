@@ -4,9 +4,9 @@ import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
 import { AgendaItem, EventData, EventResponse, TimeDuration } from "types/Events"
-import * as Avatar from "@radix-ui/react-avatar"
 import React from "react";
 import { format } from "date-fns";
+import Image from "next/image"
 
 interface Props {
 	event: EventData
@@ -53,12 +53,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 					{event.title}
 				</div>
 				<div className={styles.eventHostInformation}>
-					<Avatar.Root className={styles.avatarRoot} >
-						<Avatar.Image src={`/UserIcons/${event.user.image}.png`} alt={event.user.name} className={styles.userAvatar} />
-						<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-							{event.user.name.slice(0, 2)}
-						</Avatar.Fallback>
-					</Avatar.Root>
+					<Image className={styles.avatarRoot} src={`/UserIcons/${event.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 					{event.user.name}
 				</div>
 			</div>
@@ -109,69 +104,39 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 					</Tabs.List>
 					<Tabs.Content value="tab1">
 						{localResponse.length > 0 && !localRejected && <div className={styles.userItem}>
-							<Avatar.Root className={styles.avatarRoot} >
-								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
-								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-									{"DE"}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>
 						}
 						{attendingUsers.map((response, index) => {
 							return <div key={response.user._id} className={styles.userItem}>
-								<Avatar.Root className={styles.avatarRoot} >
-									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
-									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-										{response.user.name.slice(0, 2)}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab2">
 						{localResponse.length === 0 && !localRejected && <div className={styles.userItem}>
-							<Avatar.Root className={styles.avatarRoot} >
-								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
-								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-									{"DE"}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>
 						}
 						{invitedUsers.map((response) => {
 							return <div key={response.user._id} className={styles.userItem}>
-								<Avatar.Root className={styles.avatarRoot} >
-									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
-									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-										{response.user.name.slice(0, 2)}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab3">
 						{localRejected && <div className={styles.userItem}>
-							<Avatar.Root className={styles.avatarRoot} >
-								<Avatar.Image src={`/UserIcons/demo.png`} alt={"demo user"} className={styles.userAvatar} />
-								<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-									{"DE"}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>
 						}
 						{declinedUsers.map((response) => {
 							return <div key={response.user._id} className={styles.userItem}>
-								<Avatar.Root className={styles.avatarRoot} >
-									<Avatar.Image src={`/UserIcons/${response.user.image}.png`} alt={response.user.name} className={styles.userAvatar} />
-									<Avatar.Fallback className={styles.avatarFallback} delayMs={600}>
-										{response.user.name.slice(0, 2)}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>
 						})}
