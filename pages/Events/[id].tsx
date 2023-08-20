@@ -53,6 +53,8 @@ interface menu {
 	currentId?: string
 }
 
+const roundNearest = (value: number, nearest: number): number => Math.round(value / nearest) * nearest;
+
 export default function ViewEvent({ event, userResponses }: EventProps) {
 
 	const router = useRouter();
@@ -128,11 +130,12 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		const currentTimeDuration = scheduleState.find(r => r.id === idToSplit)
 		if (currentTimeDuration && currentTimeDuration.duration >= 60) {
 			const startTime = new Date(currentTimeDuration.start);
-			const midTime = roundToNearestMinutes(addMinutes(startTime, currentTimeDuration.duration / 2), { nearestTo: 15 });
+			const halfDuration = roundNearest(currentTimeDuration.duration / 2, 15)
+			const midTime = roundToNearestMinutes(addMinutes(startTime, halfDuration), { nearestTo: 15 });
 
 			let newSchedule = handleDelete(idToSplit, scheduleState);
-			newSchedule = handleCreate(startTime, currentTimeDuration.duration / 2, newSchedule);
-			newSchedule = handleCreate(midTime, currentTimeDuration.duration / 2, newSchedule);
+			newSchedule = handleCreate(startTime, halfDuration, newSchedule);
+			newSchedule = handleCreate(midTime, halfDuration, newSchedule);
 			setScheduleState(newSchedule);
 		}
 	}
