@@ -3,7 +3,7 @@ import styles from "styles/Events.module.scss";
 import { EventData } from "types"
 import EventCard from "components/EventCard";
 import { GetServerSidePropsContext } from "next";
-import { User } from "types/Events";
+import { ResponseState, User } from "types/Events";
 import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 import clientPromise from "lib/mongodb";
@@ -33,21 +33,11 @@ export default function Home({ events, users, dateRange }: Props) {
     setDemoEvents(events.map((event) => {
       const localDataString = localStorage.getItem(event._id.toString())
       if (localDataString !== null) {
-
         const localData: LocalDataObject = JSON.parse(localDataString);
-
-        if (localData.rejected) {
-          event.status = "rejected"
-        } else {
-          if (localData.schedule === undefined || (localData.schedule !== undefined && localData.schedule.length === 0)) {
-            event.status = "invited"
-          } else if (localData.schedule.length > 0) {
-            event.status = "attending"
-          }
-        }
+        event.status = localData.responseState !== undefined ? localData.responseState : ResponseState.pending
 
       } else {
-        event.status = "invited"
+        event.status = ResponseState.pending
       }
 
       return event;
@@ -135,7 +125,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     //   return isWithinInterval(event.startDateTime, { start: weekStart, end: weekEnd })
     // })
 
-    // const users = await prisma.user.findMany();
     const users = {}
 
     return {

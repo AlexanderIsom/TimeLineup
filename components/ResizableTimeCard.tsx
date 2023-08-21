@@ -75,10 +75,6 @@ export default function ResizableTimeCard({
 	}
 
 	const onResizeStop = (e: SyntheticEvent | MouseEvent) => {
-		// if (!inUse) {
-		// 	onClickHandler(e as React.MouseEvent, schedule.id);
-		// 	return;
-		// }
 		moveAndResizeToNearest15Minutes();
 		setInUse(false);
 	}
@@ -89,10 +85,6 @@ export default function ResizableTimeCard({
 	}
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
-		// if (!inUse) {
-		// 	onClickHandler(e as React.MouseEvent, schedule.id);
-		// 	return;
-		// }
 		moveAndResizeToNearest15Minutes();
 		setInUse(false);
 	}

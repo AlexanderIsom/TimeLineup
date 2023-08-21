@@ -1,5 +1,12 @@
 import { ObjectId } from "mongodb";
 
+export enum ResponseState {
+	attending,
+	pending,
+	declined,
+	hosting
+}
+
 export interface EventData {
 	_id: ObjectId,
 	userId: ObjectId,
@@ -12,7 +19,7 @@ export interface EventData {
 	color: string,
 	weekOffset: number,
 	day: number
-	status: string;
+	status: ResponseState;
 }
 
 export interface AgendaItem {
@@ -40,5 +47,5 @@ export interface EventResponse {
 	userId: string,
 	user: User,
 	schedule: Array<TimeDuration>
-	declined: boolean
+	state: ResponseState
 }

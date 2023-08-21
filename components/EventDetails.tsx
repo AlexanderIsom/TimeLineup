@@ -3,7 +3,7 @@ import { formatDateRange } from "utils/TimeUtils"
 import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
-import { AgendaItem, EventData, EventResponse, TimeDuration } from "types/Events"
+import { AgendaItem, EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
 import React from "react";
 import { format } from "date-fns";
 import Image from "next/image"
@@ -11,40 +11,38 @@ import Image from "next/image"
 interface Props {
 	event: EventData
 	userResponses: EventResponse[];
-	localResponse: TimeDuration[];
-	localRejected?: boolean;
+	responseState: ResponseState;
+	onStateChange: (newState: ResponseState) => void;
 }
 
-export default function EventDetails({ event, userResponses, localResponse, localRejected }: Props) {
+export default function EventDetails({ event, userResponses, responseState, onStateChange }: Props) {
 	const declinedUsers = userResponses.filter((reponse) => {
-		return reponse.declined === true;
+		return reponse.state === ResponseState.declined;
 	})
 
 	const invitedUsers = userResponses.filter((reponse) => {
-		return reponse.schedule.length === 0;
+		return reponse.state === ResponseState.pending
 	})
 
 	const attendingUsers = userResponses.filter((reponse) => {
-		return reponse.schedule.length > 0;
+		return reponse.state === ResponseState.attending
 	})
 
 	var attendingCount = attendingUsers.length;
 	var invitedCount = invitedUsers.length;
 	var declinedCount = declinedUsers.length;
 
-	if (localRejected) {
-		declinedCount += 1;
-	} else {
-
-		if (localResponse.length > 0) {
+	switch (responseState) {
+		case ResponseState.attending:
 			attendingCount += 1;
-		}
-
-		if (localResponse.length === 0) {
+			break;
+		case ResponseState.pending:
 			invitedCount += 1;
-		}
+			break;
+		case ResponseState.declined:
+			declinedCount += 1;
+			break;
 	}
-
 
 	return (
 		<div className={styles.container} >
@@ -83,6 +81,28 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 					<Separator.Root className={styles.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: event.agenda.length + 1, gridColumn: 2 }} />
 				</div>
 			</div>
+			<Separator.Root className={styles.separator} />
+			<div className={styles.sectionPadding}>
+				<div className={styles.sectionHeading}>Options</div>
+				<p>Status: {ResponseState[responseState]}</p>
+				<div className={`${styles.buttonOptions}`}>
+					<div className={`${styles.button} ${styles.attend}`} onClick={() => {
+						if (responseState !== ResponseState.attending) {
+							onStateChange(ResponseState.attending);
+						}
+					}}>Attend</div>
+					<div className={`${styles.button} ${styles.pending}`} onClick={() => {
+						if (responseState !== ResponseState.pending) {
+							onStateChange(ResponseState.pending);
+						}
+					}} >Unsure</div>
+					<div className={`${styles.button} ${styles.decline}`} onClick={() => {
+						if (responseState !== ResponseState.declined) {
+							onStateChange(ResponseState.declined);
+						}
+					}} >Decline</div>
+				</div>
+			</div>
 
 			<Separator.Root className={styles.separator} />
 			<div className={styles.invites}>
@@ -103,7 +123,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 						</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="tab1">
-						{localResponse.length > 0 && !localRejected && <div className={styles.userItem}>
+						{responseState === ResponseState.attending && <div className={styles.userItem}>
 							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>
@@ -116,7 +136,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab2">
-						{localResponse.length === 0 && !localRejected && <div className={styles.userItem}>
+						{responseState === ResponseState.pending && <div className={styles.userItem}>
 							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>
@@ -129,7 +149,7 @@ export default function EventDetails({ event, userResponses, localResponse, loca
 						})}
 					</Tabs.Content>
 					<Tabs.Content value="tab3">
-						{localRejected && <div className={styles.userItem}>
+						{responseState === ResponseState.declined && <div className={styles.userItem}>
 							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 							<div className={styles.userName}>Demo user</div>
 						</div>

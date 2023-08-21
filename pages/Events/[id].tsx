@@ -1,4 +1,4 @@
-import { EventData, EventResponse, TimeDuration } from "types/Events"
+import { EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
 import { add, addMinutes, differenceInMinutes, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
@@ -25,7 +25,7 @@ interface EventProps {
 }
 
 export interface LocalDataObject {
-	rejected: boolean,
+	responseState: ResponseState,
 	schedule: TimeDuration[]
 }
 
@@ -59,7 +59,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
-	const [rejected, setRejected] = useState<boolean>();
+	const [responseState, setResponseState] = useState<ResponseState>(ResponseState.pending);
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 
 	const designSize = 1920
@@ -74,8 +74,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
-		localStorage.setItem(event._id.toString(), JSON.stringify({ rejected: rejected, schedule: scheduleState }))
-	}, [event, scheduleState, rejected])
+		localStorage.setItem(event._id.toString(), JSON.stringify({ responseState: responseState, schedule: scheduleState }))
+	}, [event, scheduleState, responseState])
 
 	const attendingUsers = userResponses.filter((response) => {
 		return response.schedule.length > 0;
@@ -91,19 +91,18 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		window.addEventListener("beforeunload", handleUnload)
 		router.events.on('routeChangeStart', handleSave)
 
-
 		const localDataString = localStorage.getItem(event._id.toString());
 
 		const localData: LocalDataObject = localDataString !== null ? JSON.parse(localDataString) : {};
 		const schedule = localData.schedule !== undefined ? localData.schedule : [];
-		const rejected = localData.rejected;
+		const responseStateData = localData.responseState;
 
 		if (!hasLoaded) {
 			if (scheduleState.length === 0 && schedule.length !== 0) {
 				setScheduleState(schedule)
 			}
-			if (rejected) {
-				setRejected(localData.rejected)
+			if (responseStateData !== undefined) {
+				setResponseState(responseStateData)
 			}
 			setHasLoaded(true)
 		}
@@ -113,10 +112,13 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
 		}
-	}, [showMenu, router, handleSave, event, , scheduleState, hasLoaded,])
+	}, [showMenu, router, handleSave, event, scheduleState, hasLoaded, responseState])
 
 
 	function handleCreate(start: Date, duration: number, table: TimeDuration[]): TimeDuration[] {
+		if (responseState !== ResponseState.attending) {
+			setResponseState(ResponseState.attending)
+		}
 		const newSchedule = Array.from(table);
 		newSchedule.push({ start: start, duration: duration, id: uuidv4() })
 		return newSchedule;
@@ -208,14 +210,18 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		}
 	}
 
-	const handleToggleReject = () => {
-		setRejected(!rejected);
-	}
-
 	const onContentScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
 		if (e.currentTarget.scrollTop !== contentLastScroll) {
 			userContainerRef.current!.scrollTop = e.currentTarget.scrollTop;
 			setContentLastScroll(e.currentTarget.scrollTop);
+		}
+	}
+
+	const onResponseStateChange = (newState: ResponseState) => {
+		setResponseState(newState);
+
+		if (newState !== ResponseState.attending) {
+			setScheduleState([])
 		}
 	}
 
@@ -242,7 +248,6 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.icon} /></div>
 								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.icon} /></div>
 							</div>
-							<div><button onClick={handleToggleReject}>reject</button></div>
 						</div>
 					</div>
 					<div className={styles.timelineContent} onScroll={onContentScroll} >
@@ -276,10 +281,10 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					</div>
 				</div>
 			</div>
-			<EventDetails event={event} userResponses={userResponses} localResponse={scheduleState} localRejected={rejected} />
+			<EventDetails event={event} userResponses={userResponses} responseState={responseState} onStateChange={(newState: ResponseState) => { onResponseStateChange(newState) }} />
 		</div>
 
-		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { console.log("context"); setShowMenu({ showing: open }) }}>
+		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
 			<DropdownMenu.Portal >
 				<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", zIndex: 10 }}>
 					<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
@@ -328,10 +333,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		const eventData = await db.collection("Event").aggregate([
 			{ $match: { _id: new ObjectId(params.id) } }, { $limit: 1 }, {
 				$lookup: {
-					from: 'User', // The collection to perform the join with
-					localField: 'userId', // The field from the posts collection
-					foreignField: '_id', // The field from the users collection
-					as: 'user' // The field where the joined document will be stored
+					from: 'User',
+					localField: 'userId',
+					foreignField: '_id',
+					as: 'user'
 				},
 			}, { $unwind: "$user" }]).toArray();
 
@@ -340,10 +345,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		const userResponses = await db.collection("EventResponse").aggregate([
 			{ $match: { eventId: new ObjectId(params.id) } }, {
 				$lookup: {
-					from: 'User', // The collection to perform the join with
-					localField: 'userId', // The field from the posts collection
-					foreignField: '_id', // The field from the users collection
-					as: 'user' // The field where the joined document will be stored
+					from: 'User',
+					localField: 'userId',
+					foreignField: '_id',
+					as: 'user'
 				},
 			}, { $unwind: "$user" }]).toArray() as EventResponse[];
 

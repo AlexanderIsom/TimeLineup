@@ -3,6 +3,7 @@ import clientPromise from "lib/mongodb";
 import { ObjectId } from "mongodb";
 import { GetServerSidePropsContext } from "next";
 import { EventData } from "types";
+import { ResponseState } from "types/Events";
 
 export default function verifyData() {
 	return <></>
@@ -42,6 +43,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		// 			console.log(obj.event.startDateTime, item.start)
 		// 		}
 		// 	});
+		// })
+
+		// userResponses.forEach((obj) => {
+		// 	if (obj.schedule.declined) {
+		// 		obj.state = ResponseState.declined
+		// 	} else if (obj.schedule.length > 0) {
+		// 		obj.state = ResponseState.attending
+		// 	} else {
+		// 		obj.state = ResponseState.pending
+		// 	}
+		// 	db.collection("EventResponse").updateOne({ _id: obj._id }, { $set: { state: obj.state } })
 		// })
 
 		// userResponses.forEach((obj) => {

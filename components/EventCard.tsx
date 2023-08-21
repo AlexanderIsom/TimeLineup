@@ -2,6 +2,7 @@ import { EventData } from '../types'
 import styles from '../styles/Components/EventCard.module.scss'
 import Link from 'next/link'
 import { format, isSameDay } from 'date-fns'
+import { ResponseState } from 'types/Events'
 
 interface Props {
   event: EventData
@@ -20,7 +21,7 @@ export default function EventCard({ event }: Props) {
   const endTime = format(event.endDateTime, "HH:mm")
 
   return (
-    <Link href={'/Events/' + event._id} className={`${styles.card} ${event.status === "attending" ? styles.attending : ""} ${event.status === "invited" ? styles.invited : ""} ${event.status === "rejected" ? styles.rejected : ""} ${event.status === "hosting" ? styles.hosting : ""}`}>
+    <Link href={'/Events/' + event._id} className={`${styles.card} ${event.status === ResponseState.attending ? styles.attending : ""} ${event.status === ResponseState.pending ? styles.invited : ""} ${event.status === ResponseState.declined ? styles.rejected : ""} ${event.status === ResponseState.hosting ? styles.hosting : ""}`}>
       <div className={styles.title}>
         {event.title}
       </div>
