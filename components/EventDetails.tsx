@@ -48,7 +48,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 		<div className={styles.container} >
 			<div className={styles.heading}>
 				<div className={styles.eventTitle}>
-					{event.title}
+					<h1>{event.title}</h1>
 				</div>
 				<div className={styles.eventHostInformation}>
 					<Image className={styles.avatarRoot} src={`/UserIcons/${event.user.image}.png`} alt={"Demo user"} width={500} height={500} />
@@ -84,7 +84,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 			<Separator.Root className={styles.separator} />
 			<div className={styles.sectionPadding}>
 				<div className={styles.sectionHeading}>Options</div>
-				<p>Status: {ResponseState[responseState]}</p>
+				<small>Status: {ResponseState[responseState]}</small>
 				<div className={`${styles.buttonOptions}`}>
 					<div className={`${styles.button} ${styles.attend}`} onClick={() => {
 						if (responseState !== ResponseState.attending) {
