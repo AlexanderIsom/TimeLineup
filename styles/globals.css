@@ -1,7 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900;1000&display=swap');
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+html,
+body {
+  font-family: nunito;
+  font-size: 18px;
+}
+
+title {
+  font-size: 32px;
+}
+
+small {
+  font-size: 14px;
 }
 
 a {

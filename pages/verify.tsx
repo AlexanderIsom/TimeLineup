@@ -60,23 +60,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		// 	var updated = false;
 		// 	obj.schedule.forEach((item: any) => {
 		// 		updated = true
-		// 		const earliestStart = new Date(obj.event.startDateTime)
-		// 		const latestStart = addMinutes(new Date(obj.event.startDateTime), 60)
+		// 		// const earliestStart = new Date(obj.event.startDateTime)
+		// 		// const latestStart = addMinutes(new Date(obj.event.startDateTime), 60)
 
-		// 		const earliestEnd = subMinutes(new Date(obj.event.endDateTime), 60)
-		// 		const latestEnd = new Date(obj.event.endDateTime)
+		// 		// const earliestEnd = subMinutes(new Date(obj.event.endDateTime), 60)
+		// 		// const latestEnd = new Date(obj.event.endDateTime)
 
-		// 		var newStart = new Date(earliestStart.getTime() + Math.random() * (latestStart.getTime() - earliestStart.getTime()))
-		// 		newStart = roundToNearestMinutes(newStart, { nearestTo: 15 })
+		// 		// var newStart = new Date(earliestStart.getTime() + Math.random() * (latestStart.getTime() - earliestStart.getTime()))
+		// 		// newStart = roundToNearestMinutes(newStart, { nearestTo: 15 })
 
-		// 		var newEnd = new Date(earliestEnd.getTime() + Math.random() * (latestEnd.getTime() - earliestEnd.getTime()))
-		// 		newEnd = roundToNearestMinutes(newEnd, { nearestTo: 15 })
-		// 		// console.log(obj._id, newStart, newEnd)
-		// 		item.start = newStart
-		// 		item.end = newEnd
-		// 		const duration = differenceInMinutes(newEnd, newStart);
-		// 		// console.log(duration)
-		// 		item.duration = duration;
+		// 		// var newEnd = new Date(earliestEnd.getTime() + Math.random() * (latestEnd.getTime() - earliestEnd.getTime()))
+		// 		// newEnd = roundToNearestMinutes(newEnd, { nearestTo: 15 })
+		// 		// // console.log(obj._id, newStart, newEnd)
+		// 		// item.start = newStart
+		// 		// item.end = newEnd
+		// 		// const duration = differenceInMinutes(newEnd, newStart);
+		// 		// // console.log(duration)
+		// 		// item.duration = duration;
 
 		// 		// TODO change event start and end date into start and duration 
 		// 		// TODO change event schedules into start and duration instead of start and end

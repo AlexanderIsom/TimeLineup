@@ -111,15 +111,15 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 					<Tabs.List className={styles.tabContainer}>
 						<Tabs.Trigger className={styles.tab} value="tab1">
 							Attending
-							<div className={styles.attendingCount}>{attendingCount}</div>
+							<small className={styles.attendingCount}>{attendingCount}</small>
 						</Tabs.Trigger>
 						<Tabs.Trigger className={styles.tab} value="tab2">
 							Invited
-							<div className={styles.inviteCount}>{invitedCount}</div>
+							<small className={styles.inviteCount}>{invitedCount}</small>
 						</Tabs.Trigger>
 						<Tabs.Trigger className={styles.tab} value="tab3">
 							Declined
-							<div className={styles.declinedCount}>{declinedCount}</div>
+							<small className={styles.declinedCount}>{declinedCount}</small>
 						</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="tab1">

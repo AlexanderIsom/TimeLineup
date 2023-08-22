@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import styles from "../styles/welcome.module.scss";
 import Link from "next/link";
 import { useState } from "react";
+import Head from "next/head";
 
 interface RGBColor {
   red: number;
@@ -69,7 +70,7 @@ export default function SignIn({ providers }: any) {
 
             <p className={styles.description}>
               Ever wanted a shared calendar between you and your friends letting you
-              see when people are avaliable in order to plan events <span className={`${styles.descriptionSmall}`} >(and one that adjusts to your timezone ?)</span>
+              see when people are avaliable in order to plan events <small>(and one that adjusts to your timezone ?)</small>
               < span className={styles.descriptionBold}> Thats what TimeLineup aims to solve!</span>
             </p>
             <Link href={"./Events"}>

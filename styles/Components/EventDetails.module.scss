@@ -25,7 +25,7 @@
 }
 
 .eventTitle {
-	font-size: 30px;
+	font-size: 32px;
 	line-height: 30px;
 	font-weight: 500;
 }
@@ -33,8 +33,6 @@
 .eventHostInformation {
 	display: flex;
 	align-items: center;
-	font-weight: 400;
-	font-size: 14px;
 	line-height: 14px;
 	color: black;
 }
@@ -60,8 +58,6 @@
 	gap: 2px;
 
 	min-height: 100px;
-	font-weight: 500;
-	font-size: 14px;
 	line-height: 15px;
 	color: #4B4B4B;
 }
@@ -103,8 +99,6 @@
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	font-weight: 500;
-	font-size: 14px;
 }
 
 .userItem {
@@ -130,7 +124,7 @@
 
 .sectionHeading {
 	font-weight: 500;
-	font-size: 10px;
+	font-size: 12px;
 	line-height: 15px;
 	color: #B8B8B8;
 }
@@ -154,8 +148,6 @@
 	display: inline-grid;
 	padding: 6px 0px;
 	gap: 10px 5px;
-	font-size: 14px;
-	font-weight: 500;
 	line-height: 15px;
 	grid-template-columns: auto 1px 1fr;
 	color: #4B4B4B;
@@ -172,7 +164,6 @@
 	display: flex;
 	overflow: hidden;
 	border-radius: 5px;
-	font-size: 18px;
 	font-weight: bold;
 	color: rgba(0, 0, 0, 0.4);
 
@@ -205,8 +196,6 @@
 	width: 100%;
 	display: flex;
 	border-bottom: solid 1px #B8B8B8;
-	font-size: 12px;
-	font-weight: 500;
 }
 
 .tab {
@@ -221,7 +210,6 @@
 	justify-content: center;
 	align-items: center;
 	padding: 5px 0px;
-	font-size: 12px;
 
 	&:not(:active):hover {
 		color: black;
@@ -239,8 +227,7 @@
 	padding: 2px 5px;
 	border-radius: 5px;
 	color: black;
-	font-size: 10px;
-	line-height: 15px;
+	font-weight: bold
 }
 
 .attendingCount {

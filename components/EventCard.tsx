@@ -27,7 +27,7 @@ export default function EventCard({ event }: Props) {
       </div>
       <div className={styles.dates}>
         <div className={styles.dateContainer}>
-          <div className={styles.dateHeading}>starts</div>
+          <div className={styles.dateHeading}><small>starts</small></div>
           {!isDateEqual &&
             <div className={styles.time}>
               {startDate}
@@ -38,7 +38,7 @@ export default function EventCard({ event }: Props) {
         </div>
         -
         <div className={styles.dateContainer}>
-          <div className={styles.dateHeading}>ends</div>
+          <div className={styles.dateHeading}><small>ends</small></div>
           {!isDateEqual &&
             <div className={styles.time}>
               {endDate}
