@@ -79,7 +79,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	}, [event, scheduleState, responseState])
 
 	const attendingUsers = userResponses.filter((response) => {
-		return response.schedule.length > 0;
+		return response.state === ResponseState.attending;
 	})
 
 
@@ -348,18 +348,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 					as: 'user'
 				},
 			}, { $unwind: "$user" }]).toArray() as EventResponse[];
-
-		// for demo site use only
-		// userResponses.forEach(response => {
-		// 	response.schedule.forEach(item => {
-		// 		item.start = new Date(item.start)
-
-		// 		item.start.setDate(event.startDateTime.getDate())
-		// 		item.start.setMonth(event.startDateTime.getMonth())
-		// 		item.start.setFullYear(event.startDateTime.getFullYear())
-
-		// 	});
-		// });
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
