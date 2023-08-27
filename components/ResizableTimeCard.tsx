@@ -37,14 +37,9 @@ export default function ResizableTimeCard({
 			if (handle === 'w') {
 				newOffset = state.offsetFromStart + Timeline.xPositionToMinutes(deltaWidth);
 			}
-			if (size.width < minWidth) {
+			if (size.width < minWidth || newOffset < 0 || Timeline.minutesToXPosition(newOffset) + newSize > maxBounds) {
 				return state
 			}
-			if (newOffset < 0)
-				return state;
-
-			if (Timeline.minutesToXPosition(newOffset) + newSize > maxBounds)
-				return state;
 
 			return { duration: Timeline.xPositionToMinutes(newSize), offsetFromStart: newOffset, width: newSize }
 		})
