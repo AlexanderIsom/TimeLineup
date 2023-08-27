@@ -5,7 +5,7 @@ import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
 import { AgendaItem, EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
 import React from "react";
-import { format } from "date-fns";
+import { addMinutes, format } from "date-fns";
 import Image from "next/image"
 
 interface Props {
@@ -58,7 +58,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 			<Separator.Root className={styles.separator} />
 			<div className={styles.eventDate}>
 				<BsCalendar4Week className={styles.calendarIcon} />
-				{formatDateRange(new Date(event.startDateTime), new Date(event.endDateTime))}
+				{formatDateRange(new Date(event.startDateTime), addMinutes(new Date(event.startDateTime), event.duration))}
 			</div>
 
 			<div className={styles.eventDescription}>

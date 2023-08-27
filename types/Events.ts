@@ -12,7 +12,7 @@ export interface EventData {
 	userId: ObjectId,
 	title: string,
 	startDateTime: Date,
-	endDateTime: Date,
+	duration: number,
 	user: User,
 	description: string,
 	agenda: AgendaItem[],
@@ -30,7 +30,7 @@ export interface AgendaItem {
 
 export interface TimeDuration {
 	id: string,
-	start: Date,
+	offsetFromStart: number,
 	duration: number,
 }
 

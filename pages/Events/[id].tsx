@@ -1,8 +1,7 @@
 import { EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/id.module.scss"
-import { add, addMinutes, differenceInMinutes, isEqual, isWithinInterval, max, min, roundToNearestMinutes, setDate } from "date-fns";
-import CreateTimeline from "utils/TimelineUtils"
+import { addDays, addMinutes, addWeeks, roundToNearestMinutes, setDate, startOfWeek } from "date-fns";
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import StaticTimeCard from "components/StaticTimeCard";
@@ -18,6 +17,8 @@ import EventDetails from "components/EventDetails";
 import clientPromise from "lib/mongodb";
 import { ObjectId } from "mongodb";
 import Image from "next/image";
+import MathUtils from "utils/MathUtils";
+import Timeline from "utils/Timeline";
 
 interface EventProps {
 	event: EventData
@@ -53,10 +54,9 @@ interface menu {
 	currentId?: string
 }
 
-const roundNearest = (value: number, nearest: number): number => Math.round(value / nearest) * nearest;
-
 export default function ViewEvent({ event, userResponses }: EventProps) {
-
+	const startDateTime = new Date(event.startDateTime);
+	const endDateTime = addMinutes(startDateTime, event.duration);
 	const router = useRouter();
 	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
 	const [responseState, setResponseState] = useState<ResponseState>(ResponseState.pending);
@@ -64,13 +64,14 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
-	let designWidth = designSize * currentZoom
+	const [designWidth, setDesignWidth] = useState(designSize * currentZoom)
 	const [showMenu, setShowMenu] = useState<menu>({ showing: false })
-	const containerRef = useRef<HTMLDivElement>(null);
-	const userContainerRef = useRef<HTMLDivElement>(null);
+	const timelineContainerRef = useRef<HTMLDivElement>(null);
+	const timelineScrollingContainerRef = useRef<HTMLDivElement>(null);
+	const attendingUsersContainerRef = useRef<HTMLDivElement>(null);
 
-	const timeline = CreateTimeline({ start: event.startDateTime, end: event.endDateTime, ref: containerRef })
-	const bounds = { start: event.startDateTime, end: event.endDateTime }
+	new Timeline(startDateTime, event.duration, designWidth, 5)
+	const bounds = { start: startDateTime, end: endDateTime }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
@@ -99,6 +100,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 		if (!hasLoaded) {
 			if (scheduleState.length === 0 && schedule.length !== 0) {
+				// update date to event date
 				setScheduleState(schedule)
 			}
 			if (responseStateData !== undefined) {
@@ -107,20 +109,33 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			setHasLoaded(true)
 		}
 
+		const timelineContainer = timelineScrollingContainerRef.current
+		var resizeObserver: ResizeObserver | undefined;
+
+		if (timelineContainer) {
+			resizeObserver = new ResizeObserver(([element]) => {
+				setDesignWidth(Math.max(element.contentRect.width, designWidth));
+			})
+			resizeObserver.observe(timelineContainer);
+		}
+
 
 		return () => {
 			window.removeEventListener("beforeunload", handleUnload)
 			router.events.off('routeChangeStart', handleSave)
+			if (resizeObserver) {
+				resizeObserver.disconnect();
+			}
 		}
-	}, [showMenu, router, handleSave, event, scheduleState, hasLoaded, responseState])
+	}, [showMenu, router, handleSave, event, scheduleState, hasLoaded, responseState, designWidth])
 
 
-	function handleCreate(start: Date, duration: number, table: TimeDuration[]): TimeDuration[] {
+	function handleCreate(offsetFromStart: number, duration: number, table: TimeDuration[]): TimeDuration[] {
 		if (responseState !== ResponseState.attending) {
 			setResponseState(ResponseState.attending)
 		}
 		const newSchedule = Array.from(table);
-		newSchedule.push({ start: start, duration: duration, id: uuidv4() })
+		newSchedule.push({ offsetFromStart: offsetFromStart, duration: duration, id: uuidv4() })
 		return newSchedule;
 	}
 
@@ -128,53 +143,36 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		return table.filter(r => r.id !== idToDelete);
 	}
 
-	function handleSplit(idToSplit: string) {
-		const currentTimeDuration = scheduleState.find(r => r.id === idToSplit)
-		if (currentTimeDuration && currentTimeDuration.duration >= 60) {
-			const startTime = new Date(currentTimeDuration.start);
-			const halfDuration = roundNearest(currentTimeDuration.duration / 2, 15)
-			const midTime = roundToNearestMinutes(addMinutes(startTime, halfDuration), { nearestTo: 15 });
+	function findOverlappingResponses(table: Array<TimeDuration>, offsetFromStart: number, duration: number): Array<TimeDuration> {
+		const overlappingResponses = table.filter(item => {
+			const startIsWithin = MathUtils.isBetween(item.offsetFromStart, offsetFromStart, offsetFromStart + duration)
+			const endIsWithin = MathUtils.isBetween(item.offsetFromStart + duration, offsetFromStart, offsetFromStart + duration)
 
-			let newSchedule = handleDelete(idToSplit, scheduleState);
-			newSchedule = handleCreate(startTime, halfDuration, newSchedule);
-			newSchedule = handleCreate(midTime, halfDuration, newSchedule);
-			setScheduleState(newSchedule);
-		}
-	}
-
-	function checkForOverlap(table: Array<TimeDuration>, start: Date, end: Date): Array<TimeDuration> {
-		const overlappingResponses = table.filter(schedule => {
-			schedule.start = new Date(schedule.start);
-			const scheduleEnd = addMinutes(schedule.start, schedule.duration);
-			const isStartOverlapping = !isEqual(start, scheduleEnd) && isWithinInterval(start, { start: schedule.start, end: scheduleEnd })
-			const isEndOverlapping = !isEqual(end, schedule.start) && isWithinInterval(end, { start: schedule.start, end: scheduleEnd })
-			const isAllOverlapping = start < schedule.start && end > scheduleEnd;
-
-			if (isStartOverlapping || isEndOverlapping || isAllOverlapping) {
+			if (startIsWithin || endIsWithin) {
 				return true;
 			}
 		});
 		return overlappingResponses;
 	}
 
-	function handleUpdate(id: string, newStart: Date, newDuration: number) {
+	function handleUpdate(id: string, offsetFromStart: number, duration: number) {
 		let filteredUserResponses = scheduleState.filter(s => s.id !== id);
-		const overlappingEvents = checkForOverlap(filteredUserResponses, newStart, addMinutes(newStart, newDuration));
+		const overlappingEvents = findOverlappingResponses(filteredUserResponses, offsetFromStart, duration);
 
 		if (overlappingEvents.length > 0) {
-			const startTimes = overlappingEvents.map(e => e.start)
-			const endingTimes = overlappingEvents.map(e => addMinutes(e.start, e.duration))
-			startTimes.push(newStart);
-			endingTimes.push(addMinutes(newStart, newDuration))
-			const start = min(startTimes)
-			const end = max(endingTimes)
+			const startTimes = overlappingEvents.map(e => e.offsetFromStart)
+			const endTimes = overlappingEvents.map(e => e.offsetFromStart + e.duration)
+			startTimes.push(offsetFromStart);
+			endTimes.push(offsetFromStart + duration)
+			const start = Math.min(...startTimes)
+			const end = Math.max(...endTimes)
 
 			overlappingEvents.forEach(event => {
 				filteredUserResponses = handleDelete(event.id, filteredUserResponses);
 			});
-			filteredUserResponses = handleCreate(start, differenceInMinutes(end, start), filteredUserResponses)
+			filteredUserResponses = handleCreate(start, end - start, filteredUserResponses)
 		} else {
-			filteredUserResponses.push({ id: id, start: newStart, duration: newDuration })
+			filteredUserResponses.push({ id: id, offsetFromStart: offsetFromStart, duration: duration })
 		}
 
 		setScheduleState(filteredUserResponses);
@@ -187,32 +185,32 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 	function handleZoomOut() {
 		const newZoom = EnumX.of(ZoomLevels).previous(currentZoom)
+		const width = timelineScrollingContainerRef.current?.getBoundingClientRect().width !== undefined ? timelineScrollingContainerRef.current?.clientWidth : 0
+		setDesignWidth(Math.max(width, designSize * newZoom));
 		setCurrentZoom(newZoom);
-		designWidth = designSize * newZoom
 	}
 
 	function handleZoomIn() {
 		const newZoom = EnumX.of(ZoomLevels).next(currentZoom)
+		setDesignWidth(designSize * newZoom);
 		setCurrentZoom(newZoom);
-		designWidth = designSize * newZoom
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
-		var bounds = containerRef.current!.getBoundingClientRect();
-		const newX = e.clientX - bounds.left;
-		const startTime = timeline.toDate(newX);
-		startTime.setMinutes(0, 0, 0);
-		const endTime = add(startTime, { hours: 1 })
+		var bounds = timelineContainerRef.current!.getBoundingClientRect();
+		const width = e.clientX - bounds.left;
+		const offsetFromStart = MathUtils.roundToNearest(Timeline.xPositionToMinutes(width), 15)
+		const duration = 60;
 
-		if (checkForOverlap(scheduleState, startTime, endTime).length == 0) {
-			const newSchedule = handleCreate(startTime, 60, scheduleState)
+		if (findOverlappingResponses(scheduleState, offsetFromStart, duration).length === 0) {
+			const newSchedule = handleCreate(offsetFromStart, duration, scheduleState)
 			setScheduleState(newSchedule);
 		}
 	}
 
 	const onContentScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
 		if (e.currentTarget.scrollTop !== contentLastScroll) {
-			userContainerRef.current!.scrollTop = e.currentTarget.scrollTop;
+			attendingUsersContainerRef.current!.scrollTop = e.currentTarget.scrollTop;
 			setContentLastScroll(e.currentTarget.scrollTop);
 		}
 	}
@@ -228,7 +226,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	return (<>
 		<div className={styles.wrapper}>
 			<div className={styles.scrollable}>
-				<div className={styles.userContainer} ref={userContainerRef}>
+				<div className={styles.userContainer} ref={attendingUsersContainerRef}>
 					<div className={styles.userItem}>
 						<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
 						<div className={styles.userName}>Demo user</div>
@@ -250,18 +248,17 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 							</div>
 						</div>
 					</div>
-					<div className={styles.timelineContent} onScroll={onContentScroll} >
-						<div className={`${styles.gridBackground} `} style={{
+					<div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}>
+						<div style={{
 							width: `${designWidth}px`,
-							backgroundSize: `${timeline.getWidth() / timeline.hoursCount}px`
-						}} ref={containerRef} >
-							<TimelineNumbers start={new Date(event.startDateTime)} end={new Date(event.endDateTime)} />
+							backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
+						}} ref={timelineContainerRef} className={`${styles.gridBackground} `} >
+							<TimelineNumbers start={new Date(startDateTime)} end={new Date(endDateTime)} />
 							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
 								{scheduleState.map((schedule: TimeDuration) => {
 									return <ResizableTimeCard
 										key={schedule.id}
 										schedule={schedule}
-										timeline={timeline}
 										updateHandler={handleUpdate}
 										onContext={onContext}
 										bounds={bounds}
@@ -272,7 +269,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 								{attendingUsers.map((eventResponse: EventResponse, index: number) => {
 									return <div key={index} className={styles.staticRow}>{
 										eventResponse.schedule.map((sch: TimeDuration) => {
-											return <StaticTimeCard key={sch.id} schedule={sch} timeline={timeline} />
+											return <StaticTimeCard startDateTime={startDateTime} key={sch.id} schedule={sch} />
 										})
 									}</div>
 								})}
@@ -290,13 +287,6 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
 					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
 					<DropdownMenu.Group className={dropdownStyle.group}>
-						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
-							handleSplit(showMenu.currentId!)
-						}}>
-							<RxScissors className={dropdownStyle.icon} />
-							Split
-						</DropdownMenu.Item>
-
 						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
 							const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
 							setScheduleState(newSchedule);
@@ -342,6 +332,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 		const event = eventData[0] as EventData;
 
+		const eventDate = addDays(startOfWeek(addWeeks(new Date(), event.weekOffset)), event.day);
+
+		event.startDateTime = new Date(event.startDateTime);
+
+		event.startDateTime.setDate(eventDate.getDate())
+		event.startDateTime.setMonth(eventDate.getMonth())
+		event.startDateTime.setFullYear(eventDate.getFullYear())
+
 		const userResponses = await db.collection("EventResponse").aggregate([
 			{ $match: { eventId: new ObjectId(params.id) } }, {
 				$lookup: {
@@ -352,19 +350,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				},
 			}, { $unwind: "$user" }]).toArray() as EventResponse[];
 
-		const startDate = new Date(event.startDateTime);
-
 		// for demo site use only
-		userResponses.forEach(response => {
-			response.schedule.forEach(item => {
-				item.start = new Date(item.start)
+		// userResponses.forEach(response => {
+		// 	response.schedule.forEach(item => {
+		// 		item.start = new Date(item.start)
 
-				item.start.setDate(startDate.getDate())
-				item.start.setMonth(startDate.getMonth())
-				item.start.setFullYear(startDate.getFullYear())
+		// 		item.start.setDate(event.startDateTime.getDate())
+		// 		item.start.setMonth(event.startDateTime.getMonth())
+		// 		item.start.setFullYear(event.startDateTime.getFullYear())
 
-			});
-		});
+		// 	});
+		// });
 
 		return {
 			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },

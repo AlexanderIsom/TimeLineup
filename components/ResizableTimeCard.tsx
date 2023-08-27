@@ -2,123 +2,103 @@ import { TimeDuration } from 'types/Events'
 import React, { SyntheticEvent, useEffect, useState } from 'react'
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable'
 import { Resizable, ResizeCallbackData } from 'react-resizable'
-import { TimelineUtils } from 'utils/TimelineUtils'
-import { differenceInMinutes, format, roundToNearestMinutes, } from 'date-fns'
+import Timeline from 'utils/Timeline'
+import { addMinutes, differenceInMinutes, format, roundToNearestMinutes, } from 'date-fns'
 import styles from 'styles/Components/TimelineCard.module.scss'
+import MathUtils from 'utils/MathUtils'
 
 interface Props {
 	schedule: TimeDuration
-	timeline: TimelineUtils
-	updateHandler: (id: string, start: Date, duration: number) => void
+	updateHandler: (id: string, offsetFromStart: number, duration: number) => void
 	onContext: (event: React.MouseEvent, pairId: string) => void;
 	bounds: { start: Date, end: Date };
 }
 
 export default function ResizableTimeCard({
 	schedule,
-	timeline,
 	updateHandler,
 	onContext,
 	bounds
 }: Props) {
 	const [state, setState] = useState({
-		width: timeline.widthFromMinutes(schedule.duration),
-		left: timeline.toX(schedule.start)
+		duration: schedule.duration,
+		offsetFromStart: schedule.offsetFromStart,
+		width: Timeline.minutesToXPosition(schedule.duration)
 	})
 
-	const minWidth = timeline.widthFromMinutes(30);
-
-	const [inUse, setInUse] = useState(false);
-
-	useEffect(() => {
-		if (inUse) {
-			return;
-		}
-		const newState = {
-			width: timeline.widthFromMinutes(schedule.duration),
-			left: timeline.toX(schedule.start)
-		}
-		if (newState.width !== state.width || newState.left !== state.left) {
-			setState(newState)
-		}
-
-	}, [timeline, schedule, state, inUse])
+	const minWidth = Timeline.minutesToXPosition(30);
 
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
-		setInUse(true);
 
 		setState((state) => {
-			let newLeft = state.left;
+			let newOffset = state.offsetFromStart;
 			let newSize = size.width
 			const deltaWidth = state.width - size.width;
 			if (handle === 'w') {
-				newLeft = state.left + deltaWidth
+				newOffset = state.offsetFromStart + Timeline.xPositionToMinutes(deltaWidth);
 			}
 			if (size.width <= minWidth) {
-				newLeft = state.left
+				newOffset = state.offsetFromStart
 				newSize = minWidth
 			}
 
-			return { width: newSize, left: newLeft }
+			return { duration: Timeline.xPositionToMinutes(newSize), offsetFromStart: newOffset, width: newSize }
 		})
 	}
 
 	const moveAndResizeToNearest15Minutes = () => {
-		const newStart = roundToNearestMinutes(timeline.toDate(state.left), { nearestTo: 15 });
-		const newEnd = roundToNearestMinutes(timeline.toDate(state.left + state.width), { nearestTo: 15 });
+		const offsetFromStart = MathUtils.roundToNearest(state.offsetFromStart, Timeline.getSnapToNearestMinutes())
+		const newEnd = MathUtils.roundToNearest(state.offsetFromStart + state.duration, Timeline.getSnapToNearestMinutes())
+		const duration = newEnd - offsetFromStart
+		const width = Timeline.minutesToXPosition(duration)
+
 		setState(() => {
-			const newLeft = timeline.toX(newStart)
-			const newRight = timeline.toX(newEnd)
-			return { width: newRight - newLeft, left: newLeft }
+			return { offsetFromStart: offsetFromStart, duration: duration, width: width }
 		})
-		updateHandler(schedule.id, newStart, differenceInMinutes(newEnd, newStart))
+		updateHandler(schedule.id, offsetFromStart, duration)
 	}
 
 	const onResizeStop = (e: SyntheticEvent | MouseEvent) => {
 		moveAndResizeToNearest15Minutes();
-		setInUse(false);
 	}
 
 	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
-		setInUse(true);
-		setState({ width: state.width, left: ui.x })
+		setState({ offsetFromStart: Timeline.xPositionToMinutes(ui.x), duration: state.duration, width: state.width })
 	}
 
 	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
 		moveAndResizeToNearest15Minutes();
-		setInUse(false);
 	}
 
 	return (
 		<Draggable
 			axis='x'
-			position={{ x: state.left, y: 0 }}
+			position={{ x: Timeline.minutesToXPosition(state.offsetFromStart), y: 0 }}
 			handle='.dragHandle'
 			onDrag={onDrag}
 			onStop={onDragStopped}
-			bounds={{ left: 0, right: timeline.toX(bounds.end) - state.width }}
+			bounds={{ left: Timeline.dateToXPosition(bounds.start), right: Timeline.dateToXPosition(bounds.end) - state.width }}
 		>
-			<div className={styles.container} style={{ width: `${state.width}px` }} onContextMenu={(e) => { onContext(e, schedule.id) }}>
+			<div className={styles.container} style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }} onContextMenu={(e) => { onContext(e, schedule.id) }}>
 				<Resizable
 					className={styles.container}
-					width={state.width}
+					width={Timeline.minutesToXPosition(state.duration)}
 					height={0}
 					resizeHandles={['e', 'w']}
 					onResize={onResize}
 					onResizeStop={onResizeStop}
 				>
-					<div style={{ width: `${state.width}px` }}>
-						<div className={`dragHandle ${styles.timeContainer}`} >
-
+					<div style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}>
+						<div className={`dragHandle ${styles.timeContainer} ${styles.grabbable}`} >
 							<span className={styles.timeCue}>
 								{format(
-									roundToNearestMinutes(timeline.toDate(state.left), { nearestTo: 15 }),
+									roundToNearestMinutes(addMinutes(bounds.start, state.offsetFromStart), { nearestTo: Timeline.getSnapToNearestMinutes() }),
 									'HH:mm'
 								)}
 							</span>
 							<span className={styles.timeCue}>
 								{format(
-									roundToNearestMinutes(timeline.toDate(state.left + state.width), { nearestTo: 15 }),
+									roundToNearestMinutes(addMinutes(bounds.start, state.offsetFromStart + state.duration), { nearestTo: Timeline.getSnapToNearestMinutes() }),
 									'HH:mm'
 								)}
 							</span>

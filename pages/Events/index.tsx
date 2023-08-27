@@ -25,7 +25,7 @@ export default function Home({ events, users, dateRange }: Props) {
   const startDay = new Date(dateRange.start)
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
-
+  const today = new Date();
 
   const [demoEvents, setDemoEvents] = useState<EventData[]>([]);
 
@@ -51,6 +51,7 @@ export default function Home({ events, users, dateRange }: Props) {
         <div className={styles.tools}>
           <Link href={{ pathname: "/Events", query: { start: subWeeks(startDay, 1).toDateString(), end: subWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❮</Link>
           <Link href={{ pathname: "/Events", query: { start: addWeeks(startDay, 1).toDateString(), end: addWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❯</Link>
+          <Link href={{ pathname: "/Events", query: { start: startOfWeek(today).toDateString(), end: endOfWeek(today).toDateString() } }} className={styles.pagenation}>Today</Link>
           <div className={styles.weekHeader}>
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
@@ -98,14 +99,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     const events = await db.collection("Event").aggregate([{ $match: { weekOffset: weekOffset } }, {
       $lookup: {
-        from: 'User', // The collection to perform the join with
-        localField: 'userId', // The field from the posts collection
-        foreignField: '_id', // The field from the users collection
-        as: 'user' // The field where the joined document will be stored
+        from: 'User',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user'
       }
     }]).toArray()
 
-    const responses = await db.collection("EventResponses").find({})
+    // for demo site only
+    events.forEach((obj) => {
+      const day = obj.day;
+      const newStartDate = addDays(weekStart, day)
+      obj.startDateTime = new Date(obj.startDateTime);
+      obj.startDateTime.setDate(newStartDate.getDate());
+      obj.startDateTime.setMonth(newStartDate.getMonth())
+      obj.startDateTime.setYear(newStartDate.getFullYear())
+    })
+
+    // const responses = await db.collection("EventResponses").find({})
 
     // allEvents.forEach(element => {
     //   const newDay = setDay(addWeeks(today, element.weekOffset!), element.day!)

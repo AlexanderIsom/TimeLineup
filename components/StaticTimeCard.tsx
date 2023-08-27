@@ -1,23 +1,22 @@
-import { EventResponse, TimeDuration } from "types/Events";
-import { TimelineUtils } from 'utils/TimelineUtils'
+import { TimeDuration } from "types/Events";
+import Timeline from 'utils/Timeline'
 import styles from "styles/Components/TimelineCard.module.scss"
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
 
 interface Props {
+    startDateTime: Date;
     schedule: TimeDuration
-    timeline: TimelineUtils
 }
 
-export default function StaticTimeCard({ schedule, timeline }: Props) {
-    const startTime = new Date(schedule.start)
-    const width = timeline.widthFromMinutes(schedule.duration);
+export default function StaticTimeCard({ startDateTime, schedule }: Props) {
+    const startTime = addMinutes(startDateTime, schedule.offsetFromStart)
 
     return (
-        <div style={{ width: `${width}px`, translate: `${timeline.toX(startTime)}px` }} className={`${styles.container} ${styles.content}`} >
+        <div style={{ width: `${Timeline.minutesToXPosition(schedule.duration)}px`, translate: `${Timeline.minutesToXPosition(schedule.offsetFromStart)}px` }} className={`${styles.container} ${styles.content}`} >
             <div className={styles.timeContainer}>
                 <span className={styles.timeCue}>
                     {format(
-                        roundToNearestMinutes(startTime, { nearestTo: 15 }),
+                        roundToNearestMinutes(startTime, { nearestTo: Timeline.getSnapToNearestMinutes() }),
                         'HH:mm'
                     )}
                 </span>
