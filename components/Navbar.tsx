@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
-import styles from "../styles/Navbar.module.scss";
+import styles from "/styles/Navbar.module.scss";
 import Image from "next/image";
 
 const navigation = [
@@ -47,9 +47,8 @@ export default function CustomNavbar() {
             {/* Profile dropdown */}
             <Link className={styles.profileButton} href={"/"}>
               <Image
-                src={"https://cdn.discordapp.com/avatars/202124390819823616/2f0e8e49ce678d7e39656f5cbb75875c.png"}
-                width={38}
-                height={38}
+                className={styles.profileIcon}
+                src={`/UserIcons/demo.png`} width={500} height={500}
                 alt="profile image"
               />
             </Link>

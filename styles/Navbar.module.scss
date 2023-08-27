@@ -130,6 +130,13 @@
   }
 }
 
+.profileIcon {
+  border-radius: 100%;
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
+}
+
 .createEventButton {
   display: flex;
   justify-content: center;
