@@ -9,7 +9,7 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { RxScissors, RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
+import { RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
 
 import dropdownStyle from "styles/Components/Dropdown.module.scss"
@@ -100,7 +100,6 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 		if (!hasLoaded) {
 			if (scheduleState.length === 0 && schedule.length !== 0) {
-				// update date to event date
 				setScheduleState(schedule)
 			}
 			if (responseStateData !== undefined) {
