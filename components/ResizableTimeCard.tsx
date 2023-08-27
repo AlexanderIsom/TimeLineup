@@ -27,9 +27,9 @@ export default function ResizableTimeCard({
 	})
 
 	const minWidth = Timeline.minutesToXPosition(30);
+	const maxBounds = Timeline.dateToXPosition(bounds.end)
 
 	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
-
 		setState((state) => {
 			let newOffset = state.offsetFromStart;
 			let newSize = size.width
@@ -37,10 +37,14 @@ export default function ResizableTimeCard({
 			if (handle === 'w') {
 				newOffset = state.offsetFromStart + Timeline.xPositionToMinutes(deltaWidth);
 			}
-			if (size.width <= minWidth) {
-				newOffset = state.offsetFromStart
-				newSize = minWidth
+			if (size.width < minWidth) {
+				return state
 			}
+			if (newOffset < 0)
+				return state;
+
+			if (Timeline.minutesToXPosition(newOffset) + newSize > maxBounds)
+				return state;
 
 			return { duration: Timeline.xPositionToMinutes(newSize), offsetFromStart: newOffset, width: newSize }
 		})

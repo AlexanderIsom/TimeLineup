@@ -22,7 +22,7 @@ export default class Timeline {
 	}
 
 	static dateToXPosition(from: Date): number {
-		return Math.round(((differenceInSeconds(from, this.startDateTime)) / this.durationInSeconds) * this.widthInPixels)
+		return ((differenceInSeconds(from, this.startDateTime)) / this.durationInSeconds) * this.widthInPixels
 	}
 
 	static minutesToXPosition(minutes: number) {
