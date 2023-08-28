@@ -22,6 +22,8 @@ type Props = {
 }
 
 export default function Home({ events, users, dateRange }: Props) {
+
+
   const startDay = new Date(dateRange.start)
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
