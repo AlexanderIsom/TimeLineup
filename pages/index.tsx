@@ -1,9 +1,8 @@
 import { getProviders } from "next-auth/react";
 import Header from "../components/Header";
-import styles from "../styles/welcome.module.scss";
+import styles from "../styles/Components/welcome.module.scss";
 import Link from "next/link";
 import { useState } from "react";
-import Head from "next/head";
 
 interface RGBColor {
   red: number;

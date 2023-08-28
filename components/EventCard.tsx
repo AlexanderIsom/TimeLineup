@@ -76,7 +76,18 @@ export default function EventCard({ event }: Props) {
           className={`${styles.popover}`}
         >
 
-          Floating element
+          <div className={`${styles.popoverHost}`}>
+            host info
+          </div>
+          <div className={`${styles.popoverDescription}`}>
+            event description
+          </div>
+          <div className={`${styles.popoverAttending}`}>
+            attending information
+          </div>
+          <div className={`${styles.popoverStatus}`}>
+            status
+          </div>
 
         </div>
       )}

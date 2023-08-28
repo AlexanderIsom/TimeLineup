@@ -1,6 +1,6 @@
 import { EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
-import styles from "styles/id.module.scss"
+import styles from "styles/Components/id.module.scss"
 import { addDays, addMinutes, addWeeks, roundToNearestMinutes, setDate, startOfWeek } from "date-fns";
 import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback, useEffect, useRef, useState } from "react";

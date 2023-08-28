@@ -1,5 +1,5 @@
 import Header from "components/Header";
-import styles from "styles/Events.module.scss";
+import styles from "styles/Components/Events.module.scss";
 import { EventData } from "types"
 import EventCard from "components/EventCard";
 import { GetServerSidePropsContext } from "next";

@@ -1,4 +1,5 @@
-@import "colors.scss";
+@use "../Variables.scss";
+@import "../colors.scss";
 
 .card {
 	display: flex;
@@ -67,9 +68,13 @@
 }
 
 .popover {
-	display: flex;
 	background-color: white;
 	border-radius: 5px;
 	width: 250px;
-	height: 50px;
+	height: 200px;
+	box-shadow: Variables.$boxShadow;
+	border: #E1E7EF 1px solid;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
