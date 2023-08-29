@@ -5,12 +5,13 @@ import { addMinutes, format, isSameDay } from 'date-fns'
 import { ResponseState } from 'types/Events'
 import { useState } from 'react'
 import { useHover, useFloating, useInteractions, offset, flip, shift } from '@floating-ui/react';
-
+import Image from "next/image"
 interface Props {
   event: EventData
 }
 
 export default function EventCard({ event }: Props) {
+  const localResponse = event.eventResponse.find(r => r.userId === "demouser")?.state
   const [isOpen, setIsOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -39,7 +40,7 @@ export default function EventCard({ event }: Props) {
 
   return (
     <>
-      <Link ref={refs.setReference} {...getReferenceProps()} href={'/Events/' + event._id} className={`${styles.card} ${event.status === ResponseState.attending ? styles.attending : ""} ${event.status === ResponseState.pending ? styles.invited : ""} ${event.status === ResponseState.declined ? styles.rejected : ""} ${event.status === ResponseState.hosting ? styles.hosting : ""}`}>
+      <Link ref={refs.setReference} {...getReferenceProps()} href={'/Events/' + event._id} className={`${styles.card} ${localResponse === ResponseState.attending ? styles.attending : ""} ${localResponse === ResponseState.pending ? styles.invited : ""} ${localResponse === ResponseState.declined ? styles.rejected : ""} ${localResponse === ResponseState.hosting ? styles.hosting : ""}`}>
         <div className={styles.title}>
           {event.title}
         </div>
@@ -68,6 +69,7 @@ export default function EventCard({ event }: Props) {
         </div>
 
       </Link >
+
       {isOpen && (
         <div
           ref={refs.setFloating}
@@ -76,17 +78,29 @@ export default function EventCard({ event }: Props) {
           className={`${styles.popover}`}
         >
 
-          <div className={`${styles.popoverHost}`}>
-            host info
+          <div className={styles.popoverHost}>
+            <Image className={styles.avatarRoot} src={`/UserIcons/${event.user.image}.png`} alt={"Demo user"} width={500} height={500} />
+            <div className={styles.popoverHostName}>
+              <small className={styles.popoverHostText}>Host</small>
+              <p className={styles.popoverHostNameText}>{event.user.name}</p>
+            </div>
           </div>
-          <div className={`${styles.popoverDescription}`}>
-            event description
+          <div className={styles.popoverDescription}>
+            <small className={styles.popoverDescriptionText}>{event.description}</small>
           </div>
-          <div className={`${styles.popoverAttending}`}>
-            attending information
+          <div className={styles.popoverAttendingInfo}>
+            <div className={styles.popoverAttending} >
+              <small className={styles.popoverCountHeading} >Attending</small>
+              {event.eventResponse.filter(r => r.state === ResponseState.attending).length}
+            </div>
+            <div className={styles.popoverPending}> <small className={styles.popoverCountHeading} >Pending</small>
+              {event.eventResponse.filter(r => r.state === ResponseState.pending).length}</div>
           </div>
           <div className={`${styles.popoverStatus}`}>
-            status
+            {localResponse === ResponseState.attending && "you are attending"}
+            {localResponse === ResponseState.pending && "you are invited"}
+            {localResponse === ResponseState.declined && "you have declined"}
+            {localResponse === ResponseState.hosting && "you are hosting"}
           </div>
 
         </div>

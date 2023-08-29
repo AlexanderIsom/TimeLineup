@@ -25,11 +25,6 @@ interface EventProps {
 	userResponses: EventResponse[];
 }
 
-export interface LocalDataObject {
-	responseState: ResponseState,
-	schedule: TimeDuration[]
-}
-
 class EnumX {
 	static of<T extends object>(e: T) {
 		const values = Object.values(e)
@@ -75,13 +70,25 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 
 	const handleSave = useCallback(async () => {
-		localStorage.setItem(event._id.toString(), JSON.stringify({ responseState: responseState, schedule: scheduleState }))
+		const localUserResponse: EventResponse = {
+			id: event._id + "demo",
+			eventId: event._id.toString(),
+			userId: "demouser",
+			schedule: scheduleState,
+			state: responseState,
+			user: {
+				_id: "demouser",
+				name: "demouser",
+				emailVerified: new Date(),
+				image: "demo",
+			}
+		}
+		localStorage.setItem(event._id.toString(), JSON.stringify(localUserResponse))
 	}, [event, scheduleState, responseState])
 
 	const attendingUsers = userResponses.filter((response) => {
 		return response.state === ResponseState.attending;
 	})
-
 
 	useEffect(() => {
 		function handleUnload(e: BeforeUnloadEvent) {
@@ -94,9 +101,9 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 
 		const localDataString = localStorage.getItem(event._id.toString());
 
-		const localData: LocalDataObject = localDataString !== null ? JSON.parse(localDataString) : {};
+		const localData: EventResponse = localDataString !== null ? JSON.parse(localDataString) : {};
 		const schedule = localData.schedule !== undefined ? localData.schedule : [];
-		const responseStateData = localData.responseState;
+		const responseStateData = localData.state;
 
 		if (!hasLoaded) {
 			if (scheduleState.length === 0 && schedule.length !== 0) {
@@ -242,8 +249,8 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 					<div className={styles.timelineHeader}>
 						<div className={styles.timelineTools}>
 							<div className={styles.magnify}>
-								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.icon} /></div>
-								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.icon} /></div>
+								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
+								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div>
 							</div>
 						</div>
 					</div>

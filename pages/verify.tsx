@@ -31,15 +31,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 		// userResponses.forEach((obj) => {
 		// 	var updated = false;
-		// 	const startTime = new Date(obj.event.startDateTime);
-		// 	obj.schedule.forEach((item: any) => {
-		// 		// item.offsetFromStart = differenceInMinutes(new Date(item.start), startTime)
-		// 		delete item.start;
-		// 		updated = true
-		// 	});
+		// 	// const startTime = new Date(obj.event.startDateTime);
+		// 	delete obj.declined;
+		// 	updated = true
+		// 	// obj.schedule.forEach((item: any) => {
+		// 	// 	// item.offsetFromStart = differenceInMinutes(new Date(item.start), startTime)
+		// 	// 	delete item.declined;
+		// 	// });
 
 		// 	if (updated) {
-		// 		db.collection("EventResponse").updateOne({ _id: obj._id }, { $set: { schedule: obj.schedule } })
+		// 		db.collection("EventResponse").replaceOne({ _id: obj._id }, obj)
 		// 		console.log("updated")
 		// 	}
 		// })

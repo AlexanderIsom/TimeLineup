@@ -129,7 +129,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 						</div>
 						}
 						{attendingUsers.map((response, index) => {
-							return <div key={response.user._id} className={styles.userItem}>
+							return <div key={response.user._id.toString()} className={styles.userItem}>
 								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>
@@ -142,7 +142,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 						</div>
 						}
 						{invitedUsers.map((response) => {
-							return <div key={response.user._id} className={styles.userItem}>
+							return <div key={response.user._id.toString()} className={styles.userItem}>
 								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>
@@ -155,7 +155,7 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 						</div>
 						}
 						{declinedUsers.map((response) => {
-							return <div key={response.user._id} className={styles.userItem}>
+							return <div key={response.user._id.toString()} className={styles.userItem}>
 								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
 								<div className={styles.userName}>{response.user.name}</div>
 							</div>

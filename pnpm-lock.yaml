@@ -53,6 +53,9 @@ dependencies:
   auth:
     specifier: ^0.0.9
     version: 0.0.9
+  bson-objectid:
+    specifier: ^2.0.4
+    version: 2.0.4
   date-fns:
     specifier: ^2.29.3
     version: 2.29.3
@@ -1070,6 +1073,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       fill-range: 7.0.1
+
+  /bson-objectid@2.0.4:
+    resolution: {integrity: sha512-vgnKAUzcDoa+AeyYwXCoHyF2q6u/8H46dxu5JN+4/TZeq/Dlinn0K6GvxsCLb3LHUJl0m/TLiEK31kUwtgocMQ==}
+    dev: false
 
   /bson@5.4.0:
     resolution: {integrity: sha512-WRZ5SQI5GfUuKnPTNmAYPiKIof3ORXAF4IRU5UcgmivNIon01rWQlw5RUH954dpu8yGL8T59YShVddIPaU/gFA==}

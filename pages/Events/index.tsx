@@ -3,11 +3,10 @@ import styles from "styles/Components/Events.module.scss";
 import { EventData } from "types"
 import EventCard from "components/EventCard";
 import { GetServerSidePropsContext } from "next";
-import { ResponseState, User } from "types/Events";
+import { EventResponse, ResponseState, User } from "types/Events";
 import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 import clientPromise from "lib/mongodb";
-import { LocalDataObject } from "./[id]";
 import { useEffect, useState } from "react";
 
 interface DateRange {
@@ -17,13 +16,10 @@ interface DateRange {
 
 type Props = {
   events: EventData[]
-  users: User[]
   dateRange: DateRange;
 }
 
-export default function Home({ events, users, dateRange }: Props) {
-
-
+export default function Events({ events, dateRange }: Props) {
   const startDay = new Date(dateRange.start)
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
@@ -32,18 +28,36 @@ export default function Home({ events, users, dateRange }: Props) {
   const [demoEvents, setDemoEvents] = useState<EventData[]>([]);
 
   useEffect(() => {
-    setDemoEvents(events.map((event) => {
-      const localDataString = localStorage.getItem(event._id.toString())
-      if (localDataString !== null) {
-        const localData: LocalDataObject = JSON.parse(localDataString);
-        event.status = localData.responseState !== undefined ? localData.responseState : ResponseState.pending
 
-      } else {
-        event.status = ResponseState.pending
+    const demoEvents = events.map((event) => {
+      const localDataString = localStorage.getItem(event._id.toString())
+
+      const localUserResponse: EventResponse = {
+        id: event._id + "demo",
+        eventId: event._id.toString(),
+        userId: "demouser",
+        schedule: [],
+        state: 1,
+        user: {
+          _id: "demouser",
+          name: "demouser",
+          emailVerified: new Date(),
+          image: "demo",
+        }
       }
 
+      if (localDataString !== null) {
+        const localData: EventResponse = JSON.parse(localDataString);
+        if (localData.state !== undefined) {
+          console.log("adjusted state")
+          localUserResponse.state = localData.state
+        }
+      }
+
+      event.eventResponse.push(localUserResponse);
       return event;
-    }));
+    })
+    setDemoEvents(demoEvents);
   }, [events])
 
   return (
@@ -105,6 +119,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         localField: 'userId',
         foreignField: '_id',
         as: 'user'
+      },
+    }, { $unwind: "$user" }
+      , {
+      $lookup: {
+        from: 'EventResponse',
+        localField: '_id',
+        foreignField: 'eventId',
+        as: 'eventResponse'
       }
     }]).toArray()
 
@@ -118,35 +140,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       obj.startDateTime.setYear(newStartDate.getFullYear())
     })
 
-    // const responses = await db.collection("EventResponses").find({})
-
-    // allEvents.forEach(element => {
-    //   const newDay = setDay(addWeeks(today, element.weekOffset!), element.day!)
-    //   element.startDateTime.setDate(newDay.getDate())
-    //   element.endDateTime.setDate(newDay.getDate())
-
-    //   element.startDateTime.setMonth(newDay.getMonth())
-    //   element.endDateTime.setMonth(newDay.getMonth())
-
-    //   element.startDateTime.setFullYear(newDay.getFullYear())
-    //   element.endDateTime.setFullYear(newDay.getFullYear())
-    // });
-
-
-
-    // const events = allEvents.filter((event) => {
-    //   return isWithinInterval(event.startDateTime, { start: weekStart, end: weekEnd })
-    // })
-
-    const users = {}
-
     return {
-      props: { events: JSON.parse(JSON.stringify(events)) as EventData[], users: JSON.parse(JSON.stringify(users)) as User[], dateRange: JSON.parse(JSON.stringify({ start: weekStart, end: weekEnd })) },
+      props: { events: JSON.parse(JSON.stringify(events)) as EventData[], dateRange: JSON.parse(JSON.stringify({ start: weekStart, end: weekEnd })) },
     };
   } catch (e) {
     console.error(e);
     return {
-      props: { events: [], users: [], dateRange: JSON.parse(JSON.stringify({ start: new Date(), end: addDays(new Date(), 7) })) },
+      props: { events: [], dateRange: JSON.parse(JSON.stringify({ start: startOfWeek(new Date()), end: endOfWeek(new Date()) })) },
     };
   }
 }

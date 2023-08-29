@@ -1,5 +1,6 @@
-@use "styles/Variables.scss";
+@use "../Variables.scss";
 @import "colors.scss";
+@import "../avatarStyles.scss";
 
 .container {
 	grid-column: 2;
@@ -62,32 +63,7 @@
 	color: #4B4B4B;
 }
 
-.avatarRoot {
-	margin-right: 10px;
-	border-radius: 100%;
-	overflow: hidden;
-	$size: 40px;
-	width: $size;
-	height: $size;
-	display: flex;
-	background-color: #cfcfcf;
-}
 
-.smallAvatarRoot {
-	@extend .avatarRoot;
-	$size: 30px;
-}
-
-.userAvatar {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.avatarFallback {
-	margin: auto;
-	text-align: center;
-}
 
 .userName {
 	flex: 1 1 0%;
@@ -108,6 +84,7 @@
 	width: 100%;
 	padding-left: 10px;
 	height: 50px;
+	gap: 10px;
 
 	&:first-child {
 		margin-top: 10px;
@@ -220,7 +197,6 @@
 .tab[data-state='active'] {
 	color: black;
 	box-shadow: 0 1px 0 0 black;
-
 }
 
 .count {

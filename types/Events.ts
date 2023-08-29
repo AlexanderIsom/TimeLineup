@@ -16,10 +16,10 @@ export interface EventData {
 	user: User,
 	description: string,
 	agenda: AgendaItem[],
+	eventResponse: EventResponse[],
 	color: string,
 	weekOffset: number,
 	day: number
-	status: ResponseState;
 }
 
 export interface AgendaItem {
