@@ -3,34 +3,34 @@ import { formatDateRange } from "utils/TimeUtils"
 import { BsCalendar4Week } from "react-icons/bs"
 import * as Tabs from "@radix-ui/react-tabs"
 import * as Separator from "@radix-ui/react-separator"
-import { AgendaItem, EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
+import { AgendaItem, EventData, ResponseState } from "types/Events"
 import React from "react";
 import { addMinutes, format } from "date-fns";
 import Image from "next/image"
 
 interface Props {
 	event: EventData
-	userResponses: EventResponse[];
 	responseState: ResponseState;
 	onStateChange: (newState: ResponseState) => void;
 }
 
-export default function EventDetails({ event, userResponses, responseState, onStateChange }: Props) {
-	const declinedUsers = userResponses.filter((reponse) => {
+export default function EventDetails({ event, responseState, onStateChange }: Props) {
+	const declinedUsers = event.userResponses.filter((reponse) => {
 		return reponse.state === ResponseState.declined;
 	})
 
-	const invitedUsers = userResponses.filter((reponse) => {
+	const invitedUsers = event.userResponses.filter((reponse) => {
 		return reponse.state === ResponseState.pending
 	})
 
-	const attendingUsers = userResponses.filter((reponse) => {
+	const attendingUsers = event.userResponses.filter((reponse) => {
 		return reponse.state === ResponseState.attending
 	})
 
 	var attendingCount = attendingUsers.length;
 	var invitedCount = invitedUsers.length;
 	var declinedCount = declinedUsers.length;
+	var showButtons = responseState !== ResponseState.hosting;
 
 	switch (responseState) {
 		case ResponseState.attending:
@@ -82,8 +82,8 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 				</div>
 			</div>
 			<Separator.Root className={styles.separator} />
-			<div className={styles.sectionPadding}>
-				<div className={styles.sectionHeading}>Options</div>
+			<div className={styles.sectionHeading}>Options</div>
+			{showButtons && <div className={styles.sectionPadding}>
 				<small>Status: {ResponseState[responseState]}</small>
 				<div className={`${styles.buttonOptions}`}>
 					<div className={`${styles.button} ${styles.attend}`} onClick={() => {
@@ -102,7 +102,8 @@ export default function EventDetails({ event, userResponses, responseState, onSt
 						}
 					}} >Decline</div>
 				</div>
-			</div>
+			</div>}
+
 
 			<Separator.Root className={styles.separator} />
 			<div className={styles.invites}>

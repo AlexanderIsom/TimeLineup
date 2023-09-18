@@ -11,7 +11,12 @@ interface Props {
 }
 
 export default function EventCard({ event }: Props) {
-  const localResponse = event.eventResponse.find(r => r.userId === "demouser")?.state
+  var localResponse = event.eventResponse.find(r => r.userId === "demouser")?.state
+  var query = {}
+  if (event.user._id === "demouser") {
+    localResponse = ResponseState.hosting;
+    query = { localLoad: true }
+  }
   const [isOpen, setIsOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -40,7 +45,7 @@ export default function EventCard({ event }: Props) {
 
   return (
     <>
-      <Link ref={refs.setReference} {...getReferenceProps()} href={'/Events/' + event._id} className={`${styles.card} ${localResponse === ResponseState.attending ? styles.attending : ""} ${localResponse === ResponseState.pending ? styles.invited : ""} ${localResponse === ResponseState.declined ? styles.rejected : ""} ${localResponse === ResponseState.hosting ? styles.hosting : ""}`}>
+      <Link ref={refs.setReference} {...getReferenceProps()} href={{ pathname: `/Events/${event._id}`, query: query }} className={`${styles.card} ${localResponse === ResponseState.attending ? styles.attending : ""} ${localResponse === ResponseState.pending ? styles.invited : ""} ${localResponse === ResponseState.declined ? styles.rejected : ""} ${localResponse === ResponseState.hosting ? styles.hosting : ""}`}>
         <div className={styles.title}>
           {event.title}
         </div>

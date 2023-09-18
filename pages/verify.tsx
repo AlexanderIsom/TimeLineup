@@ -29,23 +29,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 				},
 			}, { $unwind: "$event" }]).toArray();
 
-		// userResponses.forEach((obj) => {
-		// 	var updated = false;
-		// 	// const startTime = new Date(obj.event.startDateTime);
-		// 	delete obj.declined;
-		// 	updated = true
-		// 	// obj.schedule.forEach((item: any) => {
-		// 	// 	// item.offsetFromStart = differenceInMinutes(new Date(item.start), startTime)
-		// 	// 	delete item.declined;
-		// 	// });
+		// const events = await db.collection("Event").find({}).toArray();
 
-		// 	if (updated) {
-		// 		db.collection("EventResponse").replaceOne({ _id: obj._id }, obj)
-		// 		console.log("updated")
-		// 	}
+		// events.forEach(async (obj) => {
+		// 	const invites: ObjectId[] = []
+		// 	const userResponsesForEvent = userResponses.filter(r => r.eventId.toString() === obj._id.toString());
+		// 	userResponsesForEvent.forEach((userResponse) => {
+		// 		invites.push(userResponse.userId)
+		// 	})
+		// 	obj.invites = invites;
+		// 	db.collection("Event").replaceOne({ _id: obj._id }, obj)
 		// })
 
-
+		// userResponses.forEach((obj) => {
+		// 	delete obj.event;
+		// 	db.collection("EventResponse").replaceOne({ _id: obj._id }, obj)
+		// })
 
 		return {
 			props: {},

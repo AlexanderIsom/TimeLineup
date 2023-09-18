@@ -8,8 +8,8 @@ export enum ResponseState {
 }
 
 export interface EventData {
-	_id: ObjectId,
-	userId: ObjectId,
+	_id: string,
+	userId: string,
 	title: string,
 	startDateTime: Date,
 	duration: number,
@@ -17,15 +17,18 @@ export interface EventData {
 	description: string,
 	agenda: AgendaItem[],
 	eventResponse: EventResponse[],
+	userResponses: EventResponse[],
 	color: string,
 	weekOffset: number,
-	day: number
+	day: number,
+	invites: User[],
 }
 
 export interface AgendaItem {
 	start: Date,
 	end: Date,
 	description: string
+	id?: string
 }
 
 export interface TimeDuration {

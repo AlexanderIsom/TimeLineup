@@ -33,3 +33,7 @@ a {
 main {
   height: 100vh;
 }
+
+textarea {
+  font-family: nunito;
+}

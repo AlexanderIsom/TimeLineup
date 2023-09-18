@@ -1,9 +1,9 @@
-import { EventData, EventResponse, ResponseState, TimeDuration } from "types/Events"
+import { EventData, EventResponse, ResponseState, TimeDuration, User } from "types/Events"
 import ResizableTimeCard from "components/ResizableTimeCard";
 import styles from "styles/Components/id.module.scss"
 import { addDays, addMinutes, addWeeks, roundToNearestMinutes, setDate, startOfWeek } from "date-fns";
 import TimelineNumbers from "components/TimelineNumber";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import StaticTimeCard from "components/StaticTimeCard";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
@@ -19,10 +19,13 @@ import { ObjectId } from "mongodb";
 import Image from "next/image";
 import MathUtils from "utils/MathUtils";
 import Timeline from "utils/Timeline";
+import shortid from "shortid";
 
 interface EventProps {
-	event: EventData
-	userResponses: EventResponse[];
+	eventData: EventData
+	loadFromLocalStorage?: boolean;
+	eventId?: string;
+	users?: Array<User>;
 }
 
 class EnumX {
@@ -49,25 +52,20 @@ interface menu {
 	currentId?: string
 }
 
-export default function ViewEvent({ event, userResponses }: EventProps) {
-	const startDateTime = new Date(event.startDateTime);
-	const endDateTime = addMinutes(startDateTime, event.duration);
-	const router = useRouter();
-	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
-	const [responseState, setResponseState] = useState<ResponseState>(ResponseState.pending);
-	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
-
+export default function ViewEvent({ eventData, loadFromLocalStorage, eventId, users }: EventProps) {
 	const designSize = 1920
 	const [currentZoom, setCurrentZoom] = useState(1);
 	const [designWidth, setDesignWidth] = useState(designSize * currentZoom)
+	const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
+	const [responseState, setResponseState] = useState<ResponseState>(ResponseState.pending);
+	const router = useRouter();
+	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 	const [showMenu, setShowMenu] = useState<menu>({ showing: false })
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 	const timelineScrollingContainerRef = useRef<HTMLDivElement>(null);
 	const attendingUsersContainerRef = useRef<HTMLDivElement>(null);
-
-	new Timeline(startDateTime, event.duration, designWidth, 5)
-	const bounds = { start: startDateTime, end: endDateTime }
 	const [contentLastScroll, setContentLastScroll] = useState(0);
+	const [event, setEvent] = useState<EventData>(eventData)
 
 	const handleSave = useCallback(async () => {
 		const localUserResponse: EventResponse = {
@@ -86,11 +84,46 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		localStorage.setItem(event._id.toString(), JSON.stringify(localUserResponse))
 	}, [event, scheduleState, responseState])
 
-	const attendingUsers = userResponses.filter((response) => {
-		return response.state === ResponseState.attending;
-	})
-
 	useEffect(() => {
+		if (event === undefined && loadFromLocalStorage) {
+			const eventsString = localStorage.getItem("events");
+			if (eventsString !== null) {
+				const events = JSON.parse(eventsString) as Array<EventData>;
+				const newEvent = events.find(e => e._id === eventId)
+				if (newEvent) {
+					if (newEvent.userResponses === undefined) {
+						newEvent.userResponses = [];
+					}
+
+					newEvent.invites.forEach(user => {
+						if (!newEvent.userResponses.find(e => e.userId === user._id)) {
+							const newResponse: EventResponse = {
+								id: shortid.generate(),
+								eventId: eventId!,
+								userId: user._id,
+								user: user,
+								schedule: [],
+								state: 1
+							}
+							newEvent.userResponses.push(newResponse)
+						}
+					});
+
+					setResponseState(ResponseState.hosting)
+					setEvent(newEvent);
+					return () => {
+						if (resizeObserver) {
+							resizeObserver.disconnect();
+						}
+					};
+				}
+			}
+		}
+
+		if (event.user._id === "demouser") {
+			return;
+		}
+
 		function handleUnload(e: BeforeUnloadEvent) {
 			e.preventDefault();
 			handleSave();
@@ -111,6 +144,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 			}
 			if (responseStateData !== undefined) {
 				setResponseState(responseStateData)
+				console.log("SET")
 			}
 			setHasLoaded(true)
 		}
@@ -133,8 +167,7 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 				resizeObserver.disconnect();
 			}
 		}
-	}, [showMenu, router, handleSave, event, scheduleState, hasLoaded, responseState, designWidth])
-
+	}, [showMenu, router, handleSave, event, scheduleState, hasLoaded, responseState, designWidth, loadFromLocalStorage, eventId])
 
 	function handleCreate(offsetFromStart: number, duration: number, table: TimeDuration[]): TimeDuration[] {
 		if (responseState !== ResponseState.attending) {
@@ -229,102 +262,120 @@ export default function ViewEvent({ event, userResponses }: EventProps) {
 		}
 	}
 
-	return (<>
-		<div className={styles.wrapper}>
-			<div className={styles.scrollable}>
-				<div className={styles.userContainer} ref={attendingUsersContainerRef}>
-					<div className={styles.userItem}>
-						<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
-						<div className={styles.userName}>Demo user</div>
-					</div>
+	if (event !== undefined) {
+		const startDateTime = new Date(event.startDateTime);
+		const endDateTime = addMinutes(startDateTime, event.duration);
+		new Timeline(startDateTime, event.duration, designWidth, 5)
+		const bounds = { start: startDateTime, end: endDateTime }
+		const attendingUsers = event.userResponses.filter((response) => {
+			return response.state === ResponseState.attending;
+		})
 
-					{attendingUsers.map((eventResponse: EventResponse, index: number) => {
-						return <div key={eventResponse.user._id} className={styles.userItem}>
-							<Image className={styles.avatarRoot} src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} width={500} height={500} />
-							<div className={styles.userName}>{eventResponse.user.name}</div>
+		return (<>
+			<div className={styles.wrapper}>
+				<div className={styles.scrollable}>
+					<div className={styles.userContainer} ref={attendingUsersContainerRef}>
+						<div className={styles.userItem}>
+							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
+							<div className={styles.userName}>Demo user</div>
 						</div>
-					})}
-				</div>
-				<div className={styles.timelineContainer}>
-					<div className={styles.timelineHeader}>
-						<div className={styles.timelineTools}>
-							<div className={styles.magnify}>
-								<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
-								<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div>
+
+						{attendingUsers.map((eventResponse: EventResponse, index: number) => {
+							return <div key={eventResponse.user._id} className={styles.userItem}>
+								<Image className={styles.avatarRoot} src={`/UserIcons/${eventResponse.user.image}.png`} alt={eventResponse.user.name} width={500} height={500} />
+								<div className={styles.userName}>{eventResponse.user.name}</div>
+							</div>
+						})}
+					</div>
+					<div className={styles.timelineContainer}>
+						<div className={styles.timelineHeader}>
+							<div className={styles.timelineTools}>
+								<div className={styles.magnify}>
+									<div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
+									<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div>
+								</div>
+							</div>
+						</div>
+						<div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}>
+							<div style={{
+								width: `${designWidth}px`,
+								backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
+							}} ref={timelineContainerRef} className={`${styles.gridBackground} `} >
+								<TimelineNumbers start={new Date(startDateTime)} end={new Date(endDateTime)} />
+								<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
+									{scheduleState.map((schedule: TimeDuration) => {
+										return <ResizableTimeCard
+											key={schedule.id}
+											schedule={schedule}
+											updateHandler={handleUpdate}
+											onContext={onContext}
+											bounds={bounds}
+										/>
+									})}
+								</div>
+								<div className={styles.userResponses}>
+									{attendingUsers.map((eventResponse: EventResponse, index: number) => {
+										return <div key={index} className={styles.staticRow}>{
+											eventResponse.schedule.map((sch: TimeDuration) => {
+												return <StaticTimeCard startDateTime={startDateTime} key={sch.id} schedule={sch} />
+											})
+										}</div>
+									})}
+								</div>
 							</div>
 						</div>
 					</div>
-					<div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}>
-						<div style={{
-							width: `${designWidth}px`,
-							backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
-						}} ref={timelineContainerRef} className={`${styles.gridBackground} `} >
-							<TimelineNumbers start={new Date(startDateTime)} end={new Date(endDateTime)} />
-							<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
-								{scheduleState.map((schedule: TimeDuration) => {
-									return <ResizableTimeCard
-										key={schedule.id}
-										schedule={schedule}
-										updateHandler={handleUpdate}
-										onContext={onContext}
-										bounds={bounds}
-									/>
-								})}
-							</div>
-							<div className={styles.userResponses}>
-								{attendingUsers.map((eventResponse: EventResponse, index: number) => {
-									return <div key={index} className={styles.staticRow}>{
-										eventResponse.schedule.map((sch: TimeDuration) => {
-											return <StaticTimeCard startDateTime={startDateTime} key={sch.id} schedule={sch} />
-										})
-									}</div>
-								})}
-							</div>
-						</div>
-					</div>
 				</div>
+				<EventDetails event={event} responseState={responseState} onStateChange={(newState: ResponseState) => { onResponseStateChange(newState) }} />
 			</div>
-			<EventDetails event={event} userResponses={userResponses} responseState={responseState} onStateChange={(newState: ResponseState) => { onResponseStateChange(newState) }} />
-		</div>
 
-		<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
-			<DropdownMenu.Portal >
-				<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", zIndex: 10 }}>
-					<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
-					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
-					<DropdownMenu.Group className={dropdownStyle.group}>
+			<DropdownMenu.Root open={showMenu.showing} onOpenChange={(open: boolean) => { setShowMenu({ showing: open }) }}>
+				<DropdownMenu.Portal >
+					<DropdownMenu.Content className={dropdownStyle.content} style={{ top: `${showMenu.y}px`, left: `${showMenu.x}px`, position: "absolute", zIndex: 10 }}>
+						<DropdownMenu.Label className={dropdownStyle.label} >Tools</DropdownMenu.Label>
+						<DropdownMenu.Separator className={dropdownStyle.sepparator} />
+						<DropdownMenu.Group className={dropdownStyle.group}>
+							<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
+								const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
+								setScheduleState(newSchedule);
+							}}>
+								<TbTrashX className={dropdownStyle.icon} style={{ strokeWidth: "1" }} />
+								Delete
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+						<DropdownMenu.Separator className={dropdownStyle.sepparator} />
 						<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
-							const newSchedule = handleDelete(showMenu.currentId!, scheduleState)
-							setScheduleState(newSchedule);
-						}}>
-							<TbTrashX className={dropdownStyle.icon} style={{ strokeWidth: "1" }} />
-							Delete
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-					<DropdownMenu.Separator className={dropdownStyle.sepparator} />
-					<DropdownMenu.Item className={dropdownStyle.item} onSelect={() => {
 
-					}}>
-						<RxCircleBackslash className={dropdownStyle.icon} />
-						Cancel
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Portal>
-		</DropdownMenu.Root>
-	</>)
+						}}>
+							<RxCircleBackslash className={dropdownStyle.icon} />
+							Cancel
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Portal>
+			</DropdownMenu.Root>
+		</>)
+	}
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 	try {
-		const { params } = context;
+		const { params, query } = context;
+		const client = await clientPromise
+		const db = client.db("TimeLineupDemo")
 
 		if (!params || typeof params.id != "string") {
+
 			throw new Error("no paramters passed")
 		}
 
-		const client = await clientPromise
-		const db = client.db("TimeLineupDemo")
+		if (query && query.localLoad) {
+			const users = await db.collection("User").aggregate().toArray();
+			return {
+				props: { loadFromLocalStorage: true, eventId: params.id, users: JSON.parse(JSON.stringify(users)) as Array<User> } as EventProps,
+			};
+		}
+
 
 		const eventData = await db.collection("Event").aggregate([
 			{ $match: { _id: new ObjectId(params.id) } }, { $limit: 1 }, {
@@ -334,7 +385,116 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 					foreignField: '_id',
 					as: 'user'
 				},
-			}, { $unwind: "$user" }]).toArray();
+			}, { $unwind: "$user" },// Create default userResponses with a state of 1 for each user in the invites array.
+			{
+				$lookup: {
+					from: "User",
+					localField: "invites",
+					foreignField: "_id",
+					as: "invites"
+				}
+			},
+			{
+				$project: {
+					allEventData: "$$ROOT", // Keep all fields of the event document
+					defaultResponses: {
+						$map: {
+							input: "$invites",
+							as: "userId",
+							in: {
+								id: new ObjectId(),  // A mock ID
+								eventId: "$_id",
+								userId: "$$userId._id",
+								user: null,  // Placeholder
+								schedule: [],  // Empty array by default
+								state: 1
+							}
+						}
+					}
+				}
+			},
+			// Lookup EventResponse
+			{
+				$lookup: {
+					from: "EventResponse",
+					let: { eventId: "$allEventData._id" },
+					pipeline: [
+						{
+							$match: {
+								$expr: { $eq: ["$eventId", "$$eventId"] }
+							}
+						},
+						{
+							$lookup: {
+								from: "User",
+								localField: "userId",
+								foreignField: "_id",
+								as: "user"
+							}
+						},
+						{ $unwind: "$user" }
+					],
+					as: "fetchedResponses"
+				}
+			},
+			// Filter out defaultResponses that exist in fetchedResponses
+			{
+				$addFields: {
+					defaultResponses: {
+						$filter: {
+							input: "$defaultResponses",
+							as: "defaultResponse",
+							cond: {
+								$not: [
+									{
+										$in: ["$$defaultResponse.userId", "$fetchedResponses.userId"]
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			// Combine defaultResponses and fetchedResponses
+			{
+				$addFields: {
+					userResponses: {
+						$concatArrays: ["$defaultResponses", "$fetchedResponses"]
+					}
+				}
+			},
+			// Lookup users for each user in defaultResponses
+			{
+				$unwind: "$userResponses"
+			},
+			{
+				$lookup: {
+					from: "User",
+					localField: "userResponses.userId",
+					foreignField: "_id",
+					as: "userResponses.user"
+				}
+			},
+			{ $unwind: "$userResponses.user" },
+			// Group back the unwound responses
+			{
+				$group: {
+					_id: "$allEventData._id",
+					allEventData: { $first: "$allEventData" },
+					userResponses: { $push: "$userResponses" }
+				}
+			},
+			// Set the userResponses field in the main event document
+			{
+				$addFields: {
+					"allEventData.userResponses": "$userResponses"
+				}
+			},
+			// Replace root with all event data
+			{
+				$replaceRoot: { newRoot: "$allEventData" }
+			}
+		]).toArray();
 
 		const event = eventData[0] as EventData;
 
@@ -346,18 +506,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		event.startDateTime.setMonth(eventDate.getMonth())
 		event.startDateTime.setFullYear(eventDate.getFullYear())
 
-		const userResponses = await db.collection("EventResponse").aggregate([
-			{ $match: { eventId: new ObjectId(params.id) } }, {
-				$lookup: {
-					from: 'User',
-					localField: 'userId',
-					foreignField: '_id',
-					as: 'user'
-				},
-			}, { $unwind: "$user" }]).toArray() as EventResponse[];
-
 		return {
-			props: { event: JSON.parse(JSON.stringify(event)) as EventData, userResponses: JSON.parse(JSON.stringify(userResponses)) as EventResponse[] },
+			props: { eventData: JSON.parse(JSON.stringify(event)) as EventData },
 		};
 	} catch (e) {
 		console.error(e);

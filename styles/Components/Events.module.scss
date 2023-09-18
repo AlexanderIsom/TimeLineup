@@ -38,6 +38,14 @@
   }
 }
 
+.button {
+  @extend .pagenation;
+  outline: none;
+  border: none;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 .weekHeader {
   grid-row: 1;
   display: flex;

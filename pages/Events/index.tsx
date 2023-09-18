@@ -4,10 +4,11 @@ import { EventData } from "types"
 import EventCard from "components/EventCard";
 import { GetServerSidePropsContext } from "next";
 import { EventResponse, ResponseState, User } from "types/Events";
-import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
+import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 import clientPromise from "lib/mongodb";
 import { useEffect, useState } from "react";
+import EventForm from "components/EventForm";
 
 interface DateRange {
   start: Date;
@@ -17,24 +18,37 @@ interface DateRange {
 type Props = {
   events: EventData[]
   dateRange: DateRange;
+  users: Array<User>
 }
 
-export default function Events({ events, dateRange }: Props) {
+export default function Events({ events, dateRange, users }: Props) {
   const startDay = new Date(dateRange.start)
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
   const today = new Date();
 
   const [demoEvents, setDemoEvents] = useState<EventData[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
 
   useEffect(() => {
+    const localEventsString = localStorage.getItem("events");
+
+    if (localEventsString !== null) {
+      const localEvents: Array<EventData> = JSON.parse(localEventsString);
+      const filtered = localEvents.filter(e => isWithinInterval(new Date(e.startDateTime), { start: startDay, end: endDay }))
+      filtered.forEach(loadedEvent => {
+        const dayOffset = getDay(new Date(loadedEvent.startDateTime))
+        loadedEvent.day = dayOffset;
+        events.push(loadedEvent)
+      });
+    }
 
     const demoEvents = events.map((event) => {
-      const localDataString = localStorage.getItem(event._id.toString())
+      const localDataString = localStorage.getItem(event._id)
 
       const localUserResponse: EventResponse = {
         id: event._id + "demo",
-        eventId: event._id.toString(),
+        eventId: event._id,
         userId: "demouser",
         schedule: [],
         state: 1,
@@ -49,7 +63,6 @@ export default function Events({ events, dateRange }: Props) {
       if (localDataString !== null) {
         const localData: EventResponse = JSON.parse(localDataString);
         if (localData.state !== undefined) {
-          console.log("adjusted state")
           localUserResponse.state = localData.state
         }
       }
@@ -58,16 +71,26 @@ export default function Events({ events, dateRange }: Props) {
       return event;
     })
     setDemoEvents(demoEvents);
+
   }, [events])
 
   return (
     <>
+      <EventForm
+        isVisible={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSave={() => {
+          // reload page
+        }}
+        users={users}
+      />
       <Header />
       <div className={styles.wrapper}>
         <div className={styles.tools}>
           <Link href={{ pathname: "/Events", query: { start: subWeeks(startDay, 1).toDateString(), end: subWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❮</Link>
           <Link href={{ pathname: "/Events", query: { start: addWeeks(startDay, 1).toDateString(), end: addWeeks(endDay, 1).toDateString() } }} className={styles.pagenation}>❯</Link>
           <Link href={{ pathname: "/Events", query: { start: startOfWeek(today).toDateString(), end: endOfWeek(today).toDateString() } }} className={styles.pagenation}>Today</Link>
+          <button className={styles.button} onClick={() => { setFormOpen(true) }}>+ New Event</button>
           <div className={styles.weekHeader}>
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
@@ -140,8 +163,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       obj.startDateTime.setYear(newStartDate.getFullYear())
     })
 
+    const users = await db.collection("User").find({}).toArray();
+
     return {
-      props: { events: JSON.parse(JSON.stringify(events)) as EventData[], dateRange: JSON.parse(JSON.stringify({ start: weekStart, end: weekEnd })) },
+      props: { events: JSON.parse(JSON.stringify(events)) as EventData[], dateRange: JSON.parse(JSON.stringify({ start: weekStart, end: weekEnd })), users: JSON.parse(JSON.stringify(users)) as Array<User> },
     };
   } catch (e) {
     console.error(e);
