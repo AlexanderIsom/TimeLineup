@@ -9,6 +9,7 @@ import Link from "next/link";
 import clientPromise from "lib/mongodb";
 import { useEffect, useState } from "react";
 import EventForm from "components/EventForm";
+import { useRouter } from "next/router";
 
 interface DateRange {
   start: Date;
@@ -26,6 +27,7 @@ export default function Events({ events, dateRange, users }: Props) {
   const endDay = new Date(dateRange.end)
   const days = eachDayOfInterval({ start: startDay, end: endDay })
   const today = new Date();
+  const router = useRouter();
 
   const [demoEvents, setDemoEvents] = useState<EventData[]>([]);
   const [formOpen, setFormOpen] = useState(false);
@@ -80,7 +82,7 @@ export default function Events({ events, dateRange, users }: Props) {
         isVisible={formOpen}
         onClose={() => setFormOpen(false)}
         onSave={() => {
-          // reload page
+          router.reload();
         }}
         users={users}
       />

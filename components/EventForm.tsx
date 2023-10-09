@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AgendaItem, EventData, User } from 'types/Events';
 import { cloneDeep } from 'lodash';
 import shortid from 'shortid';
-import { ObjectId } from 'mongodb';
 
 type Props = {
 	isVisible: boolean;
