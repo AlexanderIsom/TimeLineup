@@ -1,0 +1,50 @@
+.main {
+    box-sizing: border-box;
+}
+
+
+.backgroundFade {
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgb(247, 250, 255) 100%);
+    height: auto;
+    width: 100%;
+    position: relative;
+    display: block;
+}
+
+.titleContainer {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    display: block;
+    margin: 0px auto;
+}
+
+.titleContent {
+    margin: 0px auto;
+    max-width: 1236px;
+}
+
+.title {
+    line-height: "72px";
+    font-style: normal;
+    font-display: swap;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+.titleDescription {
+    max-width: 50%;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: rgb(103, 119, 136);
+}
+
+.svgBlocker {
+    box-sizing: inherit;
+    width: 100%;
+    margin-bottom: -8px;
+    overflow: hidden;
+}
+
+.successText {
+    color: rgb(55, 125, 255);
+}
