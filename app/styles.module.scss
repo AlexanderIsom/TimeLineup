@@ -31,11 +31,20 @@
     -webkit-font-smoothing: antialiased;
 }
 
+.titles {
+    max-width: 100%;
+
+    @media (min-width: 600px) {
+        max-width: 50%;
+    }
+}
+
 .titleDescription {
-    max-width: 50%;
     font-size: 1.25rem;
     font-weight: 400;
+    line-height: 1.6;
     color: rgb(103, 119, 136);
+
 }
 
 .svgBlocker {
@@ -47,4 +56,5 @@
 
 .successText {
     color: rgb(55, 125, 255);
+    background: linear-gradient(transparent 82%, rgba(249, 185, 52, 0.3) 0%);
 }

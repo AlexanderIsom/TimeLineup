@@ -22,11 +22,13 @@ export default function Home() {
 				<div className={`${styles.titleContainer}`}>
 					<div className={`${styles.titleContent} py-16 px-4`}>
 						<ThemeProvider theme={theme}>
-							<Typography variant='h2' fontWeight={600}>Make your events<br />actually <span className={styles.successText}>happen.</span></Typography>
-							<Typography className={styles.titleDescription}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</Typography>
-							<Button variant="contained" >
-								Send
-							</Button>
+							<div className={`${styles.titles}`}>
+								<Typography variant='h2' fontWeight={600}>Make your events<br />actually <span className={styles.successText}>happen.</span></Typography>
+								<Typography className={styles.titleDescription}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</Typography>
+								<Button variant="contained" >
+									Send
+								</Button>
+							</div>
 						</ThemeProvider>
 					</div>
 				</div>
