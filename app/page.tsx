@@ -1,5 +1,6 @@
 'use client'
 
+import { UserButton } from '@clerk/nextjs';
 import styles from './styles.module.scss'
 import { Button, ThemeProvider, Typography, createTheme, responsiveFontSizes } from "@mui/material"
 
@@ -18,16 +19,18 @@ export default function Home() {
 	return (
 		<main className={styles.main}>
 			<div className={styles.backgroundFade}>
-
 				<div className={`${styles.titleContainer}`}>
 					<div className={`${styles.titleContent} py-16 px-4`}>
 						<ThemeProvider theme={theme}>
 							<div className={`${styles.titles}`}>
 								<Typography variant='h2' fontWeight={600}>Make your events<br />actually <span className={styles.successText}>happen.</span></Typography>
 								<Typography className={styles.titleDescription}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</Typography>
-								<Button variant="contained" >
-									Send
+								<Button variant="contained" href='/sign-in' >
+									Login
 								</Button>
+								<div className='bg-blue-600 w-16 h-16 justify-center items-center flex'>
+									<UserButton afterSignOutUrl='/' />
+								</div>
 							</div>
 						</ThemeProvider>
 					</div>
