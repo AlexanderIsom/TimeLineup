@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export default function Home() {
-	const { userId, sessionId } = useAuth();
-	const { isSignedIn, user } = useUser();
+	const { isSignedIn, user, isLoaded } = useUser();
 
 	return (
     <main className={styles.main}>
@@ -21,23 +20,23 @@ export default function Home() {
                 <br />
                 actually <span className={styles.successText}>happen.</span>
               </h2>
-              <h6>
+              <h6 className={styles.titleDescription}>
                 Timelineup allows you to plan out events for anyone anywhere in
                 any timezone.
               </h6>
-              {/* {!isSignedIn && (
-                <Button>
+              {isLoaded && !isSignedIn && (
+                <Button variant="outline">
                   <Link href="/sign-in">Login</Link>
                 </Button>
               )}
-              {isSignedIn && (
+              {isLoaded && isSignedIn && (
                 <div>
                   Hello, {user?.firstName}
-                  <div className="bg-blue-600 w-16 h-16 justify-center items-center flex">
+                  <div className=" w-8 h-8 justify-center items-center flex">
                     <UserButton afterSignOutUrl="/" />
                   </div>
                 </div>
-              )} */}
+              )}
             </div>
           </div>
         </div>
