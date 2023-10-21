@@ -26,6 +26,7 @@
 .margin {
     margin: 0px auto;
     max-width: 1236px;
+    padding: 4rem 1rem 4rem 1rem;
 }
 
 .title {
@@ -80,4 +81,12 @@
 
 .iconSubText{
     color: #677788;
+}
+
+.middle{
+    max-width: 600px;
+}
+
+.flexItem{
+    max-width: 50%;
 }
