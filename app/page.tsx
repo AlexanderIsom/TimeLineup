@@ -1,34 +1,38 @@
 'use client'
 
 import { UserButton } from '@clerk/nextjs';
-import { useAuth, useUser } from '@clerk/nextjs';
-import styles from './styles.module.scss'
+import { useUser } from '@clerk/nextjs';
+import './styles.scss'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import {TbClick, TbCode, TbUserCheck} from "react-icons/tb"
 
 export default function Home() {
 	const { isSignedIn, user, isLoaded } = useUser();
 
 	return (
-    <main className={styles.main}>
-      <div className={styles.backgroundFade}>
-        <div className={`${styles.titleContainer}`}>
-          <div className={`${styles.titleContent} py-16 px-4`}>
-            <div className={`${styles.titles}`}>
+    <main className={"main"}>
+      <div className={"backgroundFade"}>
+        <div className={`${"titleContainer"}`}>
+          <div className={`${"margin"} py-16 px-4`}>
+            <div className={`${"titles"}`}>
               <h2>
                 Make your events
                 <br />
-                actually <span className={styles.successText}>happen.</span>
+                actually <span className={"successText"}>happen.</span>
               </h2>
-              <h6 className={styles.titleDescription}>
+              <p className={"titleDescription"}>
                 Timelineup allows you to plan out events for anyone anywhere in
                 any timezone.
-              </h6>
-              {isLoaded && !isSignedIn && (
-                <Button variant="outline">
-                  <Link href="/sign-in">Login</Link>
+              </p>
+              <div className="flex gap-4">
+                <Button size={"lg"}>
+                  <Link href="/sign-in">Get started</Link>
                 </Button>
-              )}
+                <Button variant={"outline"} size={"lg"}>
+                  <Link href="/sign-in">Find out more</Link>
+                </Button>
+              </div>
               {isLoaded && isSignedIn && (
                 <div>
                   Hello, {user?.firstName}
@@ -41,7 +45,7 @@ export default function Home() {
           </div>
         </div>
         <svg
-          className={styles.svgBlocker}
+          className={"svgBlocker"}
           preserveAspectRatio="none"
           x="0px"
           y="0px"
@@ -52,6 +56,51 @@ export default function Home() {
             d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"
           ></path>
         </svg>
+      </div>
+      <div className="margin py-16 px-4">
+        <div className="text-center pb-4 ">
+          <h4>Create worldwide events quickly and easily</h4>
+          <p className="pSubText">
+            Simple, flexable and easy to make events for friends for all around the world.
+          </p>
+        </div>
+        <div className="flex flex-row">
+        <div className="pl-4 pt-4 w-full">
+            <div className='gap-4 text-center items-center flex flex-col'>
+              <div className="flex rounded-full svgIconContainer ">
+                <TbClick size={30} />
+              </div>
+              <p className="font-semibold text-xl">Built for friends!</p>
+              <p className='iconSubText'>
+                TimeLineup was born from frustation.
+                <br /> online events in varying timezones shouldnt be hard
+              </p>
+            </div>
+          </div>
+          <div className="pl-4 pt-4 w-full">
+            <div className='gap-4 text-center items-center flex flex-col'>
+              <div className="flex rounded-full svgIconContainer ">
+                <TbCode size={30} />
+              </div>
+              <p className="font-semibold text-xl">Designed to be easy</p>
+              <p className='iconSubText'>
+                Based on simple yet powerful features
+                <br /> to make event organising blissful
+              </p>
+            </div>
+          </div>
+          <div className="pl-4 pt-4 w-full">
+            <div className='gap-4 text-center items-center flex flex-col'>
+              <div className="flex rounded-full svgIconContainer ">
+                <TbUserCheck size={30} />
+              </div>
+              <p className="font-semibold text-xl">Continuously developing</p>
+              <p className='iconSubText'>
+                Feeback from our users is key and we constantly improve to make things effortless for you
+              </p>
+            </div>
+          </div>          
+        </div>
       </div>
     </main>
   );

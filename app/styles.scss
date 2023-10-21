@@ -1,5 +1,10 @@
+@import 'style/Colors';
+
 .main {
     box-sizing: border-box;
+    .h2{
+            color: $textGray;
+    }
 }
 
 
@@ -18,7 +23,7 @@
     margin: 0px auto;
 }
 
-.titleContent {
+.margin {
     margin: 0px auto;
     max-width: 1236px;
 }
@@ -39,11 +44,24 @@
     }
 }
 
-.titleDescription {
+.pSubText{
     font-size: 1.25rem;
     font-weight: 400;
     line-height: 1.6;
     color: rgb(103, 119, 136);
+}
+
+.svgIconContainer{
+    background-color: rgba(55, 125, 255, 0.1);
+    color:rgb(55, 125, 255);
+    width: 70px;
+    height: 70px;
+    align-items: center;
+    justify-content: center;
+}
+
+.titleDescription {
+    @extend .pSubText;
     padding-top: 16px;
     padding-bottom: 16px;
 }
@@ -51,11 +69,15 @@
 .svgBlocker {
     box-sizing: inherit;
     width: 100%;
-    margin-bottom: -8px;
+    // margin-bottom: -8px;
     overflow: hidden;
 }
 
 .successText {
     color: rgb(55, 125, 255);
     background: linear-gradient(transparent 82%, rgba(249, 185, 52, 0.3) 0%);
+}
+
+.iconSubText{
+    color: #677788;
 }
