@@ -40,9 +40,15 @@
 .titles {
     max-width: 100%;
 
+    @media (min-width: 0px) {
+        max-width: 100%;
+    }
+
     @media (min-width: 600px) {
         max-width: 50%;
     }
+
+    
 }
 
 .pSubText{
@@ -89,4 +95,107 @@
 
 .flexItem{
     max-width: 50%;
+}
+
+.descirptionsIconsGrid{
+    flex-flow: wrap;
+    width: calc(100% + 16px);
+}
+
+.buttonsContainer{
+    @media (min-width: 0px) {
+        flex-direction: column;
+    }
+
+    @media (min-width: 600px) {
+        flex-direction: row;
+    }
+}
+
+.image{
+    @media (min-width: 0px) {
+        display: none;
+    }
+
+    @media (min-width: 900px) {
+        display: flex;
+    }
+}
+
+.imageDescription{
+    @media (min-width: 0px) {
+        flex-basis: 100%;
+    }
+
+    @media (min-width: 900px) {
+        flex-basis: 50%;
+    }
+}
+
+.statContainer{
+    display: flex;
+    flex-flow: wrap;
+}
+
+.statItem{
+    color: rgb(103, 119, 136);
+    @media (min-width: 0px) {
+        flex-basis: 100%;
+        max-width: 100%;
+        flex-grow: 0;
+    }
+
+    @media (min-width: 900px) {
+        flex-basis: 33.33%;
+        max-width: 33.33%;
+        flex-grow: 0;
+    }
+}
+
+.statHeader{
+    font-size: 28px;
+    font-weight: 400;
+    color:rgb(55, 125, 255)
+}
+
+.boxItem{
+    @media (min-width: 600px) {
+        flex-basis: 50%;
+        max-width: 50%;
+        flex-grow: 0;
+    }
+
+    @media (min-width: 900px) {
+        flex-basis: 33.33%;
+        max-width: 33.33%;
+        flex-grow: 0;
+    }
+}
+
+.boxContainer{
+    display: flex;
+    flex-flow: wrap;
+    margin-left: -32px;
+    margin-top: -32px;
+    width: calc(100% + 32px);
+}
+
+.boxInnerItem{
+    background-color: white;
+    box-shadow: rgba(140, 152, 164, 0.25) 0px 3px 6px 0px;
+}
+
+.boxDescription{
+    color:rgb(103, 119, 136);
+}
+
+.lower{
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgb(247, 250, 255) 100%);
+}
+
+.footerButton{
+    @media (max-width: 900px) {
+        width: 100%;
+    }
+   
 }
