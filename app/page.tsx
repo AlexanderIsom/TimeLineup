@@ -158,7 +158,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="margin middle">
+        <div className="margin">
           <div className="boxContainer">
             <div className="pl-8 pt-8 boxItem ">
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
