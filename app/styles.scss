@@ -133,12 +133,18 @@
 }
 
 .statContainer{
+    box-sizing: border-box;
     display: flex;
     flex-flow: wrap;
+    margin-top: -1rem;
+    width: calc(100% + 16px);
+    margin-left: -1rem;
 }
 
 .statItem{
     color: rgb(103, 119, 136);
+    padding-left: 1rem;
+    padding-top: 1rem;
     @media (min-width: 0px) {
         flex-basis: 100%;
         max-width: 100%;

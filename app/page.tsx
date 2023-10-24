@@ -8,13 +8,10 @@ import Link from "next/link";
 import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
 import { delay, motion, stagger, Variants } from "framer-motion";
 import BoxItem from "@/components/BoxItem";
+import AnimatedNumber from "@/components/AnimatedNumber";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
-
-
-
-
 
   return (
     <main className={"main"}>
@@ -137,21 +134,33 @@ export default function Home() {
                 </p>
                 <div className="statContainer">
                   <div className="statItem">
-                    <span className="statHeader">300+</span>
+                    <span className="statHeader">
+                      <AnimatedNumber from={0} to={300} duration={3}>
+                        +
+                      </AnimatedNumber>
+                    </span>
                     <p>
                       300 + component compositions, which will help you to build
                       any page easily.
                     </p>
                   </div>
                   <div className="statItem">
-                    <span className="statHeader">45+</span>
+                    <span className="statHeader">
+                      <AnimatedNumber from={0} to={45} duration={3}>
+                        +
+                      </AnimatedNumber>
+                    </span>
                     <p>
                       45 + landing and supported pages to Build a professional
                       website.
                     </p>
                   </div>
                   <div className="statItem">
-                    <span className="statHeader">99%</span>
+                    <span className="statHeader">
+                      <AnimatedNumber from={0} to={99} duration={3}>
+                        %
+                      </AnimatedNumber>
+                    </span>
                     <p>
                       99% of our customers rated 5-star our themes over 5 years.
                     </p>
@@ -178,7 +187,7 @@ export default function Home() {
                 </p>
               </div>
             </BoxItem>
-            <BoxItem index={1}            >
+            <BoxItem index={1}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -190,7 +199,7 @@ export default function Home() {
                 </p>
               </div>
             </BoxItem>
-            <BoxItem index={2} >
+            <BoxItem index={2}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -202,7 +211,7 @@ export default function Home() {
                 </p>
               </div>
             </BoxItem>
-            <BoxItem index={3} >
+            <BoxItem index={3}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -214,7 +223,7 @@ export default function Home() {
                 </p>
               </div>
             </BoxItem>
-            <BoxItem index={4} >
+            <BoxItem index={4}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -226,7 +235,7 @@ export default function Home() {
                 </p>
               </div>
             </BoxItem>
-            <BoxItem index={5} >
+            <BoxItem index={5}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -270,6 +279,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main >
+    </main>
   );
 }
