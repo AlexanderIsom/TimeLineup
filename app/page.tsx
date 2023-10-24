@@ -6,9 +6,15 @@ import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
+import { delay, motion, stagger, Variants } from "framer-motion";
+import BoxItem from "@/components/BoxItem";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
+
+
+
+
 
   return (
     <main className={"main"}>
@@ -160,7 +166,7 @@ export default function Home() {
         </div>
         <div className="margin">
           <div className="boxContainer">
-            <div className="pl-8 pt-8 boxItem ">
+            <BoxItem index={0}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -171,8 +177,8 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
-            <div className="pl-8 pt-8 boxItem ">
+            </BoxItem>
+            <BoxItem index={1}            >
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -183,8 +189,8 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
-            <div className="pl-8 pt-8 boxItem ">
+            </BoxItem>
+            <BoxItem index={2} >
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -195,8 +201,8 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
-            <div className="pl-8 pt-8 boxItem ">
+            </BoxItem>
+            <BoxItem index={3} >
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -207,8 +213,8 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
-            <div className="pl-8 pt-8 boxItem ">
+            </BoxItem>
+            <BoxItem index={4} >
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -219,8 +225,8 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
-            <div className="pl-8 pt-8 boxItem ">
+            </BoxItem>
+            <BoxItem index={5} >
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
@@ -231,7 +237,7 @@ export default function Home() {
                   ease.
                 </p>
               </div>
-            </div>
+            </BoxItem>
           </div>
         </div>
         <svg
@@ -264,6 +270,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
