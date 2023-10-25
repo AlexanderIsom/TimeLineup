@@ -168,7 +168,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="pl-8 pt-8 flexItem w-full image">
-                <div className="bg-blue-600 h-64 w-full rounded-lg"></div>
+                <div className="w-full h-full imageShadow">
+                  <div className="bg-blue-600 h-full w-full rounded-lg"></div>
+                </div>
               </div>
             </div>
           </div>

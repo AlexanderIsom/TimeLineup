@@ -113,6 +113,7 @@
 }
 
 .image{
+    
     @media (min-width: 0px) {
         display: none;
     }
@@ -120,6 +121,10 @@
     @media (min-width: 900px) {
         display: flex;
     }
+}
+
+.imageShadow{
+    box-shadow: rgba(140, 152, 164, 0.176) 0px 10px 40px 10px;
 }
 
 .imageDescription{
