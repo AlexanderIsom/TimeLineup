@@ -6,7 +6,7 @@ import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
-import { delay, motion, stagger, Variants } from "framer-motion";
+import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
 
@@ -116,7 +116,14 @@ export default function Home() {
               documented with live examples and markup for easier use <br />
               and customization
             </p>
-            <div className="bg-blue-600 h-64 rounded-lg"></div>
+            <div className="flex bg-gray-100 h-64 rounded-lg overflow-hidden justify-center items-center relative">
+              <Image
+                src={"/landing/Chat.png"}
+                alt="Chat"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
           </div>
         </div>
         <div className="margin">
