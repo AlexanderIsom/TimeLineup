@@ -46,6 +46,11 @@ export default function Home() {
               )}
             </div>
           </div>
+          <div className="titleImage">
+            <div className="titleBoxThing bg-blue-600">
+              <div className="timeContainer"></div>
+            </div>
+          </div>
         </div>
         <svg
           className={"svgBlocker"}

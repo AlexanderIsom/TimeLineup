@@ -37,6 +37,32 @@
     -webkit-font-smoothing: antialiased;
 }
 
+.titleImage{
+    @media (min-width: 0px){
+        display: none;
+    }
+
+    @media (min-width:600px){
+        display: block;
+    }
+
+    transform: rotate(-20deg);
+}
+
+.titleBoxThing{
+    display: flex;
+    width: 50rem;
+    height: 500px;
+    left:50%;
+    top:0%;
+    position: absolute;
+    transform: translate3d(20%, -50%, 0px);
+}
+
+.timeContainer{
+    //
+}
+
 .titles {
     max-width: 100%;
    
