@@ -9,6 +9,7 @@ import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
 import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
+import StaticTimeCard from "@/components/landingPage/staticTimeCard";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -48,7 +49,8 @@ export default function Home() {
           </div>
           <div className="titleImage">
             <div className="titleBoxThing bg-blue-600">
-              <div className="timeContainer"></div>
+                <StaticTimeCard width={300} transformX={10} transformY={0}/>
+                <StaticTimeCard width={300} transformX={150} transformY={100}/>
             </div>
           </div>
         </div>

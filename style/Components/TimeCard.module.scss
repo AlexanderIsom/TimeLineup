@@ -5,7 +5,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: Variables.$cardHeight;
+	height: Variables.$staticCardHeight;
 }
 
 .timeContainer {
@@ -17,7 +17,7 @@
 	margin-top: 5px;
 	margin-bottom: 5px;
 	background: #e4e4e4;
-	border-radius: 5px;
+	border-radius: 10px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
