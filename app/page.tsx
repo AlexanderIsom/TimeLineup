@@ -2,6 +2,7 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -48,9 +49,41 @@ export default function Home() {
             </div>
           </div>
           <div className="titleImage">
-            <div className="titleBoxThing bg-blue-600">
-                <StaticTimeCard width={300} transformX={10} transformY={0}/>
-                <StaticTimeCard width={300} transformX={150} transformY={100}/>
+            <div className="titleBoxThing bg-blue-600 flex flex-col">
+              <motion.div
+                className="translate-x-5 w-80"
+                animate={{
+                  transform: ["translateX(20px)", "translateX(200px)"],
+                }}
+                transition={{
+                  ease: "anticipate",
+                  repeat: Infinity,
+                  duration: 1,
+                  repeatType: "mirror",
+                  repeatDelay: 2,
+                }}
+              >
+                <StaticTimeCard />
+              </motion.div>
+
+              <div className="translate-y-24 w-80">
+                <motion.div
+                  className="translate-x-5 w-80"
+                  animate={{
+                    transform: ["translateX(20px)", "translateX(200px)"],
+                  }}
+                  transition={{
+                    ease: "anticipate",
+                    repeat: Infinity,
+                    delay: 2,
+                    duration: 1,
+                    repeatType: "mirror",
+                    repeatDelay: 2,
+                  }}
+                >
+                  <StaticTimeCard />
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
