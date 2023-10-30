@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className={"main"}>
       <div className={"backgroundFade"}>
-        <div className={`${"titleContainer"}`}>
+        <div className={`${"titleContainer"} overflow-hidden`}>
           <div className={`margin`}>
             <div className={`${"titles"}`}>
               <h2>
@@ -49,7 +49,7 @@ export default function Home() {
             </div>
           </div>
           <div className="titleImage">
-            <div className="titleBoxThing bg-blue-600 flex flex-col">
+            <div className="titleBoxThing flex flex-col ">
               <motion.div
                 className="translate-x-5 w-80"
                 animate={{
@@ -68,17 +68,75 @@ export default function Home() {
 
               <div className="translate-y-24 w-80">
                 <motion.div
-                  className="translate-x-5 w-80"
+                  className="translate-x-14 motionTest"
                   animate={{
-                    transform: ["translateX(20px)", "translateX(200px)"],
+                    x:[56,200,200,200,100],
+                    width:[200,400,400,300,300],
                   }}
                   transition={{
                     ease: "anticipate",
                     repeat: Infinity,
-                    delay: 2,
-                    duration: 1,
+                    duration: 2.5,
                     repeatType: "mirror",
                     repeatDelay: 2,
+                  }}
+                >
+                  <StaticTimeCard />
+                </motion.div>
+              </div>
+
+              <div className="translate-y-48 w-80">
+                <motion.div
+                  className="translate-x-14 motionTest"
+                  animate={{
+                    x:[400,700,285,160,25],
+                    width:[375,215,215,360,360],
+                  }}
+                  transition={{
+                    ease: "anticipate",
+                    repeat: Infinity,
+                    delay:1.5,
+                    duration: 4,
+                    repeatType: "mirror",
+                    repeatDelay: 2,
+                  }}
+                >
+                  <StaticTimeCard />
+                </motion.div>
+              </div>
+
+              <div className="translate-y-72 w-80">
+                <motion.div
+                  className="translate-x-14 motionTest"
+                  animate={{
+                    x:[500,500,-100,-100,175,500],
+                    width:[800],
+                  }}
+                  transition={{
+                    ease: "anticipate",
+                    repeat: Infinity,
+                    duration: 3,
+                    repeatType: "mirror",
+                    repeatDelay: 2,
+                  }}
+                >
+                  <StaticTimeCard />
+                </motion.div>
+              </div>
+
+              <div className="translate-y-96 w-80">
+                <motion.div
+                  className="translate-x-14 motionTest"
+                  animate={{
+                    x:[400,200,400,100,100,100],
+                    width:[100,100,150,100],
+                  }}
+                  transition={{
+                    ease: "anticipate",
+                    repeat: Infinity,
+                    duration: 5,
+                    repeatType: "mirror",
+                    repeatDelay: 1,
                   }}
                 >
                   <StaticTimeCard />
