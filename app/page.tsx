@@ -118,7 +118,7 @@ export default function Home() {
                   style={{ width: 800 }}
                   initial={{x:500}}
                   animate={{
-                    x: [500, 500, -100, -100, 175, 500],
+                    x: [500, 500, 200, -100, 175, 500],
                   }}
                   transition={{
                     ease: "anticipate",
