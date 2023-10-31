@@ -11,6 +11,7 @@ import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import StaticTimeCard from "@/components/landingPage/staticTimeCard";
+import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -51,106 +52,57 @@ export default function Home() {
           <div className="titleImage">
             <div className="titleBoxThing flex flex-col">
               <div>
-                <motion.div
-                  style={{ width: 320 }}
-                  initial={{x:20}}
-                  animate={{
-                    x: [20, 200],
-                  }}
-                  transition={{
-                    ease: "anticipate",
-                    repeat: Infinity,
-                    duration: 1,
-                    repeatType: "mirror",
-                    repeatDelay: 2,
-                  }}
-                >
-                  <StaticTimeCard />
-                </motion.div>
+                <AnimatedTimeCard
+                  initialX={20}
+                  animateX={[20, 200]}
+                  width={320}
+                  duration={1}
+                  repeatDelay={2}
+                />
               </div>
 
               <div>
-                <motion.div
-                  className="motionCard"
-                  style={{ width: 200 }}
-                  initial={{x:56}}
-                  animate={{
-                    x: [56, 200, 200, 200, 100],
-                    width: [200, 400, 400, 300, 300],
-                  }}
-                  transition={{
-                    ease: "anticipate",
-                    repeat: Infinity,
-                    duration: 2.5,
-                    repeatType: "mirror",
-                    repeatDelay: 2,
-                  }}
-                >
-                  <StaticTimeCard />
-                </motion.div>
+                <AnimatedTimeCard
+                  initialX={55}
+                  animateX={[55, 200, 200, 200, 100]}
+                  animateWidth={[200, 400, 400, 300, 300]}
+                  width={200}
+                  duration={2.5}
+                  repeatDelay={2}
+                />
               </div>
 
               <div>
-                <motion.div
-                  className="motionCard"
-                  style={{ width: 400 }}
-                  initial={{x:400}}
-                  animate={{
-                    x: [400, 700, 285, 160, 25],
-                    width: [375, 215, 215, 360, 360],
-                  }}
-                  transition={{
-                    ease: "anticipate",
-                    repeat: Infinity,
-                    delay: 1.5,
-                    duration: 4,
-                    repeatType: "mirror",
-                    repeatDelay: 2,
-                  }}
-                >
-                  <StaticTimeCard />
-                </motion.div>
+                <AnimatedTimeCard
+                  initialX={400}
+                  animateX={[400, 700, 285, 160, 25]}
+                  animateWidth={[375, 215, 215, 360, 360]}
+                  width={400}
+                  delay={1.5}
+                  duration={4}
+                  repeatDelay={2}
+                />
               </div>
 
               <div>
-                <motion.div
-                  className="motionCard"
-                  style={{ width: 800 }}
-                  initial={{x:500}}
-                  animate={{
-                    x: [500, 500, 200, -100, 175, 500],
-                  }}
-                  transition={{
-                    ease: "anticipate",
-                    repeat: Infinity,
-                    duration: 3,
-                    repeatType: "mirror",
-                    repeatDelay: 2,
-                  }}
-                >
-                  <StaticTimeCard />
-                </motion.div>
+                <AnimatedTimeCard
+                  initialX={500}
+                  animateX={[500, 500, 200, -100, 175, 500]}
+                  width={800}
+                  duration={3}
+                  repeatDelay={2}
+                />
               </div>
 
               <div>
-                <motion.div
-                  className="motionCard"
-                  style={{ width: 100 }}
-                  initial={{x:400}}
-                  animate={{
-                    x: [400, 200, 400, 100, 100, 100],
-                    width: [100, 100, 150, 100],
-                  }}
-                  transition={{
-                    ease: "anticipate",
-                    repeat: Infinity,
-                    duration: 5,
-                    repeatType: "mirror",
-                    repeatDelay: 1,
-                  }}
-                >
-                  <StaticTimeCard />
-                </motion.div>
+                <AnimatedTimeCard
+                  initialX={400}
+                  animateX={[400, 200, 400, 100, 100, 100]}
+                  animateWidth={[100, 100, 150, 100]}
+                  width={100}
+                  duration={5}
+                  repeatDelay={1}
+                />
               </div>
             </div>
           </div>
