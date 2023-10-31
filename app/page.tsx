@@ -49,29 +49,34 @@ export default function Home() {
             </div>
           </div>
           <div className="titleImage">
-            <div className="titleBoxThing flex flex-col ">
-              <motion.div
-                className="translate-x-5 w-80"
-                animate={{
-                  transform: ["translateX(20px)", "translateX(200px)"],
-                }}
-                transition={{
-                  ease: "anticipate",
-                  repeat: Infinity,
-                  duration: 1,
-                  repeatType: "mirror",
-                  repeatDelay: 2,
-                }}
-              >
-                <StaticTimeCard />
-              </motion.div>
-
-              <div className="translate-y-24 w-80">
+            <div className="titleBoxThing flex flex-col">
+              <div>
                 <motion.div
-                  className="translate-x-14 motionTest"
+                  style={{ width: 320 }}
+                  initial={{x:20}}
                   animate={{
-                    x:[56,200,200,200,100],
-                    width:[200,400,400,300,300],
+                    x: [20, 200],
+                  }}
+                  transition={{
+                    ease: "anticipate",
+                    repeat: Infinity,
+                    duration: 1,
+                    repeatType: "mirror",
+                    repeatDelay: 2,
+                  }}
+                >
+                  <StaticTimeCard />
+                </motion.div>
+              </div>
+
+              <div>
+                <motion.div
+                  className="motionCard"
+                  style={{ width: 200 }}
+                  initial={{x:56}}
+                  animate={{
+                    x: [56, 200, 200, 200, 100],
+                    width: [200, 400, 400, 300, 300],
                   }}
                   transition={{
                     ease: "anticipate",
@@ -85,17 +90,19 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <div className="translate-y-48 w-80">
+              <div>
                 <motion.div
-                  className="translate-x-14 motionTest"
+                  className="motionCard"
+                  style={{ width: 400 }}
+                  initial={{x:400}}
                   animate={{
-                    x:[400,700,285,160,25],
-                    width:[375,215,215,360,360],
+                    x: [400, 700, 285, 160, 25],
+                    width: [375, 215, 215, 360, 360],
                   }}
                   transition={{
                     ease: "anticipate",
                     repeat: Infinity,
-                    delay:1.5,
+                    delay: 1.5,
                     duration: 4,
                     repeatType: "mirror",
                     repeatDelay: 2,
@@ -105,12 +112,13 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <div className="translate-y-72 w-80">
+              <div>
                 <motion.div
-                  className="translate-x-14 motionTest"
+                  className="motionCard"
+                  style={{ width: 800 }}
+                  initial={{x:500}}
                   animate={{
-                    x:[500,500,-100,-100,175,500],
-                    width:[800],
+                    x: [500, 500, -100, -100, 175, 500],
                   }}
                   transition={{
                     ease: "anticipate",
@@ -124,12 +132,14 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <div className="translate-y-96 w-80">
+              <div>
                 <motion.div
-                  className="translate-x-14 motionTest"
+                  className="motionCard"
+                  style={{ width: 100 }}
+                  initial={{x:400}}
                   animate={{
-                    x:[400,200,400,100,100,100],
-                    width:[100,100,150,100],
+                    x: [400, 200, 400, 100, 100, 100],
+                    width: [100, 100, 150, 100],
                   }}
                   transition={{
                     ease: "anticipate",

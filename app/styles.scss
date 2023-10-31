@@ -52,7 +52,7 @@
 .titleBoxThing{
     display: flex;
     width: 50rem;
-    height: 600px;
+    height: 701px;
     left:50%;
     top:0%;
     position: absolute;
@@ -63,7 +63,13 @@
       linear-gradient(to right, #c6c6c6 1px, transparent 1px),
       linear-gradient(to bottom, #c6c6c6 1px, transparent 1px);
 
-      overflow: hidden;
+    overflow: hidden;
+
+    @for $i from 1 through 5 {
+        > :nth-child(#{$i}) {
+          transform: translateY($i * 100px);
+        }
+      }
 }
 
 .titleBoxThingContents{
@@ -259,8 +265,4 @@
     @media (max-width: 900px) {
         width: 100%;
     }
-}
-
-.motionTest{
-    width:50px;
 }
