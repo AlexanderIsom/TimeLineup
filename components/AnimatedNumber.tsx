@@ -26,7 +26,6 @@ export default function AnimatedNumber(props: Props) {
     });
 
     if (isInView) {
-      console.log("in view");
       controls.play();
     }
 

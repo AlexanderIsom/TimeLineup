@@ -2,7 +2,6 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
-import { motion } from "framer-motion";
 import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -10,11 +9,28 @@ import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
 import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
-import StaticTimeCard from "@/components/landingPage/staticTimeCard";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
+  const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
+  const animatedDivContainer = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (animatedDivContainer.current) {
+        const style = window.getComputedStyle(animatedDivContainer.current);
+        setAnimatedDivShown(style.display !== "none");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [animatedDivContainer]);
 
   return (
     <main className={"main"}>
@@ -49,62 +65,64 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="titleImage">
-            <div className="titleBoxThing flex flex-col">
-              <div>
-                <AnimatedTimeCard
-                  initialX={20}
-                  animateX={[20, 200]}
-                  width={320}
-                  duration={1}
-                  repeatDelay={2}
-                />
-              </div>
+          <div className="titleImage" ref={animatedDivContainer}>
+            {isAnimatiedDivShown && (
+              <div className="titleBoxThing flex flex-col">
+                <div>
+                  <AnimatedTimeCard
+                    initialX={20}
+                    animateX={[20, 200]}
+                    width={320}
+                    duration={1}
+                    repeatDelay={2}
+                  />
+                </div>
 
-              <div>
-                <AnimatedTimeCard
-                  initialX={55}
-                  animateX={[55, 200, 200, 200, 100]}
-                  animateWidth={[200, 400, 400, 300, 300]}
-                  width={200}
-                  duration={2.5}
-                  repeatDelay={2}
-                />
-              </div>
+                <div>
+                  <AnimatedTimeCard
+                    initialX={55}
+                    animateX={[55, 200, 200, 200, 100]}
+                    animateWidth={[200, 400, 400, 300, 300]}
+                    width={200}
+                    duration={2.5}
+                    repeatDelay={2}
+                  />
+                </div>
 
-              <div>
-                <AnimatedTimeCard
-                  initialX={400}
-                  animateX={[400, 700, 285, 160, 25]}
-                  animateWidth={[375, 215, 215, 360, 360]}
-                  width={400}
-                  delay={1.5}
-                  duration={4}
-                  repeatDelay={2}
-                />
-              </div>
+                <div>
+                  <AnimatedTimeCard
+                    initialX={400}
+                    animateX={[400, 700, 285, 160, 25]}
+                    animateWidth={[375, 215, 215, 360, 360]}
+                    width={400}
+                    delay={1.5}
+                    duration={4}
+                    repeatDelay={2}
+                  />
+                </div>
 
-              <div>
-                <AnimatedTimeCard
-                  initialX={500}
-                  animateX={[500, 500, 200, -100, 175, 500]}
-                  width={800}
-                  duration={3}
-                  repeatDelay={2}
-                />
-              </div>
+                <div>
+                  <AnimatedTimeCard
+                    initialX={500}
+                    animateX={[500, 500, 200, -100, 175, 500]}
+                    width={800}
+                    duration={3}
+                    repeatDelay={2}
+                  />
+                </div>
 
-              <div>
-                <AnimatedTimeCard
-                  initialX={400}
-                  animateX={[400, 200, 400, 100, 100, 100]}
-                  animateWidth={[100, 100, 150, 100]}
-                  width={100}
-                  duration={5}
-                  repeatDelay={1}
-                />
+                <div>
+                  <AnimatedTimeCard
+                    initialX={400}
+                    animateX={[400, 200, 400, 100, 100, 100]}
+                    animateWidth={[100, 100, 150, 100]}
+                    width={100}
+                    duration={5}
+                    repeatDelay={1}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <svg
