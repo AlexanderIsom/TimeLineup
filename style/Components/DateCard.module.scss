@@ -1,0 +1,10 @@
+@use "../Variables.scss";
+
+.dateCard{
+    width: 100px;
+    height: 200px;
+
+    background: #e4e4e4;
+    box-shadow: Variables.$boxShadow ;
+	border: #E1E7EF 1px solid;
+}

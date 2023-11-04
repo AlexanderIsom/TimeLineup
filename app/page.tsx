@@ -21,6 +21,7 @@ import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
+import DateCard from "@/components/landingPage/dateCard";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -251,8 +252,11 @@ export default function Home() {
                 </div>
               </div>
               <div className="pl-8 pt-8 flexItem w-full image">
-                <div className="w-full h-full imageShadow">
-                  <div className="bg-blue-600 h-full w-full rounded-lg"></div>
+                <div className="w-full h-full imageShadow rounded-lg">
+                  <div className=" h-full w-full flex gap-4 pl-4 pt-4">
+                    <DateCard heading="Event 1" />
+                    <DateCard heading="Event 2" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -351,7 +355,7 @@ export default function Home() {
         <div>
           <h4>Get started with TimeLineup today</h4>
           <p className="pSubText mb-8">
-            Build simple, easy, flexible and fully customizable, events.
+            Build simple, easy, flexible and fully customizable events.
           </p>
           <div className="flex w-full gap-4 justify-center">
             <Button size={"lg"} className="footerButton">

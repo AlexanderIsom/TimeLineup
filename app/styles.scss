@@ -266,3 +266,12 @@
         width: 100%;
     }
 }
+
+.eventsBoxThing{
+    background-size: 200px 100px;
+    background-image:
+      linear-gradient(to right, #c6c6c6 1px, transparent 1px),
+      linear-gradient(to bottom, #c6c6c6 1px, transparent 1px);
+
+    overflow: hidden;
+}
