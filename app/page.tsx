@@ -72,7 +72,7 @@ export default function Home() {
                   <AnimatedTimeCard
                     initialX={20}
                     animateX={[20, 200]}
-                    width={320}
+                    width={300}
                     duration={1}
                     repeatDelay={2}
                   />
@@ -80,8 +80,8 @@ export default function Home() {
 
                 <div>
                   <AnimatedTimeCard
-                    initialX={55}
-                    animateX={[55, 200, 200, 200, 100]}
+                    initialX={40}
+                    animateX={[40, 200, 200, 200, 100]}
                     animateWidth={[200, 400, 400, 300, 300]}
                     width={200}
                     duration={2.5}
@@ -92,8 +92,8 @@ export default function Home() {
                 <div>
                   <AnimatedTimeCard
                     initialX={400}
-                    animateX={[400, 700, 285, 160, 25]}
-                    animateWidth={[375, 215, 215, 360, 360]}
+                    animateX={[400, 700, 280, 160, 20]}
+                    animateWidth={[380, 220, 220, 360, 360]}
                     width={400}
                     delay={1.5}
                     duration={4}
@@ -104,7 +104,7 @@ export default function Home() {
                 <div>
                   <AnimatedTimeCard
                     initialX={500}
-                    animateX={[500, 500, 200, -100, 175, 500]}
+                    animateX={[500, 500, 200, -100, 180, 500]}
                     width={800}
                     duration={3}
                     repeatDelay={2}

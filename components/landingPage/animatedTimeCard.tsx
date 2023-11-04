@@ -1,6 +1,7 @@
 import styles from "@/style/Components/TimeCard.module.scss";
 import { motion, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
+import { addMinutes, format, roundToNearestMinutes } from "date-fns";
 
 interface Props {
   width: number;
@@ -12,18 +13,27 @@ interface Props {
   repeatDelay: number;
 }
 
+const minutesIncrements = 20;
+
 export default function AnimatedTimeCard(props: Props) {
   const translateXValue = useMotionValue(props.initialX);
   const widthValue = useMotionValue(props.width);
-  const [currentX, setCurrentX] = useState(props.initialX);
-  const [currentWidth, setCurrentWidth] = useState(props.width);
+  const [currentX, setCurrentX] = useState(
+    Math.round(Math.round(translateXValue.get()) / minutesIncrements)
+  );
+  const [currentWidth, setCurrentWidth] = useState(
+    Math.round(Math.round(widthValue.get()) / minutesIncrements)
+  );
+
+  const startTime = new Date();
+  startTime.setHours(9, 0, 0, 0);
 
   useMotionValueEvent(translateXValue, "change", (latest) => {
-    setCurrentX(latest);
+    setCurrentX(Math.round(latest) / minutesIncrements);
   });
 
   useMotionValueEvent(widthValue, "change", (latest) => {
-    setCurrentWidth(latest);
+    setCurrentWidth(Math.round(latest) / minutesIncrements);
   });
 
   return (
@@ -47,9 +57,22 @@ export default function AnimatedTimeCard(props: Props) {
       >
         <div className={styles.container} style={{ width: "100%" }}>
           <div className={`${styles.timeContainer}`}>
-            <span className={styles.timeCue}>{Math.round(currentX)}</span>
             <span className={styles.timeCue}>
-              {Math.round(currentX) + Math.round(currentWidth)}
+              {format(
+                roundToNearestMinutes(addMinutes(startTime, currentX * 5), {
+                  nearestTo: 5,
+                }),
+                "HH:mm"
+              )}
+            </span>
+            <span className={styles.timeCue}>
+              {format(
+                roundToNearestMinutes(
+                  addMinutes(startTime, (currentX + currentWidth) * 5),
+                  { nearestTo: 5 }
+                ),
+                "HH:mm"
+              )}
             </span>
           </div>
         </div>
