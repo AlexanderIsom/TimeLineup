@@ -3,6 +3,7 @@
 import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import "./styles.scss";
+import dateCardStyle from "@/style/Components/DateCard.module.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -22,11 +23,14 @@ import AnimatedNumber from "@/components/AnimatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
+import { Variants, motion, useScroll, useTransform } from "framer-motion";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
   const animatedDivContainer = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll();
+  const thing = useTransform(scrollYProgress, [0, 1], [-100, 100]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,6 +46,20 @@ export default function Home() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, [animatedDivContainer]);
+
+  const cardVariants: Variants = {
+    offscreen: {
+      y: -150,
+    },
+    onscreen: {
+      y: 50,
+      transition: {
+        type: "spring",
+        bounce: 0.4,
+        duration: 0.8,
+      },
+    },
+  };
 
   return (
     <main className={"main"}>
@@ -252,12 +270,70 @@ export default function Home() {
                 </div>
               </div>
               <div className="pl-8 pt-8 flexItem w-full image">
-                <div className="w-full h-full imageShadow rounded-lg">
-                  <div className=" h-full w-full flex gap-4 pl-4 pt-4">
-                    <DateCard heading="Event 1" />
-                    <DateCard heading="Event 2" />
+                {isAnimatiedDivShown && (
+                  <div className="w-full h-full imageShadow rounded-lg overflow-hidden">
+                    <motion.div
+                      className="h-1 w-full gap-4 pl-4 pr-4 flex"
+                      initial="offscreen"
+                      whileInView="onscreen"
+                      viewport={{ once: true, amount: 1 }}
+                    >
+                      <motion.div
+                        className="h-fit"
+                        style={{ width: "50%", height: "300px" }}
+                        variants={{
+                          offscreen: {
+                            y: -250,
+                          },
+                          onscreen: {
+                            y: -100,
+                            transition: {
+                              type: "spring",
+                              bounce: 0.4,
+                              duration: 0.8,
+                            },
+                          },
+                        }}
+                      >
+                        <DateCard
+                          heading="Release party"
+                          subtext="Thursday 5 pm to 1 am"
+                          cancelled={2}
+                          attending={20}
+                          invited={7}
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        className="h-fit w-fit"
+                        style={{ width: "50%", height: "300px" }}
+                        variants={{
+                          offscreen: {
+                            y: 270,
+                          },
+                          onscreen: {
+                            y: 120,
+                            transition: {
+                              type: "spring",
+                              bounce: 0.4,
+                              duration: 1.2,
+                              delay: 0.1,
+                            },
+                          },
+                        }}
+                      >
+                        <DateCard
+                          heading="Wine tasting night!"
+                          reversed={true}
+                          subtext="Friday 5 pm to 8 pm"
+                          cancelled={1}
+                          attending={5}
+                          invited={2}
+                        />
+                      </motion.div>
+                    </motion.div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
