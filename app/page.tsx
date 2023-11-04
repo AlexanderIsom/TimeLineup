@@ -5,7 +5,17 @@ import { useUser } from "@clerk/nextjs";
 import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { TbClick, TbCode, TbUserCheck, TbPuzzle } from "react-icons/tb";
+import {
+  TbClick,
+  TbCode,
+  TbUserCheck,
+  TbPuzzle,
+  TbBrush,
+  TbContrast2,
+  TbClockSearch,
+  TbShieldCheckFilled,
+  TbBellRinging,
+} from "react-icons/tb";
 import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
@@ -188,11 +198,13 @@ export default function Home() {
       <div className="lower">
         <div className="margin middle">
           <div className="text-center m-auto">
-            <h4>Build tools and full documentation </h4>
+            <h4>Plan and create events fast</h4>
             <p className="pSubText">
-              Components, plugins, and build tools are all thoroughly <br />
-              documented with live examples and markup for easier use <br />
-              and customization
+              Events are easy to create, intuitive and simple
+              <br />
+              with real time notifications so you dont miss a thing
+              <br />
+              in any timezone
             </p>
             <div className="flex bg-gray-100 h-64 rounded-lg overflow-hidden justify-center items-center relative">
               <Image
@@ -208,47 +220,33 @@ export default function Home() {
           <div>
             <div className="flex">
               <div className="pl-8 pt-8 imageDescription">
-                <h4>
-                  The powerful and flexible theme for all kinds of businesses
-                </h4>
+                <h4>Powerful and flexible events for all kinds of functions</h4>
                 <p className="pSubText">
-                  Whether youre creating a subscription service, an on-demand
-                  marketplace, an e-commerce store, or a portfolio showcase,
-                  theFront helps you create the best possible product for your
-                  users.
+                  Whether you&apos;re planning to skype, have a simple call, a
+                  game of among us, or a in person party, TimeLineup helps you
+                  create the best possible events for your friends.
                 </p>
                 <div className="statContainer">
                   <div className="statItem">
                     <span className="statHeader">
-                      <AnimatedNumber from={0} to={300} duration={3}>
-                        +
-                      </AnimatedNumber>
+                      <AnimatedNumber from={0} to={100} duration={3} />
+                    </span>
+                    <p>Create up to 100 events per user.</p>
+                  </div>
+                  <div className="statItem">
+                    <span className="statHeader">
+                      <AnimatedNumber from={0} to={30} duration={3} />
                     </span>
                     <p>
-                      300 + component compositions, which will help you to build
-                      any page easily.
+                      30 day retention, old expired events are deleted after 30
+                      days.
                     </p>
                   </div>
                   <div className="statItem">
                     <span className="statHeader">
-                      <AnimatedNumber from={0} to={45} duration={3}>
-                        +
-                      </AnimatedNumber>
+                      <AnimatedNumber from={0} to={24} duration={3} />
                     </span>
-                    <p>
-                      45 + landing and supported pages to Build a professional
-                      website.
-                    </p>
-                  </div>
-                  <div className="statItem">
-                    <span className="statHeader">
-                      <AnimatedNumber from={0} to={99} duration={3}>
-                        %
-                      </AnimatedNumber>
-                    </span>
-                    <p>
-                      99% of our customers rated 5-star our themes over 5 years.
-                    </p>
+                    <p>24 timezones all synced perfectly to events.</p>
                   </div>
                 </div>
               </div>
@@ -267,70 +265,70 @@ export default function Home() {
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Simple</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Designed with simplicity in mind. Create new events in
+                  moments.
                 </p>
               </div>
             </BoxItem>
             <BoxItem index={1}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <TbContrast2 size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Flexible</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Easily re-organise and re-schedule events and attending times
+                  with the click of a mouse
                 </p>
               </div>
             </BoxItem>
             <BoxItem index={2}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <TbBrush size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Customizable</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Events have huge number of options to adjust from date time,
+                  agenda and invites.
                 </p>
               </div>
             </BoxItem>
             <BoxItem index={3}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <TbClockSearch size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Timezones</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Event times automatically adjust to the timezone you&apos;re
+                  in, making time planning easy for you.
                 </p>
               </div>
             </BoxItem>
             <BoxItem index={4}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <TbShieldCheckFilled size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Safe</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Old events are deleted and no data is saved long term, data
+                  transparency for us is key.
                 </p>
               </div>
             </BoxItem>
             <BoxItem index={5}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <TbBellRinging size={25} color="white" />
                 </div>
-                <h6 className="mb-2">Composable</h6>
+                <h6 className="mb-2">Real time</h6>
                 <p className="boxDescription">
-                  Designed with composition in mind. Compose new components with
-                  ease.
+                  Whether&apos;s its an event update or users respond to your
+                  own event, you&apos;ll get notifications in real time.
                 </p>
               </div>
             </BoxItem>
@@ -351,10 +349,9 @@ export default function Home() {
       </div>
       <div className="text-center margin">
         <div>
-          <h4>Get started with theFront today</h4>
+          <h4>Get started with TimeLineup today</h4>
           <p className="pSubText mb-8">
-            Build a beautiful, modern website with flexible, fully customizable,
-            atomic MUI components.
+            Build simple, easy, flexible and fully customizable, events.
           </p>
           <div className="flex w-full gap-4 justify-center">
             <Button size={"lg"} className="footerButton">
