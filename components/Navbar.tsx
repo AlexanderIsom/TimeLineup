@@ -93,50 +93,50 @@ export default function Navbar() {
                 <span className="underline">Lineup</span>
               </SheetTitle>
             </SheetHeader>
-            <SignedOut>
-              <div className="items-center text-center">
-                <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
-                  <Link href="/sign-in">Sign in</Link>
-                </SheetClose>
-              </div>
-            </SignedOut>
-            <SignedIn>
-              <div className="flex gap-4 items-center">
-                <span className="font-medium text-l">{user?.firstName}</span>
-                <div className=" w-8 h-8 justify-center items-center flex">
-                  {typeof user?.imageUrl === "string" && (
-                    <Image
-                      src={user!.imageUrl as string}
-                      width={500}
-                      height={500}
-                      alt="User Avatar"
-                      className="rounded-full"
-                    />
-                  )}
-
-                  {/* <UserButton afterSignOutUrl="/" /> */}
+            <div className="flex flex-col w-full h-full">
+              <SignedOut>
+                <div className="items-center text-center">
+                  <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
+                    <Link href="/sign-in">Sign in</Link>
+                  </SheetClose>
                 </div>
-              </div>
-              <div>
-                <SheetClose asChild>
-                  <Link href="/events" className="font-medium text-xl">
-                    Events
-                  </Link>
-                </SheetClose>
-              </div>
-              <div>
-                <SheetClose asChild>
-                  <Link href="/user-profile" className="font-medium text-xl">
-                    Manage account
-                  </Link>
-                </SheetClose>
-              </div>
-              <div>
-                <SheetClose>
-                  <SignOutButton />
-                </SheetClose>
-              </div>
-            </SignedIn>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex gap-4 items-center pb-4">
+                  <div className=" w-8 h-8 justify-center items-center flex">
+                    {typeof user?.imageUrl === "string" && (
+                      <Image
+                        src={user!.imageUrl as string}
+                        width={500}
+                        height={500}
+                        alt="User Avatar"
+                        className="rounded-full"
+                      />
+                    )}
+                  </div>
+                  <span className="font-medium text-l">{user?.firstName}</span>
+                </div>
+                <div>
+                  <SheetClose asChild>
+                    <Link href="/user-profile" className="font-medium text-xl">
+                      Manage account
+                    </Link>
+                  </SheetClose>
+                </div>
+                <div>
+                  <SheetClose asChild>
+                    <Link href="/events" className="font-medium text-xl">
+                      Events
+                    </Link>
+                  </SheetClose>
+                </div>
+                <div className="h-fit absolute bottom-0 pb-8">
+                  <SheetClose>
+                    <SignOutButton />
+                  </SheetClose>
+                </div>
+              </SignedIn>
+            </div>
           </SheetContent>
         </Sheet>
       )}
