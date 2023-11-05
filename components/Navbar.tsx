@@ -72,7 +72,11 @@ export default function Navbar() {
       )) || (
         <Sheet>
           <SheetTrigger>
-            <TbMenu2 />
+            <div
+              className={`${styles.hamburgerMenu} w-8 h-8 flex justify-center items-center rounded-md`}
+            >
+              <TbMenu2 />
+            </div>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
