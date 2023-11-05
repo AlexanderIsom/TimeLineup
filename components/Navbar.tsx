@@ -90,9 +90,9 @@ export default function Navbar() {
                     </div>
                   </div>
                 )) || (
-                  <Button size={"sm"}>
+                  <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
                     <Link href="/sign-in">Sign in</Link>
-                  </Button>
+                  </SheetClose>
                 ))}
             </div>
             {isSignedIn && (
