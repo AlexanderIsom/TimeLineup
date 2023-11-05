@@ -1,9 +1,6 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
-import { useUser } from "@clerk/nextjs";
 import "./styles.scss";
-import dateCardStyle from "@/style/Components/DateCard.module.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -23,14 +20,13 @@ import AnimatedNumber from "@/components/AnimatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
-import { Variants, motion, useScroll, useTransform } from "framer-motion";
+import { Variants, motion } from "framer-motion";
+import { useUser } from "@clerk/nextjs";
 
 export default function Home() {
-  const { isSignedIn, user, isLoaded } = useUser();
   const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
   const animatedDivContainer = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll();
-  const thing = useTransform(scrollYProgress, [0, 1], [-100, 100]);
+  const { isSignedIn } = useUser();
 
   useEffect(() => {
     const handleResize = () => {
@@ -78,7 +74,9 @@ export default function Home() {
               </p>
               <div className="flex w-full gap-4 buttonsContainer">
                 <Button size={"lg"}>
-                  <Link href="/sign-in">Get started</Link>
+                  <Link href={isSignedIn ? "/events" : "/sign-in"}>
+                    Get started
+                  </Link>
                 </Button>
                 <Button variant={"outline"} size={"lg"}>
                   <Link href="/sign-in">Find out more</Link>
@@ -219,10 +217,11 @@ export default function Home() {
             </p>
             <div className="flex bg-gray-100 h-64 rounded-lg overflow-hidden justify-center items-center relative">
               <Image
+                className="chatImage"
                 src={"/landing/Chat.png"}
                 alt="Chat"
-                layout="fill"
-                objectFit="cover"
+                width={1000}
+                height={1000}
               />
             </div>
           </div>
@@ -263,7 +262,7 @@ export default function Home() {
               </div>
               <div className="pl-8 pt-8 flexItem w-full image">
                 {isAnimatiedDivShown && (
-                  <div className="w-full h-full imageShadow rounded-lg overflow-hidden">
+                  <div className="w-full h-full imageShadow rounded-lg overflow-hidden ">
                     <motion.div
                       className="h-1 w-full gap-4 pl-4 pr-4 flex"
                       initial="offscreen"
@@ -282,7 +281,7 @@ export default function Home() {
                             transition: {
                               type: "spring",
                               bounce: 0.4,
-                              duration: 0.8,
+                              duration: 1,
                             },
                           },
                         }}
@@ -427,7 +426,9 @@ export default function Home() {
           </p>
           <div className="flex w-full gap-4 justify-center">
             <Button size={"lg"} className="footerButton">
-              <Link href="/sign-in">Get started</Link>
+              <Link href={isSignedIn ? "/events" : "/sign-in"}>
+                Get started
+              </Link>
             </Button>
             <Button variant={"outline"} size={"lg"} className="footerButton">
               <Link href="/sign-in">Find out more</Link>

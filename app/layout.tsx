@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+import Navbar from "@/components/Navbar";
 
 var cn = require("classnames");
 
@@ -29,6 +30,7 @@ export default function RootLayout({
             inter.className
           )}
         >
+          <Navbar />
           {children}
         </body>
       </html>
