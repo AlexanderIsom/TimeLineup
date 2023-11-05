@@ -176,7 +176,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex descirptionsIconsGrid">
-          <div className="pl-4 pt-4 w-full md:w-1/3">
+          <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
                 <TbClick size={30} />
@@ -188,7 +188,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="pl-4 pt-4 w-full md:w-1/3">
+          <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
                 <TbCode size={30} />
@@ -200,7 +200,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="pl-4 pt-4 w-full md:w-1/3">
+          <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
                 <TbUserCheck size={30} />
@@ -218,7 +218,7 @@ export default function Home() {
         <div className="margin middle">
           <div className="text-center m-auto">
             <h4>Plan and create events fast</h4>
-            <p className="pSubText">
+            <p className="pSubText pb-4">
               Events are easy to create, intuitive and simple
               <br />
               with real time notifications so you dont miss a thing
@@ -238,7 +238,7 @@ export default function Home() {
         <div className="margin">
           <div>
             <div className="flex">
-              <div className="pl-8 pt-8 imageDescription">
+              <div className="pl-8 pt-8 pr-8 imageDescription">
                 <h4>Powerful and flexible events for all kinds of functions</h4>
                 <p className="pSubText">
                   Whether you&apos;re planning to skype, have a simple call, a
