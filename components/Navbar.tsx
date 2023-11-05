@@ -1,6 +1,12 @@
 "use client";
 
-import { UserButton, useUser } from "@clerk/nextjs";
+import {
+  SignOutButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import styles from "@/style/Components/Navbar.module.scss";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -14,6 +20,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { TbMenu2 } from "react-icons/tb";
+import Image from "next/image";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -79,33 +86,56 @@ export default function Navbar() {
             </div>
           </SheetTrigger>
           <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Navigate</SheetTitle>
+            <SheetHeader className="pb-4">
+              <SheetTitle>
+                {" "}
+                <span className="no-underline">Time</span>
+                <span className="underline">Lineup</span>
+              </SheetTitle>
             </SheetHeader>
-            <div className={`${!isSignedIn && "justify-center text-center"}`}>
-              {isLoaded &&
-                ((isSignedIn && (
-                  <div className="flex gap-4 items-center">
-                    <span className="font-medium text-l">
-                      {user?.firstName}
-                    </span>
-                    <div className=" w-8 h-8 justify-center items-center flex">
-                      <UserButton afterSignOutUrl="/" />
-                    </div>
-                  </div>
-                )) || (
-                  <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
-                    <Link href="/sign-in">Sign in</Link>
-                  </SheetClose>
-                ))}
-            </div>
-            {isSignedIn && (
-              <SheetClose asChild>
-                <Link href="/events" className="font-medium text-xl">
-                  Events
-                </Link>
-              </SheetClose>
-            )}
+            <SignedOut>
+              <div className="items-center text-center">
+                <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
+                  <Link href="/sign-in">Sign in</Link>
+                </SheetClose>
+              </div>
+            </SignedOut>
+            <SignedIn>
+              <div className="flex gap-4 items-center">
+                <span className="font-medium text-l">{user?.firstName}</span>
+                <div className=" w-8 h-8 justify-center items-center flex">
+                  {typeof user?.imageUrl === "string" && (
+                    <Image
+                      src={user!.imageUrl as string}
+                      width={500}
+                      height={500}
+                      alt="User Avatar"
+                    />
+                  )}
+
+                  {/* <UserButton afterSignOutUrl="/" /> */}
+                </div>
+              </div>
+              <div>
+                <SheetClose asChild>
+                  <Link href="/events" className="font-medium text-xl">
+                    Events
+                  </Link>
+                </SheetClose>
+              </div>
+              <div>
+                <SheetClose asChild>
+                  <Link href="/user-profile" className="font-medium text-xl">
+                    Manage account
+                  </Link>
+                </SheetClose>
+              </div>
+              <div>
+                <SheetClose>
+                  <SignOutButton />
+                </SheetClose>
+              </div>
+            </SignedIn>
           </SheetContent>
         </Sheet>
       )}

@@ -60,7 +60,7 @@ export default function Home() {
   return (
     <main className={"main"}>
       <div className={"backgroundFade"}>
-        <div className={`${"titleContainer"} overflow-hidden`}>
+        <div className={`titleContainer overflow-hidden`}>
           <div className={`margin`}>
             <div className={`${"titles"}`}>
               <h2>
