@@ -25,7 +25,7 @@ export default function BoxItem(props: Props) {
 
   return (
     <motion.div
-      className="pl-8 pt-8 boxItem"
+      className=" boxItem"
       initial="offscreen"
       whileInView="onscreen"
       viewport={{ once: true, amount: 0.8 }}

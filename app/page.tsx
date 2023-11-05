@@ -84,14 +84,6 @@ export default function Home() {
                   <Link href="/sign-in">Find out more</Link>
                 </Button>
               </div>
-              {isLoaded && isSignedIn && (
-                <div>
-                  Hello, {user?.firstName}
-                  <div className=" w-8 h-8 justify-center items-center flex">
-                    <UserButton afterSignOutUrl="/" />
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           <div className="titleImage" ref={animatedDivContainer}>
@@ -207,7 +199,7 @@ export default function Home() {
               </div>
               <h6 className="font-regular text-xl">Continuously developing</h6>
               <p className="iconSubText">
-                Feeback from our users is key and we constantly improve to make
+                Feedback from our users is key and we constantly improve to make
                 things effortless for you
               </p>
             </div>
@@ -339,7 +331,7 @@ export default function Home() {
           </div>
         </div>
         <div className="margin">
-          <div className="boxContainer">
+          <div className="boxContainer justify-center">
             <BoxItem index={0}>
               <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
