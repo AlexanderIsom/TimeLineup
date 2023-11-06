@@ -1,5 +1,4 @@
 "use client";
-
 import {
   SignOutButton,
   SignedIn,
@@ -10,7 +9,7 @@ import {
 import styles from "@/style/Components/Navbar.module.scss";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+
 import {
   Sheet,
   SheetClose,
@@ -21,24 +20,19 @@ import {
 } from "./ui/sheet";
 import { TbMenu2 } from "react-icons/tb";
 import Image from "next/image";
+import DeviceDetector from "device-detector-js";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
-  const [navbarShown, setNavbarShown] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setNavbarShown(window.innerWidth > 900);
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, [navbarShown]);
+  const deviceDetector = new DeviceDetector();
+  const userAgent = navigator.userAgent;
+  const device = deviceDetector.parse(userAgent);
+  const isMobile = device.device?.type === "smartphone";
 
   return (
     <div
       className={`${styles.wrapper} ${
-        navbarShown ? "pl-32 pr-32" : "pl-4 pr-4"
+        isMobile ? "pl-4 pr-4" : "pl-32 pr-32"
       } absolute z-50 h-24 w-full justify-between flex items-center`}
     >
       <div className="flex items-center gap-12">
@@ -48,7 +42,7 @@ export default function Navbar() {
             <span className="underline">Lineup</span>
           </Link>
         </div>
-        {navbarShown && (
+        {!isMobile && (
           <div className="font-medium text-xl">
             {isSignedIn && (
               <div>
@@ -58,7 +52,7 @@ export default function Navbar() {
           </div>
         )}
       </div>
-      {(navbarShown && (
+      {(!isMobile && (
         <div>
           {isLoaded &&
             ((isSignedIn && (
