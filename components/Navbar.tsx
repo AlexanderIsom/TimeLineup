@@ -21,13 +21,18 @@ import {
 import { TbMenu2 } from "react-icons/tb";
 import Image from "next/image";
 import DeviceDetector from "device-detector-js";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
-  const deviceDetector = new DeviceDetector();
-  const userAgent = navigator.userAgent;
-  const device = deviceDetector.parse(userAgent);
-  const isMobile = device.device?.type === "smartphone";
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const deviceDetector = new DeviceDetector();
+    const userAgent = window.navigator.userAgent;
+    const device = deviceDetector.parse(userAgent);
+    setIsMobile(device.device?.type === "smartphone");
+  }, []);
 
   return (
     <div

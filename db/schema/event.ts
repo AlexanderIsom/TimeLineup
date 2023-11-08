@@ -2,12 +2,11 @@ import {
     mysqlTable,
     serial,
     timestamp,
-    varchar,
 } from 'drizzle-orm/mysql-core';
 
-export const users = mysqlTable('users', {
+export const event = mysqlTable('event', {
     id: serial('id').primaryKey().notNull(),
-    name: varchar('name', { length: 256 }),
-    email: varchar('email', { length: 256 }),
+    startTime: timestamp('startTime', { mode: 'date' }).defaultNow(),
+    endTime: timestamp('endTime', { mode: 'date' }).defaultNow(),
     createdAt: timestamp('createdAt', { mode: 'string' }).defaultNow(),
 });
