@@ -1,23 +1,10 @@
 "use client";
-import {
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
-import styles from "@/style/Components/Navbar.module.scss";
+import { SignOutButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import styles from "@/styles/Components/Navbar.module.scss";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { TbMenu2 } from "react-icons/tb";
 import Image from "next/image";
 import DeviceDetector from "device-detector-js";
@@ -35,11 +22,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div
-      className={`${styles.wrapper} ${
-        isMobile ? "pl-4 pr-4" : "pl-32 pr-32"
-      } absolute z-50 h-24 w-full justify-between flex items-center`}
-    >
+    <div className={`${styles.wrapper} ${isMobile ? "pl-4 pr-4" : "pl-32 pr-32"} absolute z-50 h-24 w-full justify-between flex items-center`}>
       <div className="flex items-center gap-12">
         <div className="text-2xl font-bold">
           <Link href="/">
@@ -78,9 +61,7 @@ export default function Navbar() {
       )) || (
         <Sheet>
           <SheetTrigger>
-            <div
-              className={`${styles.hamburgerMenu} w-8 h-8 flex justify-center items-center rounded-md`}
-            >
+            <div className={`${styles.hamburgerMenu} w-8 h-8 flex justify-center items-center rounded-md`}>
               <TbMenu2 />
             </div>
           </SheetTrigger>
@@ -103,15 +84,7 @@ export default function Navbar() {
               <SignedIn>
                 <div className="flex gap-4 items-center pb-4">
                   <div className=" w-8 h-8 justify-center items-center flex">
-                    {typeof user?.imageUrl === "string" && (
-                      <Image
-                        src={user!.imageUrl as string}
-                        width={500}
-                        height={500}
-                        alt="User Avatar"
-                        className="rounded-full"
-                      />
-                    )}
+                    {typeof user?.imageUrl === "string" && <Image src={user!.imageUrl as string} width={500} height={500} alt="User Avatar" className="rounded-full" />}
                   </div>
                   <span className="font-medium text-l">{user?.firstName}</span>
                 </div>

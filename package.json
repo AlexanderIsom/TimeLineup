@@ -24,9 +24,12 @@
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.6",
     "framer-motion": "^10.16.4",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.288.0",
+    "nanoid": "^5.0.3",
     "next": "14.0.1",
     "react": "^18",
+    "react-datepicker": "^4.21.0",
     "react-dom": "^18",
     "react-icons": "^4.11.0",
     "styled-components": "^6.1.0",
@@ -34,8 +37,10 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.201",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-datepicker": "^4.19.3",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
     "drizzle-kit": "^0.19.13",

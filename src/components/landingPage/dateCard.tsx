@@ -1,4 +1,4 @@
-import styles from "@/style/Components/DateCard.module.scss";
+import styles from "@/styles/Components/DateCard.module.scss";
 
 interface Props {
   heading: string;
@@ -11,11 +11,7 @@ interface Props {
 
 export default function DateCard(props: Props) {
   return (
-    <div
-      className={`${styles.dateCard} rounded-xl pt-4 pb-4 flex ${
-        props.reversed ? "flex-col-reverse" : "flex-col"
-      } justify-end text-center`}
-    >
+    <div className={`${styles.dateCard} rounded-xl pt-4 pb-4 flex ${props.reversed ? "flex-col-reverse" : "flex-col"} justify-end text-center`}>
       <div className="flex text-center w-full pl-4 pt-4 pb-4">
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
