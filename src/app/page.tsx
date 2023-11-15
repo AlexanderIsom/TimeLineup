@@ -4,7 +4,7 @@ import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TbClick, TbCode, TbUserCheck, TbPuzzle, TbBrush, TbContrast2, TbClockSearch, TbShieldCheckFilled, TbBellRinging } from "react-icons/tb";
-import Image from "next/image";
+// import Image from "next/image";
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
@@ -152,7 +152,7 @@ export default function Home() {
               in any timezone
             </p>
             <div className="flex bg-gray-100 h-64 rounded-lg overflow-hidden justify-center items-center relative">
-              <Image className="chatImage" src={"/landing/Chat.png"} alt="Chat" width={1000} height={1000} />
+              <img className="chatImage" src="/landing/Chat.png" alt="Chat" width={1000} height={1000} />
             </div>
           </div>
         </div>
