@@ -1,5 +1,5 @@
 "use client";
-import { SignOutButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { ClerkLoaded, SignOutButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/Components/Navbar.module.scss";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import DeviceDetector from "device-detector-js";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -31,32 +31,36 @@ export default function Navbar() {
           </Link>
         </div>
         {!isMobile && (
-          <div className="font-medium text-xl">
-            {isSignedIn && (
-              <div>
-                <Link href="/events">Events</Link>
+          <ClerkLoaded>
+            <SignedIn>
+              <div className="font-medium text-xl">
+                <div>
+                  <Link href="/events">Events</Link>
+                </div>
               </div>
-            )}
-          </div>
+            </SignedIn>
+          </ClerkLoaded>
         )}
       </div>
       {(!isMobile && (
         <div>
-          {isLoaded &&
-            ((isSignedIn && (
+          <ClerkLoaded>
+            <SignedIn>
               <div className="flex gap-4 items-center">
                 <span className="font-medium text-l">{user?.firstName}</span>
                 <div className=" w-8 h-8 justify-center items-center flex">
                   <UserButton afterSignOutUrl="/" />
                 </div>
               </div>
-            )) || (
+            </SignedIn>
+            <SignedOut>
               <div>
                 <Button size={"sm"}>
                   <Link href="/sign-in">Sign in</Link>
                 </Button>
               </div>
-            ))}
+            </SignedOut>
+          </ClerkLoaded>
         </div>
       )) || (
         <Sheet>
@@ -103,7 +107,7 @@ export default function Navbar() {
                   </SheetClose>
                 </div>
                 <div className="h-fit absolute bottom-0 pb-8">
-                  <SheetClose>
+                  <SheetClose asChild>
                     <SignOutButton />
                   </SheetClose>
                 </div>
