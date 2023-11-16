@@ -4,13 +4,13 @@ import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TbClick, TbCode, TbUserCheck, TbPuzzle, TbBrush, TbContrast2, TbClockSearch, TbShieldCheckFilled, TbBellRinging } from "react-icons/tb";
-// import Image from "next/image";
+
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
-import { Variants, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 
 export default function Home() {
@@ -33,45 +33,32 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, [animatedDivContainer]);
 
-  const cardVariants: Variants = {
-    offscreen: {
-      y: -150,
-    },
-    onscreen: {
-      y: 50,
-      transition: {
-        type: "spring",
-        bounce: 0.4,
-        duration: 0.8,
-      },
-    },
-  };
-
   return (
     <main className={"main"}>
       <div className={"backgroundFade"}>
         <div className={`titleContainer overflow-hidden`}>
           <div className={`margin`}>
-            <div className={`${"titles"}`}>
+            <div className="titles">
               <h2>
                 Make your events
                 <br />
-                actually <span className={"successText"}>happen.</span>
+                actually <span className={"titleHighlight"}>happen.</span>
               </h2>
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
                 <Button size={"lg"}>
-                  <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
+                  Coming soon
+                  {/* <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link> */}
                 </Button>
-                <Button variant={"outline"} size={"lg"}>
+                {/* <Button variant={"outline"} size={"lg"}>
                   <Link href="/sign-in">Find out more</Link>
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
           <div className="titleImage" ref={animatedDivContainer}>
             {isAnimatiedDivShown && (
-              <div className="titleBoxThing flex flex-col">
+              <div className="animatedEventCardsContainer flex flex-col">
                 <div>
                   <AnimatedTimeCard initialX={20} animateX={[20, 200]} width={300} duration={1} repeatDelay={2} />
                 </div>
@@ -102,7 +89,7 @@ export default function Home() {
       <div className="margin">
         <div className="text-center pb-4 ">
           <h4>Create worldwide events quickly and easily</h4>
-          <p className="pSubText">Simple, flexable and easy to make events for friends for all around the world.</p>
+          <p className="subText">Simple, flexable and easy to make events for friends for all around the world.</p>
         </div>
         <div className="flex descirptionsIconsGrid">
           <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
@@ -140,11 +127,11 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="lower">
+      <div className="lowerSection">
         <div className="margin middle">
           <div className="text-center m-auto">
             <h4>Plan and create events fast</h4>
-            <p className="pSubText pb-4">
+            <p className="subText pb-4">
               Events are easy to create, intuitive and simple
               <br />
               with real time notifications so you dont miss a thing
@@ -159,35 +146,35 @@ export default function Home() {
         <div className="margin">
           <div>
             <div className="flex">
-              <div className="pl-8 pt-8 pr-8 imageDescription">
+              <div className="pl-8 pt-8 pr-8 animatedEventInfoDescription">
                 <h4>Powerful and flexible events for all kinds of functions</h4>
-                <p className="pSubText">
+                <p className="subText">
                   Whether you&apos;re planning to skype, have a simple call, a game of among us, or a in person party, TimeLineup helps you create the best possible events for your friends.
                 </p>
-                <div className="statContainer">
+                <div className="statsContainer">
                   <div className="statItem">
-                    <span className="statHeader">
+                    <span className="statsHeader">
                       <AnimatedNumber from={0} to={100} duration={3} />
                     </span>
                     <p>Create up to 100 events per user.</p>
                   </div>
                   <div className="statItem">
-                    <span className="statHeader">
+                    <span className="statsHeader">
                       <AnimatedNumber from={0} to={30} duration={3} />
                     </span>
                     <p>30 day retention, old expired events are deleted after 30 days.</p>
                   </div>
                   <div className="statItem">
-                    <span className="statHeader">
+                    <span className="statsHeader">
                       <AnimatedNumber from={0} to={24} duration={3} />
                     </span>
                     <p>24 timezones all synced perfectly to events.</p>
                   </div>
                 </div>
               </div>
-              <div className="pl-8 pt-8 flexItem w-full image">
+              <div className="pl-8 pt-8 flexItem w-full animatedEventInfoCardContainer">
                 {isAnimatiedDivShown && (
-                  <div className="w-full h-full imageShadow rounded-lg overflow-hidden ">
+                  <div className="w-full h-full animatedEventInfoCard rounded-lg overflow-hidden ">
                     <motion.div className="h-1 w-full gap-4 pl-4 pr-4 flex" initial="offscreen" whileInView="onscreen" viewport={{ once: true, amount: 1 }}>
                       <motion.div
                         className="h-fit"
@@ -237,9 +224,9 @@ export default function Home() {
           </div>
         </div>
         <div className="margin">
-          <div className="boxContainer justify-center">
+          <div className="animatedCardsContainer justify-center">
             <BoxItem index={0}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbPuzzle size={25} color="white" />
                 </div>
@@ -248,7 +235,7 @@ export default function Home() {
               </div>
             </BoxItem>
             <BoxItem index={1}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbContrast2 size={25} color="white" />
                 </div>
@@ -257,7 +244,7 @@ export default function Home() {
               </div>
             </BoxItem>
             <BoxItem index={2}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbBrush size={25} color="white" />
                 </div>
@@ -266,7 +253,7 @@ export default function Home() {
               </div>
             </BoxItem>
             <BoxItem index={3}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbClockSearch size={25} color="white" />
                 </div>
@@ -275,7 +262,7 @@ export default function Home() {
               </div>
             </BoxItem>
             <BoxItem index={4}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbShieldCheckFilled size={25} color="white" />
                 </div>
@@ -284,7 +271,7 @@ export default function Home() {
               </div>
             </BoxItem>
             <BoxItem index={5}>
-              <div className="rounded-lg  h-full w-full p-8 boxInnerItem">
+              <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <TbBellRinging size={25} color="white" />
                 </div>
@@ -301,14 +288,15 @@ export default function Home() {
       <div className="text-center margin">
         <div>
           <h4>Get started with TimeLineup today</h4>
-          <p className="pSubText mb-8">Build simple, easy, flexible and fully customizable events.</p>
+          <p className="subText mb-8">Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
             <Button size={"lg"} className="footerButton">
-              <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
+              Coming soon
+              {/* <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link> */}
             </Button>
-            <Button variant={"outline"} size={"lg"} className="footerButton">
+            {/* <Button variant={"outline"} size={"lg"} className="footerButton">
               <Link href="/sign-in">Find out more</Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>

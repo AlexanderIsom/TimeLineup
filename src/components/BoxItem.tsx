@@ -24,13 +24,7 @@ export default function BoxItem(props: Props) {
   };
 
   return (
-    <motion.div
-      className=" boxItem"
-      initial="offscreen"
-      whileInView="onscreen"
-      viewport={{ once: true, amount: 0.8 }}
-      variants={cardVariants}
-    >
+    <motion.div className="animatedCardItem" initial="offscreen" whileInView="onscreen" viewport={{ once: true, amount: 0.8 }} variants={cardVariants}>
       {props.children}
     </motion.div>
   );
