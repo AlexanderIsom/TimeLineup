@@ -30,7 +30,7 @@ export default function Navbar() {
             <span className="underline">Lineup</span>
           </Link>
         </div>
-        {/* {!isMobile && (
+        {!isMobile && (
           <ClerkLoaded>
             <SignedIn>
               <div className="font-medium text-xl">
@@ -40,9 +40,9 @@ export default function Navbar() {
               </div>
             </SignedIn>
           </ClerkLoaded>
-        )} */}
+        )}
       </div>
-      {/* {(!isMobile && (
+      {(!isMobile && (
         <div>
           <ClerkLoaded>
             <SignedIn>
@@ -115,7 +115,7 @@ export default function Navbar() {
             </div>
           </SheetContent>
         </Sheet>
-      )} */}
+      )}
     </div>
   );
 }

@@ -47,12 +47,11 @@ export default function Home() {
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
                 <Button size={"lg"}>
-                  Coming soon
-                  {/* <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link> */}
+                  <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
                 </Button>
-                {/* <Button variant={"outline"} size={"lg"}>
+                <Button variant={"outline"} size={"lg"}>
                   <Link href="/sign-in">Find out more</Link>
-                </Button> */}
+                </Button>
               </div>
             </div>
           </div>
@@ -291,12 +290,11 @@ export default function Home() {
           <p className="subText mb-8">Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
             <Button size={"lg"} className="footerButton">
-              Coming soon
-              {/* <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link> */}
+              <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
             </Button>
-            {/* <Button variant={"outline"} size={"lg"} className="footerButton">
+            <Button variant={"outline"} size={"lg"} className="footerButton">
               <Link href="/sign-in">Find out more</Link>
-            </Button> */}
+            </Button>
           </div>
         </div>
       </div>
