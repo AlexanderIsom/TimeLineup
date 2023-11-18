@@ -9,16 +9,11 @@ import Link from "next/link";
 import EventForm from "@/components/events/EventForm";
 import { useRouter } from "next/navigation";
 import { db } from "@/db";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 interface DateRange {
   start: Date;
   end: Date;
-}
-
-interface Props {
-  events: EventData[];
-  dateRange: DateRange;
-  users: Array<User>;
 }
 
 async function getData() {
@@ -26,20 +21,12 @@ async function getData() {
   return res;
 }
 
-interface params {
-  params: {
-    start: string;
-    end: string;
-  };
-}
-
-export default async function Events({ searchParams }: { searchParams?: { start: string | string[] | undefined; end: string | string[] | undefined } }) {
+export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
   const data = await getData();
   console.log(searchParams?.start, searchParams?.end);
-  // const startDay = new Date(dateRange.start);
-  // const endDay = new Date(dateRange.end);
-  const startDay = new Date();
-  const endDay = new Date();
+
+  const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
+  const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
   const days = eachDayOfInterval({ start: startDay, end: endDay });
   const today = new Date();
 
@@ -71,9 +58,10 @@ export default async function Events({ searchParams }: { searchParams?: { start:
                 end: subWeeks(endDay, 1).toDateString(),
               },
             }}
-            className={styles.pagenation}
           >
-            ❮
+            <Button variant="outline" size={"icon"}>
+              <FaChevronLeft />
+            </Button>
           </Link>
           <Link
             href={{
@@ -83,9 +71,10 @@ export default async function Events({ searchParams }: { searchParams?: { start:
                 end: addWeeks(endDay, 1).toDateString(),
               },
             }}
-            className={styles.pagenation}
           >
-            ❯
+            <Button variant="outline" size={"icon"}>
+              <FaChevronRight />
+            </Button>
           </Link>
           <Link
             href={{
@@ -95,9 +84,8 @@ export default async function Events({ searchParams }: { searchParams?: { start:
                 end: endOfWeek(today).toDateString(),
               },
             }}
-            className={styles.pagenation}
           >
-            Today
+            <Button variant="outline">Today</Button>
           </Link>
           {/* <button
             className={styles.button}
