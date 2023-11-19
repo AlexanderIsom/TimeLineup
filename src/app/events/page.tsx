@@ -6,10 +6,11 @@ import { EventResponse, ResponseState, User } from "@/lib/types/Events";
 import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 // import { useEffect, useState } from "react";
-import EventForm from "@/components/events/EventForm";
+import EventForm from "@/components/events/CreateEventForm";
 import { useRouter } from "next/navigation";
 import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import CreateEventForm from "@/components/events/CreateEventForm";
 
 interface DateRange {
   start: Date;
@@ -59,7 +60,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
               },
             }}
           >
-            <Button variant="outline" size={"icon"}>
+            <Button variant="ghost" size={"icon"}>
               <FaChevronLeft />
             </Button>
           </Link>
@@ -72,7 +73,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
               },
             }}
           >
-            <Button variant="outline" size={"icon"}>
+            <Button variant="ghost" size={"icon"}>
               <FaChevronRight />
             </Button>
           </Link>
@@ -85,8 +86,9 @@ export default async function Events({ searchParams }: { searchParams?: { start:
               },
             }}
           >
-            <Button variant="outline">Today</Button>
+            <Button variant="ghost">Today</Button>
           </Link>
+          <CreateEventForm />
           {/* <button
             className={styles.button}
             onClick={() => {
