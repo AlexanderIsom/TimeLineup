@@ -6,11 +6,11 @@ import { EventResponse, ResponseState, User } from "@/lib/types/Events";
 import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 // import { useEffect, useState } from "react";
-import EventForm from "@/components/events/CreateEventForm";
+import EventForm from "@/components/events/CreateEventDialog";
 import { useRouter } from "next/navigation";
 import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import CreateEventForm from "@/components/events/CreateEventForm";
+import CreateEventDialog from "@/components/events/CreateEventDialog";
 
 interface DateRange {
   start: Date;
@@ -24,7 +24,7 @@ async function getData() {
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
   const data = await getData();
-  console.log(searchParams?.start, searchParams?.end);
+  // console.log(searchParams?.start, searchParams?.end);
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
@@ -88,7 +88,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
           >
             <Button variant="ghost">Today</Button>
           </Link>
-          <CreateEventForm />
+          <CreateEventDialog />
           {/* <button
             className={styles.button}
             onClick={() => {
