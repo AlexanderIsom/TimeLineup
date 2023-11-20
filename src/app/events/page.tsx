@@ -24,31 +24,15 @@ async function getData() {
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
   const data = await getData();
-  // console.log(searchParams?.start, searchParams?.end);
+  console.log("DATA", data);
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
   const days = eachDayOfInterval({ start: startDay, end: endDay });
   const today = new Date();
 
-  // const [formOpen, setFormOpen] = useState(false);
-
-  const createEvent = async () => {
-    const res = await fetch("http://localhost:3000/api/addEvent", {
-      method: "POST",
-    });
-  };
-
   return (
     <>
-      {/* <EventForm
-        isVisible={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSave={() => {
-          router.reload();
-        }}
-        users={users}
-      /> */}
       <div className={styles.wrapper}>
         <div className={styles.tools}>
           <Link
@@ -89,14 +73,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
             <Button variant="ghost">Today</Button>
           </Link>
           <CreateEventDialog />
-          {/* <button
-            className={styles.button}
-            onClick={() => {
-              // setFormOpen(true);
-            }}
-          >
-            + New Event
-          </button> */}
+
           <div className={styles.weekHeader}>
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
