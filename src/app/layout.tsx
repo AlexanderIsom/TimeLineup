@@ -19,10 +19,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={inter.className}>
-        <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+      <html lang="en" className={inter.className} style={{ height: "100%" }}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
           <Navbar />
-          <div className="pt-24">{children}</div>
+          <div className="pt-24" style={{ height: "100%" }}>{children}</div>
         </body>
       </html>
     </ClerkProvider>

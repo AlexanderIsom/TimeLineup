@@ -31,9 +31,9 @@ export default async function Events({ searchParams }: { searchParams?: { start:
   const today = new Date();
 
   return (
-    <>
-      <div className={styles.wrapper}>
-        {/* <div className={styles.tools}>
+
+    <div className={styles.wrapper}>
+      {/* <div className={styles.tools}>
           <Link
             href={{
               pathname: "/events",
@@ -77,14 +77,27 @@ export default async function Events({ searchParams }: { searchParams?: { start:
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
         </div> */}
-        <div className={styles.weekGrid}>
+      <div className={styles.dateGrid}>
+        {days.map((day: Date, index) => {
+          return (
+            <div key={index} >
+              <div className={` ${isSameDay(day, new Date()) ? styles.today : ""} ${styles.dateContainer}`}>
+                <div className={styles.halfHeightBorder} />
+                <div className={styles.date}>
+                  <div className={styles.dayText}>{format(day, "ccc")}</div>
+                  <div className={styles.dayNumber}>{format(day, "d")}</div>
+                </div>
+              </div>
+
+            </div>
+          );
+        })}
+      </div>
+      <div className={styles.weekGrid}>
+        <div className={styles.weekInner}>
           {days.map((day: Date, index) => {
             return (
-              <div key={index} className={`${isSameDay(day, new Date()) ? styles.today : ""} ${styles.weekTile}`} style={{ gridColumn: index + 1 }}>
-                <div>
-                  <div className={styles.dayHeading}>{format(day, "ccc")}</div>
-                  <div className={styles.dayHeading}>{format(day, "d")}</div>
-                </div>
+              <div key={index} >
                 <div className={styles.eventList}>
 
                 </div>
@@ -93,6 +106,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
           })}
         </div>
       </div>
-    </>
+    </div>
+
   );
 }
