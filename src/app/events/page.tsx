@@ -24,7 +24,6 @@ async function getData() {
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
   const data = await getData();
-  console.log("DATA", data);
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
@@ -34,7 +33,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
   return (
     <>
       <div className={styles.wrapper}>
-        <div className={styles.tools}>
+        {/* <div className={styles.tools}>
           <Link
             href={{
               pathname: "/events",
@@ -77,20 +76,17 @@ export default async function Events({ searchParams }: { searchParams?: { start:
           <div className={styles.weekHeader}>
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
-        </div>
+        </div> */}
         <div className={styles.weekGrid}>
           {days.map((day: Date, index) => {
             return (
               <div key={index} className={`${isSameDay(day, new Date()) ? styles.today : ""} ${styles.weekTile}`} style={{ gridColumn: index + 1 }}>
-                <div className={styles.dayHeading}>{format(day, "ccc do")}</div>
+                <div>
+                  <div className={styles.dayHeading}>{format(day, "ccc")}</div>
+                  <div className={styles.dayHeading}>{format(day, "d")}</div>
+                </div>
                 <div className={styles.eventList}>
-                  {/* {demoEvents
-                    .filter((eventCard) => {
-                      return eventCard.day === index;
-                    })
-                    .map((filteredEvent, eIndex) => {
-                      return <EventCard key={eIndex} event={filteredEvent} />;
-                    })} */}
+
                 </div>
               </div>
             );
