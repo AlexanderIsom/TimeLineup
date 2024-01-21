@@ -96,7 +96,7 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
           );
         })}
       </div>
-      <OverlayScrollbarsComponent className={styles.scrollArea} defer>
+      <OverlayScrollbarsComponent defer>
         <div className={styles.weekGrid}>
           <div className={styles.time}>
             {Array.from({ length: 23 }, (_, i) => i).map((number) => (
