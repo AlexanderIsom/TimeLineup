@@ -9,20 +9,30 @@
   overflow: hidden;
 }
 
+.scrollArea {
+  height: 50%;
+}
+
 .weekGrid {
   grid-row: 2;
-  overflow-y: scroll;
+  height: min-content;
 }
 
 .weekInner {
-  height: 200%;
+  height: 100%;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 
+.time {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
 .dateGrid {
-  padding-right: 17px;
   grid-row: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);

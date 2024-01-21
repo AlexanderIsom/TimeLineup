@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import styles from "@/styles/pages/Events.module.scss";
 import { EventData } from "@/lib/types";
@@ -11,6 +12,8 @@ import { useRouter } from "next/navigation";
 import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+
 
 interface DateRange {
   start: Date;
@@ -22,8 +25,8 @@ async function getData() {
   return res;
 }
 
-export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
-  const data = await getData();
+export default function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
+  // const data = await getData();
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
@@ -93,19 +96,26 @@ export default async function Events({ searchParams }: { searchParams?: { start:
           );
         })}
       </div>
-      <div className={styles.weekGrid}>
-        <div className={styles.weekInner}>
-          {days.map((day: Date, index) => {
-            return (
-              <div key={index} >
-                <div className={styles.eventList}>
+      <OverlayScrollbarsComponent className={styles.scrollArea} defer>
+        <div className={styles.weekGrid}>
+          <div className={styles.time}>
+            {Array.from({ length: 23 }, (_, i) => i).map((number) => (
+              <div key={number + 1}>{(number + 1).toString().padStart(2, '0')}:00</div>
+            ))}
+          </div>
+          <div className={styles.weekInner}>
+            {days.map((day: Date, index) => {
+              return (
+                <div key={index} >
+                  <div className={styles.eventList}>
 
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </OverlayScrollbarsComponent>
     </div>
 
   );

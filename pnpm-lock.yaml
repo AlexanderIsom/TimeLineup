@@ -71,6 +71,12 @@ dependencies:
   next:
     specifier: 14.0.2
     version: 14.0.2(react-dom@18.2.0)(react@18.2.0)(sass@1.69.5)
+  overlayscrollbars:
+    specifier: ^2.4.6
+    version: 2.4.6
+  overlayscrollbars-react:
+    specifier: ^0.5.3
+    version: 0.5.3(overlayscrollbars@2.4.6)(react@18.2.0)
   react:
     specifier: ^18
     version: 18.2.0
@@ -3831,6 +3837,20 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
     dev: true
+
+  /overlayscrollbars-react@0.5.3(overlayscrollbars@2.4.6)(react@18.2.0):
+    resolution: {integrity: sha512-mq9D9tbfSeq0cti1kKMf3B3AzsEGwHcRIDX/K49CvYkHz/tKeU38GiahDkIPKTMEAp6lzKCo4x1eJZA6ZFYOxQ==}
+    peerDependencies:
+      overlayscrollbars: ^2.0.0
+      react: '>=16.8.0'
+    dependencies:
+      overlayscrollbars: 2.4.6
+      react: 18.2.0
+    dev: false
+
+  /overlayscrollbars@2.4.6:
+    resolution: {integrity: sha512-C7tmhetwMv9frEvIT/RfkAVEgbjRNz/Gh2zE8BVmN+jl35GRaAnz73rlGQCMRoC2arpACAXyMNnJkzHb7GBrcA==}
+    dev: false
 
   /p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
