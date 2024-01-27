@@ -1,5 +1,8 @@
 @use "@/styles/Variables.scss";
 
+$spacing: 60px;
+$strokeStyle: #DADCE0 1px solid;
+
 .wrapper {
   display: grid;
   grid-template-rows: max-content 1fr;
@@ -7,6 +10,27 @@
   font-display: swap;
   font-style: medium;
   overflow: hidden;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+
+
+
+
+.dateHeader {
+  display: flex;
+
+  .datePadding {
+    width: 66px
+  }
+
+  .dateGrid {
+    width: 100%;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
 }
 
 .weekGrid {
@@ -14,25 +38,49 @@
   height: min-content;
   display: flex;
 
-  .weekInner {
+  .weekContainer {
     flex-grow: 1;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    position: relative;
+    // background-color: red;
+
+    .rows {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .horizontalLine {
+        height: $spacing;
+        width: 100%;
+        border-bottom: $strokeStyle;
+      }
+    }
+
+    .columns {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 15px repeat(7, 1fr);
+    }
   }
 
   .time {
-    width: max-content;
+    padding-right: 5px;
+    padding-top: 45px;
+    padding-bottom: 60px;
+
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: $spacing;
+
+    .timeText {
+      height: 0px
+    }
   }
 }
 
-.dateGrid {
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
+
 
 .pagenation {
   display: flex;
@@ -80,7 +128,7 @@
 .dateContainer {
   height: 75px;
   display: flex;
-  border-bottom: #DADCE0 1px solid;
+  border-bottom: $strokeStyle;
 
   &.today {
     background-color: rgba(194, 194, 194, 0.1);
@@ -89,7 +137,7 @@
 
 .halfHeightBorder {
   height: 50%;
-  border-right: #DADCE0 1px solid;
+  border-right: $strokeStyle;
   align-self: flex-end;
 }
 

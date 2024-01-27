@@ -1,5 +1,5 @@
 "use client";
-import { ClerkLoaded, SignOutButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { ClerkLoaded, SignOutButton, SignedIn, SignedOut, UserButton, useUser, SignInButton } from "@clerk/nextjs";
 import styles from "@/styles/Components/Navbar.module.scss";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -22,15 +22,15 @@ export default function Navbar() {
 
   return (
     <div className={`${styles.wrapper} ${isMobile ? "pl-4 pr-4" : "pl-16 pr-8"} absolute z-50 h-24 w-full justify-between flex items-center`}>
-      <div className="flex items-center gap-12">
-        <div className="text-2xl font-bold">
-          <Link href="/">
-            <span className="no-underline">Time</span>
-            <span className="underline">Lineup</span>
-          </Link>
-        </div>
-        {!isMobile && (
-          <ClerkLoaded>
+      <ClerkLoaded>
+        <div className="flex items-center gap-12">
+          <div className="text-2xl font-bold">
+            <Link href="/">
+              <span className="no-underline">Time</span>
+              <span className="underline">Lineup</span>
+            </Link>
+          </div>
+          {!isMobile && (
             <SignedIn>
               <div className="font-medium text-xl">
                 <div>
@@ -38,12 +38,10 @@ export default function Navbar() {
                 </div>
               </div>
             </SignedIn>
-          </ClerkLoaded>
-        )}
-      </div>
-      {(!isMobile && (
-        <div>
-          <ClerkLoaded>
+          )}
+        </div>
+        {(!isMobile && (
+          <div>
             <SignedIn>
               <div className="flex gap-4 items-center">
                 <span className="font-medium text-base">{user?.firstName}</span>
@@ -59,68 +57,60 @@ export default function Navbar() {
                 </Button>
               </div>
             </SignedOut>
-          </ClerkLoaded>
-        </div>
-      )) || (
-          <Sheet>
-            <SheetTrigger>
-              <div className={`${styles.hamburgerMenu} w-8 h-8 flex justify-center items-center rounded-md`}>
-                <TbMenu2 />
-              </div>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader className="pb-4">
-                <SheetTitle>
-                  {" "}
-                  <span className="no-underline">Time</span>
-                  <span className="underline">Lineup</span>
-                </SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col w-full h-full">
-                <SignedOut>
-                  <div className="items-center text-center">
-                    <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
-                      <Link href="/sign-in">Sign in</Link>
-                    </SheetClose>
-                  </div>
-                </SignedOut>
-                <SignedIn>
-                  <div className="flex gap-4 items-center pb-4">
-                    <UserButton
-                      appearance={{
-                        elements: {
-                          modalContent: {
-                            pointerEvents: "initial",
-                          },
-                        },
-                      }}
-                    />
-                    <span className="font-medium text-base">{user?.firstName}</span>
-                  </div>
-                  <div>
-                    <SheetClose asChild>
-                      <Link href="/user-profile" className="font-medium text-xl">
-                        Manage account
-                      </Link>
-                    </SheetClose>
-                  </div>
-                  <div>
-                    <SheetClose asChild>
-                      <Link href="/events" className="font-medium text-xl">
-                        Events
-                      </Link>
-                    </SheetClose>
-                  </div>
-                  <div className="h-fit absolute bottom-0 pb-8">
-                    <SheetClose asChild>
-                      <SignOutButton />
-                    </SheetClose>
-                  </div>
-                </SignedIn>
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
+          </div>
+        )) || (
+            <Sheet>
+              <SheetTrigger>
+                <div className={`${styles.hamburgerMenu} w-8 h-8 flex justify-center items-center rounded-md`}>
+                  <TbMenu2 />
+                </div>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader className="pb-4">
+                  <SheetTitle>
+                    {" "}
+                    <span className="no-underline">Time</span>
+                    <span className="underline">Lineup</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col w-full h-full">
+                  <SignedOut>
+                    <div className="items-center text-center">
+                      <SheetClose asChild className="bg-blue-500 p-2 rounded-md">
+                        <Link href="/sign-in">Sign in</Link>
+                      </SheetClose>
+                    </div>
+                  </SignedOut>
+                  <SignedIn>
+                    <div className="flex gap-4 items-center pb-4">
+                      <UserButton />
+                      <span className="font-medium text-base">{user?.firstName}</span>
+                    </div>
+                    <div>
+                      <SheetClose asChild>
+                        <Link href="/user-profile" className="font-medium text-xl">
+                          Manage account
+                        </Link>
+                      </SheetClose>
+                    </div>
+                    <div>
+                      <SheetClose asChild>
+                        <Link href="/events" className="font-medium text-xl">
+                          Events
+                        </Link>
+                      </SheetClose>
+                    </div>
+                    <div className="h-fit absolute bottom-0 pb-8">
+                      <SheetClose asChild>
+                        <SignOutButton />
+                      </SheetClose>
+                    </div>
+                  </SignedIn>
+                </div>
+              </SheetContent>
+            </Sheet>
+          )}
+      </ClerkLoaded>
     </div>
   );
 }

@@ -80,39 +80,50 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
             {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
           </div>
         </div> */}
-      <div className={styles.dateGrid}>
-        {days.map((day: Date, index) => {
-          return (
-            <div key={index} >
-              <div className={` ${isSameDay(day, new Date()) ? styles.today : ""} ${styles.dateContainer}`}>
-                <div className={styles.halfHeightBorder} />
-                <div className={styles.date}>
-                  <div className={styles.dayText}>{format(day, "ccc")}</div>
-                  <div className={styles.dayNumber}>{format(day, "d")}</div>
+      <div className={styles.dateHeader}>
+        <div className={styles.datePadding} />
+        <div className={styles.dateGrid}>
+          {days.map((day: Date, index) => {
+            return (
+              <div key={index} >
+                <div className={` ${isSameDay(day, new Date()) ? styles.today : ""} ${styles.dateContainer}`}>
+                  <div className={styles.halfHeightBorder} />
+                  <div className={styles.date}>
+                    <div className={styles.dayText}>{format(day, "ccc")}</div>
+                    <div className={styles.dayNumber}>{format(day, "d")}</div>
+                  </div>
                 </div>
-              </div>
 
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <OverlayScrollbarsComponent defer>
         <div className={styles.weekGrid}>
           <div className={styles.time}>
             {Array.from({ length: 23 }, (_, i) => i).map((number) => (
-              <div key={number + 1}>{(number + 1).toString().padStart(2, '0')}:00</div>
+              <div key={number + 1} className={styles.timeText}>{(number + 1).toString().padStart(2, '0')}:00</div>
             ))}
           </div>
-          <div className={styles.weekInner}>
-            {days.map((day: Date, index) => {
-              return (
-                <div key={index} >
-                  <div className={styles.eventList}>
+          <div className={styles.weekContainer}>
+            <div className={styles.rows}>
+              {Array.from({ length: 23 }, (_, i) => i).map((number) => (
+                <div className={styles.horizontalLine} key={number} ></div>
+              ))}
+            </div>
+            <div className={styles.columns}>
+              <div />
+              {days.map((day: Date, index) => {
+                return (
+                  <div key={index} >
+                    <div className={styles.eventList}>
 
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </OverlayScrollbarsComponent>

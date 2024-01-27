@@ -11,7 +11,8 @@ import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
 import { motion } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
+import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Home() {
   const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
@@ -46,9 +47,12 @@ export default function Home() {
               </h2>
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
-                <Button size={"lg"}>
-                  <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
-                </Button>
+
+                <SignInButton mode="modal">
+                  <Button size={"lg"}>
+                    Get started
+                  </Button>
+                </SignInButton>
                 <Button variant={"outline"} size={"lg"}>
                   <Link href="/sign-in">Find out more</Link>
                 </Button>
@@ -289,9 +293,12 @@ export default function Home() {
           <h4>Get started with TimeLineup today</h4>
           <p className="subText mb-8">Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
-            <Button size={"lg"} className="footerButton">
-              <Link href={isSignedIn ? "/events" : "/sign-in"}>Get started</Link>
-            </Button>
+            <SignInButton mode="modal">
+              <Button size={"lg"} className="footerButton">
+                Get started
+              </Button>
+            </SignInButton>
+
             <Button variant={"outline"} size={"lg"} className="footerButton">
               <Link href="/sign-in">Find out more</Link>
             </Button>
