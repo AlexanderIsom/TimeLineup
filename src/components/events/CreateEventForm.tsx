@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -19,8 +19,11 @@ const formSchema = z.object({
   title: z.string().min(4, {
     message: "Title must be at least 4 characters.",
   }),
-  from: z.date({
-    required_error: "A date of birth is required.",
+  start: z.date({
+    required_error: "Start date is required.",
+  }),
+  end: z.date({
+    required_error: "End date is required.",
   }),
   description: z.string().optional(),
 });
@@ -29,6 +32,7 @@ interface newFormData {
   userId: string;
   title: string;
   start: Date;
+  end: Date;
   description?: string;
 }
 
@@ -37,7 +41,8 @@ export function NewEventForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      from: new Date(),
+      start: new Date(),
+      end: new Date(),
     },
   });
 
@@ -52,7 +57,7 @@ export function NewEventForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!isSignedIn) return;
-    const data: newFormData = { userId: user?.id, title: values.title, start: values.from, description: values.description };
+    const data: newFormData = { userId: user?.id, title: values.title, start: values.start, end: values.end, description: values.description };
     createEvent(data);
   }
 
@@ -75,10 +80,10 @@ export function NewEventForm() {
 
         <FormField
           control={form.control}
-          name="from"
+          name="start"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Start</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -89,7 +94,31 @@ export function NewEventForm() {
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date > new Date() || date < new Date("1900-01-01")} />
+                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="end"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>End</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                      {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
                 </PopoverContent>
               </Popover>
               <FormMessage />

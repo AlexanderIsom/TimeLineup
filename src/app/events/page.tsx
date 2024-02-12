@@ -81,7 +81,7 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
           </div>
         </div> */}
       <div className={styles.dateHeader}>
-        <div className={styles.datePadding} />
+        <div className={styles.datePadding} ><CreateEventDialog /></div>
         <div className={styles.dateGrid}>
           {days.map((day: Date, index) => {
             return (

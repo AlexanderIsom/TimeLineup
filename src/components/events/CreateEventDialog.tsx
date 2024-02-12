@@ -7,7 +7,7 @@ export default function CreateEventDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"ghost"}>Create Event</Button>
+        <Button >+</Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
