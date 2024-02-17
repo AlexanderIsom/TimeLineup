@@ -76,6 +76,10 @@ $strokeStyle: #DADCE0 1px solid;
   }
 }
 
+.scrollContainer {
+  overflow-y: scroll;
+}
+
 .pagenation {
   display: flex;
   font-weight: 600;

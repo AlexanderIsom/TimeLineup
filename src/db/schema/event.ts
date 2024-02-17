@@ -8,10 +8,10 @@ import {
 const event = mysqlTable('event', {
     id: serial('id').primaryKey().notNull(),
     userId: text('userId').notNull(),
-    start: timestamp('start', { mode: 'date' }).defaultNow(),
-    end: timestamp('end', { mode: 'date' }).defaultNow(),
+    start: timestamp('start', { mode: 'date' }).defaultNow().notNull(),
+    end: timestamp('end', { mode: 'date' }).defaultNow().notNull(),
     title: text('Title').notNull(),
-    description: text('description').default(" "),
+    description: text('description').default("").notNull(),
 });
 
 export default event;

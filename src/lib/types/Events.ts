@@ -6,20 +6,21 @@ export enum ResponseState {
 }
 
 export interface EventData {
-    _id: string,
+    id: number,
     userId: string,
     title: string,
-    startDateTime: Date,
-    duration: number,
-    user: User,
+    start: Date,
+    end: Date,
+    // duration: number,
+    // user: User,
     description: string,
-    agenda: AgendaItem[],
-    eventResponse: EventResponse[],
-    userResponses: EventResponse[],
-    color: string,
-    weekOffset: number,
-    day: number,
-    invites: User[],
+    // agenda: AgendaItem[],
+    // eventResponse: EventResponse[],
+    // userResponses: EventResponse[],
+    // color: string,
+    // weekOffset: number,
+    // day: number,
+    // invites: User[],
 }
 
 export interface AgendaItem {

@@ -1,10 +1,9 @@
-"use client"
 import { Button } from "@/components/ui/button";
 import styles from "@/styles/pages/Events.module.scss";
 import { EventData } from "@/lib/types";
 import EventCard from "@/components/events/EventCard";
-import { EventResponse, ResponseState, User } from "@/lib/types/Events";
-import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
+import { EventResponse, ResponseState } from "@/lib/types/Events";
+import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isAfter, isBefore, isEqual, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
 // import { useEffect, useState } from "react";
 import EventForm from "@/components/events/CreateEventDialog";
@@ -12,7 +11,9 @@ import { useRouter } from "next/navigation";
 import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { auth, currentUser, useUser } from "@clerk/nextjs";
+import { eq } from "drizzle-orm";
+import eventSchema from "@/db/schema/event"
 
 
 interface DateRange {
@@ -21,20 +22,24 @@ interface DateRange {
 }
 
 async function getData() {
-  const res = await db.query.event.findMany();
-  return res;
+  const user = await currentUser();
+  if (user === null) return [];
+
+  const res = await db.query.event.findMany({
+    where: eq(eventSchema.userId, user.id)
+  });
+
+  return res as Array<EventData>;
 }
 
-export default function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
-  // const data = await getData();
+export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
+  const userEvents = await getData();
 
-  const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : startOfWeek(new Date());
-  const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : endOfWeek(new Date());
+  const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : new Date();
+  const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : addDays(startDay, 6);
   const days = eachDayOfInterval({ start: startDay, end: endDay });
-  const today = new Date();
 
   return (
-
     <div className={styles.wrapper}>
       {/* <div className={styles.tools}>
           <Link
@@ -93,13 +98,12 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
                     <div className={styles.dayNumber}>{format(day, "d")}</div>
                   </div>
                 </div>
-
               </div>
             );
           })}
         </div>
       </div>
-      <OverlayScrollbarsComponent defer>
+      <div className={styles.scrollContainer}>
         <div className={styles.weekGrid}>
           <div className={styles.time}>
             {Array.from({ length: 23 }, (_, i) => i).map((number) => (
@@ -118,7 +122,11 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
                 return (
                   <div key={index} >
                     <div className={styles.eventList}>
-
+                      {userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e: EventData) => {
+                        return <div key={e.id}><Link href={`/events/${e.id}`}>
+                          {e.title}
+                        </Link></div>
+                      })}
                     </div>
                   </div>
                 );
@@ -126,8 +134,8 @@ export default function Events({ searchParams }: { searchParams?: { start: strin
             </div>
           </div>
         </div>
-      </OverlayScrollbarsComponent>
-    </div>
+      </div>
+    </div >
 
   );
 }
