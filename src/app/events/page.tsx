@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import styles from "@/styles/pages/Events.module.scss";
 import { EventData } from "@/lib/types";
-import EventCard from "@/components/events/EventCard";
+// import EventCard from "@/components/events/EventCard";
 import { EventResponse, ResponseState } from "@/lib/types/Events";
 import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isAfter, isBefore, isEqual, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
 import Link from "next/link";
