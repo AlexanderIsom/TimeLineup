@@ -1,9 +1,7 @@
 // import styles from "styles/Components/EventDetails.module.scss"
-// import { formatDateRange } from "utils/TimeUtils"
+// import { formatDateRange } from "@/utils/TimeUtils"
 // import { BsCalendar4Week } from "react-icons/bs"
-// import * as Tabs from "@radix-ui/react-tabs"
-// import * as Separator from "@radix-ui/react-separator"
-// import { AgendaItem, EventData, ResponseState } from "types/Events"
+// import { AgendaItem, EventData, ResponseState } from "@/lib/types/Events"
 // import React from "react";
 // import { addMinutes, format } from "date-fns";
 // import Image from "next/image"

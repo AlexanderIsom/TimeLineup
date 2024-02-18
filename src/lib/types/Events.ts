@@ -20,7 +20,7 @@ export interface EventData {
     // color: string,
     // weekOffset: number,
     // day: number,
-    // invites: User[],
+    invitedUsers: string[],
 }
 
 export interface AgendaItem {

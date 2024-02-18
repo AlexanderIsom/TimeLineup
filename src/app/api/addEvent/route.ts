@@ -10,7 +10,8 @@ export async function POST(request: Request) {
         title: res.title,
         start: new Date(res.start),
         end: new Date(res.end),
-        description: res.description
+        description: res.description,
+        invitedUsers: []
     });
 
     return new Response("success", {

@@ -2,7 +2,7 @@ import {
     mysqlTable,
     serial,
     timestamp,
-    text
+    text, json
 } from 'drizzle-orm/mysql-core';
 
 const event = mysqlTable('event', {
@@ -12,6 +12,7 @@ const event = mysqlTable('event', {
     end: timestamp('end', { mode: 'date' }).defaultNow().notNull(),
     title: text('Title').notNull(),
     description: text('description').default("").notNull(),
+    invitedUsers: json("invitedUsers").$type<string[]>().default([]).notNull(),
 });
 
 export default event;
