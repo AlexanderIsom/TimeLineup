@@ -1,5 +1,5 @@
 import { eachHourOfInterval, subMinutes } from "date-fns";
-import styles from "styles/Components/TimelineHours.module.scss";
+import styles from "@/styles/Components/Events/TimelineHours.module.scss";
 
 interface Props {
   start: Date;

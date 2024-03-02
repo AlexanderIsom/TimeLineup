@@ -1,0 +1,32 @@
+@use "../Variables.scss";
+
+.pagination {
+	position: sticky;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	width: 100%;
+	height: 32px;
+	align-self: flex-end;
+	z-index: 2;
+}
+
+.hourCellHeading {
+	flex: 1 1 0;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	background: white;
+	display: inline-flex;
+	border-right: Variables.$gridColor 1px solid;
+	border-bottom: Variables.$gridColor 1px solid;
+	border-top: Variables.$gridColor 1px solid;
+}
+
+.hourCellLabel {
+	justify-content: center;
+	text-align: center;
+	font-family: Inter;
+	font-weight: 400;
+	font-size: 15px;
+}

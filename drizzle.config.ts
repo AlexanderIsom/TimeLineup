@@ -1,4 +1,4 @@
-import type { Config } from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
 import { config } from 'dotenv';
 config({ path: '.env' })
 
@@ -6,11 +6,11 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is required.');
 }
 
-export default {
-    schema: './src/db/schema/*',
-    out: './drizzle',
+export default defineConfig({
+    schema: './src/db/schema.ts',
     driver: 'mysql2',
+    out: './drizzle',
     dbCredentials: {
-        connectionString: process.env.DATABASE_URL,
+        uri: process.env.DATABASE_URL,
     },
-} satisfies Config;
+});

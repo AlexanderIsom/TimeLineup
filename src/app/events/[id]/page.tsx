@@ -21,9 +21,12 @@ import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import shortid from "shortid"; replaced with NAno id
 
-import eventSchema from "@/db/schema/event"
+import { Rsvp, events } from "@/db/schema"
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
+import TimelineNumbers from "@/components/events/TimelineNumber";
+import assert from "assert";
+import ClientCardContainer from "@/components/events/ClientCardContainer";
 
 interface EventProps {
 	eventData: EventData
@@ -57,20 +60,27 @@ interface menu {
 }
 
 async function GetEventData(id: number) {
-	const res = await db.query.event.findFirst({
-		where: eq(eventSchema.id, id)
+	const res = await db.query.events.findFirst({
+		where: eq(events.id, id),
+		with: {
+			rsvps: true
+		}
 	});
 
-	return res as EventData;
+	return res;
 }
 
 export default async function ViewEvent({ params }: { params: { id: number } }) {
 	const designSize = 1920
 	const user = await currentUser();
-	const event = await GetEventData(params.id);
+	const eventData = await GetEventData(params.id);
+	assert(eventData, "Event data returned undefined")
+
 	const attendingUsers = await clerkClient.users.getUserList({
-		userId: event.invitedUsers,
+		userId: eventData!.invitedUsers!,
 	})
+	const localRsvp: Rsvp | undefined = eventData?.rsvps.find(r => r.userId === user?.id)
+	const otherRsvp = eventData.rsvps.filter(r => r.userId !== user?.id)
 	// const [currentZoom, setCurrentZoom] = useState(1);
 	// const [designWidth, setDesignWidth] = useState(designSize * currentZoom)
 	// const [scheduleState, setScheduleState] = useState<TimeDuration[]>([])
@@ -315,9 +325,11 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 								width: `${designSize}px`,
 								// backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
 							}} className={`${styles.gridBackground} `} >
-								{/* <TimelineNumbers start={new Date(startDateTime)} end={new Date(endDateTime)} /> */}
+								<TimelineNumbers start={new Date(eventData.start)} end={new Date(eventData.end)} />
 								<div className={styles.localUserResponses}>
-									{/* {scheduleState.map((schedule: TimeDuration) => {
+									<ClientCardContainer schedules={localRsvp?.schedules ?? []} eventStartDate={eventData.start} eventEndDate={eventData.end} />
+									{/* {localRsvp?.spans?.map((v, i) => {
+										return
 										// return <ResizableTimeCard
 										// 	key={schedule.id}
 										// 	schedule={schedule}
@@ -325,18 +337,17 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 										// 	onContext={onContext}
 										// 	bounds={bounds}
 										// />
-
-										return <div key={schedule.id}>test</div>
 									})} */}
+
 								</div>
 								<div className={styles.userResponses}>
-									{/* {attendingUsers.map((eventResponse: EventResponse, index: number) => {
+									{otherRsvp.map((value, index: number) => {
 										return <div key={index} className={styles.staticRow}>{
-											eventResponse.schedule.map((sch: TimeDuration) => {
-												return <StaticTimeCard startDateTime={startDateTime} key={sch.id} schedule={sch} />
+											value.schedules.map((schedule) => {
+												return <StaticTimeCard key={schedule.id} start={schedule.start} duration={schedule.duration} />
 											})
 										}</div>
-									})} */}
+									})}
 								</div>
 							</div>
 						</div>

@@ -11,25 +11,19 @@ import { useRouter } from "next/navigation";
 import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
-import { auth, currentUser, useUser } from "@clerk/nextjs";
-import { eq } from "drizzle-orm";
-import eventSchema from "@/db/schema/event"
-
-
-interface DateRange {
-  start: Date;
-  end: Date;
-}
+import { currentUser } from "@clerk/nextjs";
+import { eq, inArray, or, sql } from "drizzle-orm";
+import { events } from "@/db/schema"
 
 async function getData() {
   const user = await currentUser();
   if (user === null) return [];
 
-  const res = await db.query.event.findMany({
-    where: eq(eventSchema.userId, user.id)
+  const query = await db.query.events.findMany({
+    where: or(eq(events.userId, user.id), sql`JSON_CONTAINS(${events.invitedUsers}, ${JSON.stringify(user.id)}, '$')`)
   });
 
-  return res as Array<EventData>;
+  return query as Array<EventData>;
 }
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
