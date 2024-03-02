@@ -6,6 +6,7 @@ import { nanoid } from "nanoid"
 import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
 import { differenceInMinutes } from "date-fns"
+import styles from "@/styles/Components/Events/id.module.scss"
 
 interface Schedule {
 	id: string
@@ -134,6 +135,19 @@ export default function ClientCardContainer(props: Props) {
 
 	// const isPropPopulated = prop.spans !== null && prop.spans !== undefined;
 	return (
-		<ResizableTimeCard id={nanoid()} bounds={bounds} duration={60} start={60} updateHandler={handleUpdate} />
+		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
+			{scheduleState.map((schedule: Schedule) => {
+				return <ResizableTimeCard
+					key={schedule.id}
+					id={schedule.id}
+					start={schedule.start}
+					duration={schedule.duration}
+					updateHandler={handleUpdate}
+
+					bounds={bounds}
+				/>
+			})}
+			{/* <ResizableTimeCard id={nanoid()} bounds={bounds} duration={60} start={60} updateHandler={handleUpdate} /> */}
+		</div>
 	)
 }

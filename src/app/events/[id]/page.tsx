@@ -326,9 +326,9 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 								// backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
 							}} className={`${styles.gridBackground} `} >
 								<TimelineNumbers start={new Date(eventData.start)} end={new Date(eventData.end)} />
-								<div className={styles.localUserResponses}>
-									<ClientCardContainer schedules={localRsvp?.schedules ?? []} eventStartDate={eventData.start} eventEndDate={eventData.end} />
-									{/* {localRsvp?.spans?.map((v, i) => {
+								<ClientCardContainer schedules={localRsvp?.schedules ?? []} eventStartDate={eventData.start} eventEndDate={eventData.end} />
+
+								{/* {localRsvp?.spans?.map((v, i) => {
 										return
 										// return <ResizableTimeCard
 										// 	key={schedule.id}
@@ -339,7 +339,7 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 										// />
 									})} */}
 
-								</div>
+
 								<div className={styles.userResponses}>
 									{otherRsvp.map((value, index: number) => {
 										return <div key={index} className={styles.staticRow}>{
