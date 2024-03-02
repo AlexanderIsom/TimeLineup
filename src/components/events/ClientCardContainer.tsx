@@ -26,10 +26,8 @@ export default function ClientCardContainer(props: Props) {
 	const [designWidth, setDesignWidth] = useState(designSize * currentZoom)
 	const [scheduleState, setScheduleState] = useState<Schedule[]>([])
 	// const [responseState, setResponseState] = useState<ResponseState>(ResponseState.pending);
-	const [hasLoaded, setHasLoaded] = useState<boolean>(false)
 	// const [showMenu, setShowMenu] = useState<menu>({ showing: false })
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
-	const timelineScrollingContainerRef = useRef<HTMLDivElement>(null);
 	const attendingUsersContainerRef = useRef<HTMLDivElement>(null);
 	const [contentLastScroll, setContentLastScroll] = useState(0);
 	// const [event, setEvent] = useState<EventData>(eventData)
@@ -63,8 +61,8 @@ export default function ClientCardContainer(props: Props) {
 	}
 
 	function handleUpdate(id: string, offsetFromStart: number, duration: number) {
-		// let filteredUserResponses = scheduleState.filter(s => s.id !== id);
-		let filteredUserResponses: Array<Schedule> = [];
+		let filteredUserResponses = scheduleState.filter(s => s.id !== id);
+		// let filteredUserResponses: Array<Schedule> = [];
 		const overlappingEvents = findOverlappingResponses(filteredUserResponses, offsetFromStart, duration);
 
 		if (overlappingEvents.length > 0) {
@@ -135,7 +133,7 @@ export default function ClientCardContainer(props: Props) {
 
 	// const isPropPopulated = prop.spans !== null && prop.spans !== undefined;
 	return (
-		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick}>
+		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{scheduleState.map((schedule: Schedule) => {
 				return <ResizableTimeCard
 					key={schedule.id}
@@ -143,7 +141,6 @@ export default function ClientCardContainer(props: Props) {
 					start={schedule.start}
 					duration={schedule.duration}
 					updateHandler={handleUpdate}
-
 					bounds={bounds}
 				/>
 			})}

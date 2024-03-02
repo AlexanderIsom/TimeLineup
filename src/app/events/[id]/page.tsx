@@ -5,16 +5,15 @@ import { addDays, addMinutes, addWeeks, roundToNearestMinutes, setDate, startOfW
 // import TimelineNumbers from "components/TimelineNumber";
 import React, { useCallback } from "react";
 import StaticTimeCard from "@/components/events/StaticTimeCard";
-import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { RxZoomIn, RxZoomOut, RxCircleBackslash } from "react-icons/rx"
 import { TbTrashX } from "react-icons/tb"
 import { nanoid } from "nanoid"
 
-import dropdownStyle from "styles/Components/Dropdown.module.scss"
+import dropdownStyle from "@/styles/Components/Dropdown.module.scss"
 // import EventDetails from "components/EventDetails";
-import Image from "next/image";
+// import Image from "next/image";
 import MathUtils from "@/utils/MathUtils";
 import Timeline from "@/utils/Timeline";
 import { clerkClient, currentUser } from "@clerk/nextjs";
