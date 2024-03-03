@@ -121,6 +121,8 @@ export default function ClientCardContainer(props: Props) {
 		}
 	}
 
+	//TODO instead of doing this via a client state, make a server component and just update it with react query
+
 	// const onResponseStateChange = (newState: ResponseState) => {
 	// 	setResponseState(newState);
 
@@ -130,8 +132,6 @@ export default function ClientCardContainer(props: Props) {
 	// }
 
 	const bounds = { start: props.eventStartDate, end: props.eventEndDate }
-
-	// const isPropPopulated = prop.spans !== null && prop.spans !== undefined;
 	return (
 		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{scheduleState.map((schedule: Schedule) => {
@@ -144,7 +144,6 @@ export default function ClientCardContainer(props: Props) {
 					bounds={bounds}
 				/>
 			})}
-			{/* <ResizableTimeCard id={nanoid()} bounds={bounds} duration={60} start={60} updateHandler={handleUpdate} /> */}
 		</div>
 	)
 }
