@@ -12,15 +12,17 @@ import { db } from "@/db";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
 import { currentUser } from "@clerk/nextjs";
-import { eq, inArray, or, sql } from "drizzle-orm";
+import { eq, inArray, or, sql, arrayContains } from "drizzle-orm";
 import { events } from "@/db/schema"
+
+// where: or(eq(events.userId, user.id), sql`JSON_CONTAINS(${events.invitedUsers}, ${JSON.stringify(user.id)}, '$')`)
 
 async function getData() {
   const user = await currentUser();
   if (user === null) return [];
 
   const query = await db.query.events.findMany({
-    where: or(eq(events.userId, user.id), sql`JSON_CONTAINS(${events.invitedUsers}, ${JSON.stringify(user.id)}, '$')`)
+    where: or(eq(events.userId, user.id), arrayContains(events.invitedUsers, [user.id]))
   });
 
   return query as Array<EventData>;

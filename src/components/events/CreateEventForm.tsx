@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,6 +12,7 @@ import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "../ui/textarea";
 import { useUser } from "@clerk/nextjs";
+import { createEvent, newEventData } from "@/app/actions/actions"
 
 const formSchema = z.object({
   title: z.string().min(4, {
@@ -28,14 +27,6 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-interface newFormData {
-  userId: string;
-  title: string;
-  start: Date;
-  end: Date;
-  description?: string;
-}
-
 export function NewEventForm() {
   const { user, isSignedIn } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,18 +37,9 @@ export function NewEventForm() {
     },
   });
 
-  const createEvent = async (data: newFormData) => {
-    console.log("creating");
-    const res = await fetch("http://localhost:3000/api/addEvent", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    console.log("RES", res);
-  };
-
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!isSignedIn) return;
-    const data: newFormData = { userId: user?.id, title: values.title, start: values.start, end: values.end, description: values.description };
+    const data: newEventData = { userId: user?.id, title: values.title, start: values.start, end: values.end, description: values.description, invitedUsers: [] };
     createEvent(data);
   }
 
