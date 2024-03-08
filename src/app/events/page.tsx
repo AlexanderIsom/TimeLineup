@@ -1,21 +1,13 @@
-import { Button } from "@/components/ui/button";
 import styles from "@/styles/pages/Events.module.scss";
 import { EventData } from "@/lib/types";
-// import EventCard from "@/components/events/EventCard";
-import { EventResponse, ResponseState } from "@/lib/types/Events";
-import { addDays, addWeeks, differenceInWeeks, eachDayOfInterval, endOfWeek, format, getDay, isAfter, isBefore, isEqual, isSameDay, isWithinInterval, setDay, startOfWeek, subWeeks } from "date-fns";
+import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns";
 import Link from "next/link";
-// import { useEffect, useState } from "react";
-import EventForm from "@/components/events/CreateEventDialog";
-import { useRouter } from "next/navigation";
 import { db } from "@/db";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
 import { currentUser } from "@clerk/nextjs";
-import { eq, inArray, or, sql, arrayContains } from "drizzle-orm";
+import { eq, or, arrayContains } from "drizzle-orm";
 import { events } from "@/db/schema"
 
-// where: or(eq(events.userId, user.id), sql`JSON_CONTAINS(${events.invitedUsers}, ${JSON.stringify(user.id)}, '$')`)
 
 async function getData() {
   const user = await currentUser();

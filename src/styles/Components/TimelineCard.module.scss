@@ -25,11 +25,7 @@
 	overflow: hidden;
 	box-shadow: 0px 2px 4px -2px rgba(0, 0, 0, 0.1), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
 	border: #E1E7EF 1px solid;
-	cursor: grab;
 
-	&:active {
-		cursor: grabbing;
-	}
 }
 
 .timeCue {
@@ -39,4 +35,12 @@
 	overflow: hidden;
 	font-family: Inter;
 	font-weight: 600;
+}
+
+.grabbable {
+	cursor: grab;
+
+	&:active {
+		cursor: grabbing;
+	}
 }

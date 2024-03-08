@@ -18,11 +18,12 @@ interface Props {
 	schedules: Array<Schedule>
 	eventStartDate: Date;
 	eventEndDate: Date;
+	updateState: (newSchedule: Schedule[]) => void;
 }
 
 export default function ClientCardContainer(props: Props) {
 	const designSize = 1920
-	const [scheduleState, setScheduleState] = useState<Schedule[]>([])
+	// const [scheduleState, setScheduleState] = useState<Schedule[]>([])
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
 	const eventDurationMinutes = differenceInMinutes(props.eventEndDate, props.eventStartDate)
@@ -54,7 +55,7 @@ export default function ClientCardContainer(props: Props) {
 	}
 
 	function handleUpdate(id: string, startTime: number, duration: number) {
-		let otherResponses = scheduleState.filter((s) => {
+		let otherResponses = props.schedules.filter((s) => {
 			return s.id !== id
 		});
 
@@ -75,8 +76,8 @@ export default function ClientCardContainer(props: Props) {
 		} else {
 			otherResponses.push({ id: id, start: startTime, duration: duration })
 		}
-
-		setScheduleState(otherResponses);
+		props.updateState(otherResponses);
+		// setScheduleState(otherResponses);
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
@@ -85,23 +86,24 @@ export default function ClientCardContainer(props: Props) {
 		const offsetFromStart = MathUtils.roundToNearest(Timeline.xPositionToMinutes(width), 5)
 		const duration = 60;
 
-		const lapping = findOverlappingResponses(scheduleState, offsetFromStart, duration);
-		console.log(lapping.length)
+		const lapping = findOverlappingResponses(props.schedules, offsetFromStart, duration);
 
 		if (lapping.length === 0) {
-			const newSchedule = handleCreate(offsetFromStart, duration, scheduleState)
-			setScheduleState(newSchedule);
+			const newSchedule = handleCreate(offsetFromStart, duration, props.schedules)
+			props.updateState(newSchedule);
+			// setScheduleState(newSchedule);
 		}
 	}
 
 	function handleDelete(id: string) {
-		const newSchedule = deleteIdFromTable(id, scheduleState)
-		setScheduleState(newSchedule);
+		const newSchedule = deleteIdFromTable(id, props.schedules)
+		props.updateState(newSchedule);
+		// setScheduleState(newSchedule);
 	}
 
 	return (<>
 		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
-			{scheduleState.map((schedule: Schedule) => {
+			{props.schedules.map((schedule: Schedule) => {
 				return <ResizableTimeCard
 					key={schedule.id}
 					schedule={schedule}
