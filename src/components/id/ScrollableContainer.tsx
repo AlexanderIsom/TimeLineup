@@ -7,9 +7,7 @@ import TimelineNumbers from "../events/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
-import { createRSVP, newRsvpData } from "@/app/actions/actions"
-import { differenceInMinutes } from "date-fns";
-import Timeline from "@/utils/Timeline";
+import { createRSVP } from "@/app/actions/actions"
 
 interface Props {
 	localRSVP?: Rsvp
@@ -32,21 +30,17 @@ export default function ScrollableContainer({ localRSVP, eventData, children, du
 				<div className={styles.timelineTools}>
 					<div className={styles.magnify}>
 						{/* <div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
-									<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div> */}
+							<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div> */}
 						<div className={styles.buttonLeft} >< RxZoomIn className={styles.zoomIcon} /></div>
 						<div className={styles.buttonRight} ><RxZoomOut className={styles.zoomIcon} /></div>
 						<Button onClick={() => {
-							createRSVP({ eventId: eventData.id, schedules: scheduleState, rejected: false })
+							createRSVP({ eventId: eventData.id, schedules: scheduleState, rejected: false, rsvpId: localRSVP?.id })
 						}}>Save</Button>
 					</div>
 				</div>
 			</div>
 			{/* <div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}> */}
 			<div className={styles.timelineContent} >
-				{/* <div style={{
-								width: `${designWidth}px`,
-								backgroundSize: `${designWidth / Math.round(event.duration / 60)}px`
-							}} ref={timelineContainerRef} className={`${styles.gridBackground} `} > */}
 				<div style={{
 					width: `${designSize}px`,
 					backgroundSize: `${designSize / Math.round(duration / 60)}px`

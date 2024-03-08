@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import ResizableTimeCard from "./ResizableTimeCard"
 import { nanoid } from "nanoid"
 import MathUtils from "@/utils/MathUtils"
@@ -23,7 +23,6 @@ interface Props {
 
 export default function ClientCardContainer(props: Props) {
 	const designSize = 1920
-	// const [scheduleState, setScheduleState] = useState<Schedule[]>([])
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
 	const eventDurationMinutes = differenceInMinutes(props.eventEndDate, props.eventStartDate)
@@ -77,7 +76,6 @@ export default function ClientCardContainer(props: Props) {
 			otherResponses.push({ id: id, start: startTime, duration: duration })
 		}
 		props.updateState(otherResponses);
-		// setScheduleState(otherResponses);
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
@@ -91,14 +89,12 @@ export default function ClientCardContainer(props: Props) {
 		if (lapping.length === 0) {
 			const newSchedule = handleCreate(offsetFromStart, duration, props.schedules)
 			props.updateState(newSchedule);
-			// setScheduleState(newSchedule);
 		}
 	}
 
 	function handleDelete(id: string) {
 		const newSchedule = deleteIdFromTable(id, props.schedules)
 		props.updateState(newSchedule);
-		// setScheduleState(newSchedule);
 	}
 
 	return (<>

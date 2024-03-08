@@ -27,7 +27,7 @@ export const rsvps = pgTable('rsvp', {
 	id: serial('id').primaryKey(),
 	userId: text('user_id').notNull(),
 	eventId: integer('event_id').notNull(),
-	schedules: json("spans").$type<{ id: string, start: number, duration: number }[]>().default([]).notNull(),
+	schedules: json("schedules").$type<{ id: string, start: number, duration: number }[]>().default([]).notNull(),
 	rejected: boolean('rejected').default(false).notNull()
 });
 export type Rsvp = typeof rsvps.$inferSelect;

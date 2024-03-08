@@ -1,4 +1,3 @@
-import { TimeDuration } from "@/lib/types/Events";
 import Timeline from "@/utils/Timeline";
 import styles from "@/styles/Components/TimelineCard.module.scss";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
