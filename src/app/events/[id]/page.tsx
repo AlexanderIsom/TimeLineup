@@ -51,14 +51,13 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 							<div className={styles.userName}>{user?.firstName}</div>
 						</div>
 
-						{otherRsvp.map((rsvpUser) => {
-							const userData = clerkUsers.find(v => v.id === rsvpUser.userId)
+						{clerkUsers.filter(v => v.id !== user?.id).map((rsvpUser) => {
 							return <div key={rsvpUser.id} className={styles.userItem}>
 								<Avatar>
-									<AvatarImage src={userData?.imageUrl} />
-									<AvatarFallback>{userData?.firstName?.substring(0, 2)}</AvatarFallback>
+									<AvatarImage src={rsvpUser?.imageUrl} />
+									<AvatarFallback>{rsvpUser?.firstName?.substring(0, 2)}</AvatarFallback>
 								</Avatar>
-								<div className={styles.userName}>{userData?.firstName ?? ""}</div>
+								<div className={styles.userName}>{rsvpUser?.firstName ?? ""}</div>
 							</div>
 						})}
 					</div>
@@ -67,7 +66,7 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 							{otherRsvp.map((value, index: number) => {
 								return <div key={index} className={styles.staticRow}>{
 									value.schedules.map((schedule) => {
-										return <StaticTimeCard key={schedule.id} start={schedule.start} duration={schedule.duration} />
+										return <StaticTimeCard key={schedule.id} start={schedule.start} duration={schedule.duration} eventStartDate={eventData.start} />
 									})
 								}</div>
 							})}

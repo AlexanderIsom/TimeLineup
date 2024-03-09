@@ -11,7 +11,7 @@ export interface rsvpData {
 	rsvpId?: number;
 }
 
-export async function createRSVP(data: rsvpData) {
+export async function saveRsvp(data: rsvpData) {
 	const user = await currentUser();
 	await db.insert(rsvps).values({
 		id: data.rsvpId,

@@ -7,7 +7,8 @@ import TimelineNumbers from "../events/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
-import { createRSVP } from "@/app/actions/actions"
+import { saveRsvp } from "@/app/actions/actions"
+import { useRouter } from "next/navigation";
 
 interface Props {
 	localRSVP?: Rsvp
@@ -19,6 +20,8 @@ interface Props {
 export default function ScrollableContainer({ localRSVP, eventData, children, duration }: Props) {
 	const designSize = 1920
 	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])
+
+	const router = useRouter();
 
 	const updateScheduleState = (newSchedule: Schedule[]) => {
 		setScheduleState(newSchedule);
@@ -34,7 +37,8 @@ export default function ScrollableContainer({ localRSVP, eventData, children, du
 						<div className={styles.buttonLeft} >< RxZoomIn className={styles.zoomIcon} /></div>
 						<div className={styles.buttonRight} ><RxZoomOut className={styles.zoomIcon} /></div>
 						<Button onClick={() => {
-							createRSVP({ eventId: eventData.id, schedules: scheduleState, rejected: false, rsvpId: localRSVP?.id })
+							saveRsvp({ eventId: eventData.id, schedules: scheduleState, rejected: false, rsvpId: localRSVP?.id })
+							router.refresh();
 						}}>Save</Button>
 					</div>
 				</div>
