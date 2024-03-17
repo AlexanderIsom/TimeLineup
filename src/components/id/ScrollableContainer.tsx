@@ -7,7 +7,7 @@ import TimelineNumbers from "../events/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
-import { saveRsvp } from "@/app/actions/actions"
+import { saveRsvp } from "@/app/events/[id]/actions"
 import { useRouter } from "next/navigation";
 
 interface Props {

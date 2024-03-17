@@ -4,17 +4,14 @@ import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from
 import Link from "next/link";
 import { db } from "@/db";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
-import { currentUser } from "@clerk/nextjs";
 import { eq, or, arrayContains } from "drizzle-orm";
 import { events } from "@/db/schema"
 
 
 async function getData() {
-  const user = await currentUser();
-  if (user === null) return [];
 
   const query = await db.query.events.findMany({
-    where: or(eq(events.userId, user.id), arrayContains(events.invitedUsers, [user.id]))
+    where: or(eq(events.userId, "ad409367-2d4c-43ff-b223-cbd1dd27310d"), arrayContains(events.invitedUsers, ["ad409367-2d4c-43ff-b223-cbd1dd27310d"]))
   });
 
   return query as Array<EventData>;
@@ -29,50 +26,6 @@ export default async function Events({ searchParams }: { searchParams?: { start:
 
   return (
     <div className={styles.wrapper}>
-      {/* <div className={styles.tools}>
-          <Link
-            href={{
-              pathname: "/events",
-              query: {
-                start: subWeeks(startDay, 1).toDateString(),
-                end: subWeeks(endDay, 1).toDateString(),
-              },
-            }}
-          >
-            <Button variant="ghost" size={"icon"}>
-              <FaChevronLeft />
-            </Button>
-          </Link>
-          <Link
-            href={{
-              pathname: "/events",
-              query: {
-                start: addWeeks(startDay, 1).toDateString(),
-                end: addWeeks(endDay, 1).toDateString(),
-              },
-            }}
-          >
-            <Button variant="ghost" size={"icon"}>
-              <FaChevronRight />
-            </Button>
-          </Link>
-          <Link
-            href={{
-              pathname: "/events",
-              query: {
-                start: startOfWeek(today).toDateString(),
-                end: endOfWeek(today).toDateString(),
-              },
-            }}
-          >
-            <Button variant="ghost">Today</Button>
-          </Link>
-          <CreateEventDialog />
-
-          <div className={styles.weekHeader}>
-            {format(startDay, "do")} - {format(endDay, "do MMMM yyyy")}
-          </div>
-        </div> */}
       <div className={styles.dateHeader}>
         <div className={styles.datePadding} ><CreateEventDialog /></div>
         <div className={styles.dateGrid}>

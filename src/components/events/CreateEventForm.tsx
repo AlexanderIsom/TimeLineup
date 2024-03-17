@@ -11,8 +11,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "../ui/textarea";
-import { useUser } from "@clerk/nextjs";
-import { createEvent, newEventData } from "@/app/actions/actions"
+import { createEvent, newEventData } from "@/app/events/actions"
 
 const formSchema = z.object({
   title: z.string().min(4, {
@@ -28,7 +27,6 @@ const formSchema = z.object({
 });
 
 export function NewEventForm() {
-  const { user, isSignedIn } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,8 +36,7 @@ export function NewEventForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!isSignedIn) return;
-    const data: newEventData = { userId: user?.id, title: values.title, start: values.start, end: values.end, description: values.description, invitedUsers: [] };
+    const data: newEventData = { userId: "", title: values.title, start: values.start, end: values.end, description: values.description, invitedUsers: [] };
     createEvent(data);
   }
 

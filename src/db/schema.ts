@@ -38,3 +38,8 @@ export const rsvpRelations = relations(rsvps, ({ one }) => ({
 		references: [events.id]
 	})
 }))
+
+// export const friendships = pgTable('friends', {
+// 	user1Id: text('user_1_id').notNull().primaryKey(),
+// 	user2Id: text('user_2_id').notNull().primaryKey(),
+// })

@@ -11,13 +11,11 @@ import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
 import { motion } from "framer-motion";
-import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Home() {
   const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
   const animatedDivContainer = useRef<HTMLDivElement>(null);
-  const { isSignedIn } = useUser();
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,11 +46,11 @@ export default function Home() {
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
 
-                <SignInButton mode="modal">
-                  <Button size={"lg"}>
-                    Get started
-                  </Button>
-                </SignInButton>
+
+                <Button size={"lg"}>
+                  Get started
+                </Button>
+
                 <Button variant={"outline"} size={"lg"}>
                   <Link href="/sign-in">Find out more</Link>
                 </Button>
@@ -293,11 +291,9 @@ export default function Home() {
           <h4>Get started with TimeLineup today</h4>
           <p className="subText mb-8">Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
-            <SignInButton mode="modal">
-              <Button size={"lg"} className="footerButton">
-                Get started
-              </Button>
-            </SignInButton>
+            <Button size={"lg"} className="footerButton">
+              Get started
+            </Button>
 
             <Button variant={"outline"} size={"lg"} className="footerButton">
               <Link href="/sign-in">Find out more</Link>
