@@ -48,11 +48,11 @@ export default function Home() {
 
 
                 <Button size={"lg"}>
-                  Get started
+                  <Link href="/login">Get started</Link>
                 </Button>
 
                 <Button variant={"outline"} size={"lg"}>
-                  <Link href="/sign-in">Find out more</Link>
+                  <Link href="/login">Find out more</Link>
                 </Button>
               </div>
             </div>

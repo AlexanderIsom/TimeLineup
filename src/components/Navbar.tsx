@@ -33,7 +33,6 @@ export default async function Navbar() {
             <span className="no-underline">Time</span>
             <span className="underline">Lineup.</span>
           </Link>
-          {user === null ? <LoginButton /> : <LogoutButton />}
         </div>
       </div>
       {/* {!isMobile && (

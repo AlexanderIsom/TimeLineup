@@ -4,21 +4,31 @@ import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from
 import Link from "next/link";
 import { db } from "@/db";
 import CreateEventDialog from "@/components/events/CreateEventDialog";
-import { eq, or, arrayContains } from "drizzle-orm";
+import { eq, or, arrayOverlaps } from "drizzle-orm";
 import { events } from "@/db/schema"
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 
-async function getData() {
+async function getData(user: User) {
 
   const query = await db.query.events.findMany({
-    where: or(eq(events.userId, "ad409367-2d4c-43ff-b223-cbd1dd27310d"), arrayContains(events.invitedUsers, ["ad409367-2d4c-43ff-b223-cbd1dd27310d"]))
+    where: or(eq(events.userId, user.id), arrayOverlaps(events.invitedUsers, [user.id]))
   });
 
   return query as Array<EventData>;
 }
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
-  const userEvents = await getData();
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data?.user) {
+    redirect('/login')
+  }
+
+  const userEvents = await getData(data?.user);
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : new Date();
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : addDays(startDay, 6);

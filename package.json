@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push:pg",
+    "db:pull": "drizzle-kit introspect:pg",
     "dks": "drizzle-kit studio"
   },
   "dependencies": {

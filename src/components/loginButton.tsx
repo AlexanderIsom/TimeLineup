@@ -2,20 +2,27 @@
 import { Button } from '@/components/ui/button'
 
 import { createClient } from '@/utils/supabase/client'
+import { Provider } from '@supabase/supabase-js';
+import { ReactNode } from 'react';
 
-export default function LoginButton() {
+interface Props {
+	provider: Provider,
+	children: ReactNode
+}
+
+export default function LoginButton({ provider, children }: Props) {
 	const supabase = createClient();
 
 	const handleGoogleLogin = async () => {
 		await supabase.auth.signInWithOAuth({
-			provider: 'google',
+			provider: provider,
 			options: {
-				redirectTo: `${location.origin}/auth/callback?next=/private`,
+				redirectTo: `${location.origin}/auth/callback?next=/events`,
 			},
 		})
 	}
 
 	return (
-		<Button onClick={handleGoogleLogin}>Login</Button>
+		<Button onClick={handleGoogleLogin}>{children}</Button>
 	)
 }

@@ -2,74 +2,58 @@ import styles from "@/styles/Components/Events/id.module.scss"
 import React from "react";
 import StaticTimeCard from "@/components/events/StaticTimeCard";
 
-import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { Rsvp, events } from "@/db/schema"
+import { Profile, Rsvp, events, profiles } from "@/db/schema"
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
+import { arrayOverlaps, eq, inArray } from "drizzle-orm";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
 import { differenceInMinutes } from "date-fns";
 import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
-import { User } from "@clerk/nextjs/server";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-interface ClerkUserData {
-	id: string;
-	firstName: string;
-	imageUrl: string;
-}
-
-async function GetEventData(id: number) {
-	let res = await db.query.events.findFirst({
-		where: eq(events.id, id),
+async function GetEventData(eventId: string) {
+	const eventData = await db.query.events.findFirst({
+		where: eq(events.id, eventId),
 		with: {
-			rsvps: true
+			rsvps: {
+				with: { user: true }
+			}
 		}
 	});
 
-	const clerkUsers = await clerkClient.users.getUserList({
-		userId: res?.rsvps.map(r => r.userId) ?? [],
-		limit: 100,
-	})
-
-	const usersIndexedById = clerkUsers.reduce<{ [id: string]: User }>((acc, obj) => {
-		acc[obj.id] = obj;
-		return acc
-	}, {});
-
-	const newRsvps = res!.rsvps.map(obj => {
-		const rsvpUser = usersIndexedById[obj.userId];
-		const userData: ClerkUserData = {
-			id: rsvpUser.id,
-			firstName: rsvpUser.firstName ?? "",
-			imageUrl: rsvpUser.imageUrl
-		}
-		return {
-			...obj,
-			user: userData
-		}
-	});
-
-	const newRes = { ...res!, rsvps: newRsvps };
-
-	return newRes;
+	let inviteeData: Array<Profile> = [];
+	if (eventData?.invitedUsers !== undefined && eventData.invitedUsers.length > 0) {
+		inviteeData = await db.query.profiles.findMany({
+			where: inArray(profiles.id, eventData?.invitedUsers)
+		})
+	}
+	return { eventData, inviteeData }
 }
 
-export default async function ViewEvent({ params }: { params: { id: number } }) {
-	const localUser = await currentUser();
-	const eventData = await GetEventData(params.id);
+export default async function ViewEvent({ params }: { params: { id: string } }) {
+	const supabase = createClient()
+
+	const { data, error } = await supabase.auth.getUser()
+	if (error || !data?.user) {
+		redirect("/login");
+	}
+	const localUser = data.user;
+
+	const { eventData, inviteeData } = await GetEventData(params.id);
 	assert(eventData, "Event data returned undefined")
 
 	const duration = differenceInMinutes(eventData.end, eventData.start);
 	new Timeline(eventData.start, duration, 1920, 5)
 
-	const localRsvp: Rsvp | undefined = eventData?.rsvps.find(r => r.userId === localUser?.id)
-	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser?.id)
+	const localRsvp: Rsvp | undefined = eventData?.rsvps.find(r => r.userId === localUser.id)
+	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
 	otherRsvp.sort((a, b) => {
-		return (a.user.firstName).localeCompare(b.user.firstName)
+		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
 	})
 
 	return (
@@ -78,19 +62,19 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 				<div className={styles.userContainer}>
 					<div className={styles.userItem}>
 						<Avatar>
-							<AvatarImage src={localUser?.imageUrl} />
-							<AvatarFallback>{localUser?.firstName?.substring(0, 2)}</AvatarFallback>
+							<AvatarImage src={localUser.user_metadata.picture} />
+							<AvatarFallback>{localUser.user_metadata.full_name.substring(0, 2)}</AvatarFallback>
 						</Avatar>
-						<div className={styles.userName}>{localUser?.firstName}</div>
+						<div className={styles.userName}>{localUser.user_metadata.full_name}</div>
 					</div>
 
 					{otherRsvp.map((rsvpUser) => {
 						return <div key={rsvpUser.user.id} className={styles.userItem}>
 							<Avatar>
-								<AvatarImage src={rsvpUser.user.imageUrl} />
-								<AvatarFallback>{rsvpUser.user?.firstName?.substring(0, 2)}</AvatarFallback>
+								<AvatarImage src={rsvpUser.user.avatarUrl ?? undefined} />
+								<AvatarFallback>{rsvpUser.user.username ?? "user".substring(0, 2)}</AvatarFallback>
 							</Avatar>
-							<div className={styles.userName}>{rsvpUser.user?.firstName ?? ""}</div>
+							<div className={styles.userName}>{rsvpUser.user.username ?? "user"}</div>
 						</div>
 					})}
 				</div>
@@ -99,14 +83,14 @@ export default async function ViewEvent({ params }: { params: { id: number } }) 
 						{otherRsvp.map((value, index: number) => {
 							return <div key={index} className={styles.staticRow}>{
 								value.schedules.map((schedule) => {
-									return <StaticTimeCard key={schedule.id} start={schedule.start} duration={schedule.duration} eventStartDate={eventData.start} username={value.user.firstName} />
+									return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
 								})
 							}</div>
 						})}
 					</div>
 				</ScrollableContainer>
 			</div>
-			<EventDetails localUser={localUser!} event={eventData} localRsvp={localRsvp} otherRsvp={otherRsvp} />
+			{/* <EventDetails localUser={localUser!} event={eventData} localRsvp={localRsvp} otherRsvp={otherRsvp} /> */}
 		</div>
 	)
 

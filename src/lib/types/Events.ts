@@ -6,7 +6,7 @@ export enum ResponseState {
 }
 
 export interface EventData {
-    id: number,
+    id: string,
     userId: string,
     title: string,
     start: Date,
