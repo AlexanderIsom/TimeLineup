@@ -18,8 +18,12 @@ export const events = pgTable('event', {
 	invitedUsers: uuid('invited_users').array().notNull(),
 });
 
-export const eventRelations = relations(events, ({ many }) => ({
+export const eventRelations = relations(events, ({ many, one }) => ({
 	rsvps: many(rsvps),
+	host: one(profiles, {
+		fields: [events.userId],
+		references: [profiles.id]
+	})
 }));
 
 export const rsvps = pgTable('rsvp', {

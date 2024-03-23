@@ -3,7 +3,7 @@
 import "./styles.scss";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { TbClick, TbCode, TbUserCheck, TbPuzzle, TbBrush, TbContrast2, TbClockSearch, TbShieldCheckFilled, TbBellRinging } from "react-icons/tb";
+import { BadgeCheck, BellRing, Brush, CodeXml, DraftingCompass, Earth, MousePointerClick, Puzzle, UserCheck } from "lucide-react"
 
 import BoxItem from "@/components/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";
@@ -33,7 +33,7 @@ export default function Home() {
   }, [animatedDivContainer]);
 
   return (
-    <main className={"main"}>
+    <div className={"main"}>
       <div className={"backgroundFade"}>
         <div className={`titleContainer overflow-hidden`}>
           <div className={`margin`}>
@@ -45,8 +45,6 @@ export default function Home() {
               </h2>
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
-
-
                 <Button size={"lg"}>
                   <Link href="/login">Get started</Link>
                 </Button>
@@ -96,7 +94,7 @@ export default function Home() {
           <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
-                <TbClick size={30} />
+                <MousePointerClick size={30} />
               </div>
               <h6 className="font-regular text-xl">Built for friends!</h6>
               <p className="iconSubText">
@@ -108,7 +106,7 @@ export default function Home() {
           <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
-                <TbCode size={30} />
+                <CodeXml size={30} />
               </div>
               <h6 className="font-regular text-xl">Designed to be easy</h6>
               <p className="iconSubText">
@@ -120,7 +118,7 @@ export default function Home() {
           <div className="pl-4 pt-4 pr-4 w-full md:w-1/3">
             <div className="gap-4 text-center items-center flex flex-col">
               <div className="flex rounded-full svgIconContainer ">
-                <TbUserCheck size={30} />
+                <UserCheck size={30} />
               </div>
               <h6 className="font-regular text-xl">Continuously developing</h6>
               <p className="iconSubText">Feedback from our users is key and we constantly improve to make things effortless for you</p>
@@ -229,7 +227,7 @@ export default function Home() {
             <BoxItem index={0}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbPuzzle size={25} color="white" />
+                  <Puzzle size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Simple</h6>
                 <p className="boxDescription">Designed with simplicity in mind. Create new events in moments.</p>
@@ -238,7 +236,7 @@ export default function Home() {
             <BoxItem index={1}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbContrast2 size={25} color="white" />
+                  <DraftingCompass size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Flexible</h6>
                 <p className="boxDescription">Easily re-organise and re-schedule events and attending times with the click of a mouse</p>
@@ -247,7 +245,7 @@ export default function Home() {
             <BoxItem index={2}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbBrush size={25} color="white" />
+                  <Brush size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Customizable</h6>
                 <p className="boxDescription">Events have huge number of options to adjust from date time, agenda and invites.</p>
@@ -256,7 +254,7 @@ export default function Home() {
             <BoxItem index={3}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbClockSearch size={25} color="white" />
+                  <Earth size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Timezones</h6>
                 <p className="boxDescription">Event times automatically adjust to the timezone you&apos;re in, making time planning easy for you.</p>
@@ -265,7 +263,7 @@ export default function Home() {
             <BoxItem index={4}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbShieldCheckFilled size={25} color="white" />
+                  <BadgeCheck size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Safe</h6>
                 <p className="boxDescription">Old events are deleted and no data is saved long term, data transparency for us is key.</p>
@@ -274,7 +272,7 @@ export default function Home() {
             <BoxItem index={5}>
               <div className="rounded-lg  h-full w-full p-8 animatedCardBackground">
                 <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  <TbBellRinging size={25} color="white" />
+                  <BellRing size={25} color="white" />
                 </div>
                 <h6 className="mb-2">Real time</h6>
                 <p className="boxDescription">Whether&apos;s its an event update or users respond to your own event, you&apos;ll get notifications in real time.</p>
@@ -301,6 +299,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

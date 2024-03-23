@@ -5,36 +5,39 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { TbMenu2 } from "react-icons/tb";
-import LoginButton from "./loginButton";
-import LogoutButton from "./logoutButton";
+import ProfileButton from "./ProfileButton";
+import { getUserProfile } from "@/app/profile/actions";
+import { Profile } from "@/db/schema";
 // import { useEffect, useState } from "react";
 
 export default async function Navbar() {
-  // const [isMobile, setIsMobile] = useState(false);
-
-  // useEffect(() => {
-  //   const deviceDetector = new DeviceDetector();
-  //   const userAgent = window.navigator.userAgent;
-  //   const device = deviceDetector.parse(userAgent);
-  //   setIsMobile(device.device?.type === "smartphone");
-  // }, []);
-
   const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
   const user = data?.user
+  const signedIn = user !== null;
+  let profile: Profile | undefined;
+  if (signedIn) {
+    profile = await getUserProfile();
+  }
 
   return (
-    <div className={`${styles.wrapper} pl-16 pr-8 absolute z-50 h-24 w-full justify-between flex items-center`}>
+    <div className={`${styles.wrapper} pl-16 pr-32 absolute z-50 h-24 w-full justify-between flex items-center`}>
       <div className="flex items-center gap-12">
         <div className="text-2xl font-bold">
-          <Link href="/">
-            <span className="no-underline">Time</span>
-            <span className="underline">Lineup.</span>
-          </Link>
+          <span className="no-underline">Time</span>
+          <span className="underline">Lineup.</span>
         </div>
+        {signedIn &&
+          <div className="font-medium text-xl">
+            <div>
+              <Link href="/events">Events</Link>
+            </div>
+          </div>
+        }
       </div>
+      {signedIn && <ProfileButton profile={profile!} />}
+      {!signedIn && <Link href="/login"><Button>Login</Button></Link>}
       {/* {!isMobile && (
           <SignedIn>
             <div className="font-medium text-xl">

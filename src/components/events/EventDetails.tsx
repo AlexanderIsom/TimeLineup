@@ -1,19 +1,19 @@
 import styles from "@/styles/Components/Events/EventDetails.module.scss";
 import { formatDateRange } from "@/utils/TimeUtils"
-import { BsCalendar4Week } from "react-icons/bs"
 import { AgendaItem, EventData, ResponseState } from "@/lib/types/Events"
 import React from "react";
 import { addMinutes, format } from "date-fns";
 import Image from "next/image"
-import { Rsvp } from "@/db/schema";
-import { User, clerkClient } from "@clerk/nextjs/server";
+import { Profile, Rsvp } from "@/db/schema";
 import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { EventWithRsvpAndUser } from "@/db/schemaTypes";
+import { CalendarRange } from "lucide-react";
 
 interface Props {
-	localUser: User
-	event: EventData
+	localUser: Profile
+	event: EventWithRsvpAndUser
 	localRsvp?: Rsvp
 	otherRsvp: Array<Rsvp>
 	// responseState: ResponseState;
@@ -38,8 +38,6 @@ export default async function EventDetails({ event, localRsvp, otherRsvp }: Prop
 	// var declinedCount = declinedUsers.length;
 	// var showButtons = event.userId !== ResponseState.hosting;
 
-	const hostUser = await clerkClient.users.getUser(event.userId)
-
 	return (
 		<div className={styles.container} >
 			<div className={styles.heading}>
@@ -48,15 +46,15 @@ export default async function EventDetails({ event, localRsvp, otherRsvp }: Prop
 				</div>
 				<div className={styles.eventHostInformation}>
 					<Avatar>
-						<AvatarImage src={hostUser?.imageUrl} />
-						<AvatarFallback>{hostUser?.firstName?.substring(0, 2)}</AvatarFallback>
+						<AvatarImage src={event.host.avatarUrl!} />
+						<AvatarFallback>{event.host.username!.substring(0, 2)}</AvatarFallback>
 					</Avatar>
-					{hostUser?.firstName}
+					{event.host.username}
 				</div>
 			</div>
 			<Separator />
 			<div className={styles.eventDate}>
-				<BsCalendar4Week className={styles.calendarIcon} />
+				<CalendarRange className={styles.calendarIcon} />
 				{formatDateRange(new Date(event.start), event.end)}
 			</div>
 

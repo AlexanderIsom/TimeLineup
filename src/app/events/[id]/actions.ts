@@ -2,21 +2,29 @@
 import { Schedule } from "@/components/events/ClientCardContainer";
 import { db } from "@/db";
 import { rsvps } from "@/db/schema";
+import { createClient } from "@/utils/supabase/server";
 
 export interface rsvpData {
-	eventId: number;
+	eventId: string;
 	schedules: Array<Schedule>
 	rejected: boolean;
-	rsvpId?: number;
+	rsvpId?: string;
 }
 
-export async function saveRsvp(data: rsvpData) {
+export async function saveRsvp(rsvpData: rsvpData) {
+	const supabase = createClient()
+
+	const { data, error } = await supabase.auth.getUser()
+	if (error || !data?.user) {
+		return;
+	}
+	const user = data.user;
 
 	await db.insert(rsvps).values({
-		id: data.rsvpId,
-		userId: "user!.id",
-		eventId: data.eventId,
-		schedules: data.schedules,
-		rejected: data.rejected
-	}).onConflictDoUpdate({ target: rsvps.id, set: { schedules: data.schedules, rejected: data.rejected } }).execute();
+		id: rsvpData.rsvpId,
+		userId: user.id,
+		eventId: rsvpData.eventId,
+		schedules: rsvpData.schedules,
+		rejected: rsvpData.rejected
+	}).onConflictDoUpdate({ target: rsvps.id, set: { schedules: rsvpData.schedules, rejected: rsvpData.rejected } }).execute();
 }

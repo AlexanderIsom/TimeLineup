@@ -14,6 +14,8 @@ import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getUser } from "@/app/addfriend/actions";
+import { getUserProfile } from "@/app/profile/actions";
 
 async function GetEventData(eventId: string) {
 	const eventData = await db.query.events.findFirst({
@@ -21,35 +23,35 @@ async function GetEventData(eventId: string) {
 		with: {
 			rsvps: {
 				with: { user: true }
-			}
+			},
+			host: true
 		}
 	});
 
-	let inviteeData: Array<Profile> = [];
+	let attendees: Array<Profile> = [];
 	if (eventData?.invitedUsers !== undefined && eventData.invitedUsers.length > 0) {
-		inviteeData = await db.query.profiles.findMany({
+		attendees = await db.query.profiles.findMany({
 			where: inArray(profiles.id, eventData?.invitedUsers)
 		})
 	}
-	return { eventData, inviteeData }
+
+	return { eventData, attendees }
 }
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
-	const supabase = createClient()
+	const localUser = await getUserProfile()
 
-	const { data, error } = await supabase.auth.getUser()
-	if (error || !data?.user) {
+	const { eventData, attendees } = await GetEventData(params.id);
+	assert(eventData, "Event data returned undefined")
+
+	if (localUser === undefined) {
 		redirect("/login");
 	}
-	const localUser = data.user;
-
-	const { eventData, inviteeData } = await GetEventData(params.id);
-	assert(eventData, "Event data returned undefined")
 
 	const duration = differenceInMinutes(eventData.end, eventData.start);
 	new Timeline(eventData.start, duration, 1920, 5)
 
-	const localRsvp: Rsvp | undefined = eventData?.rsvps.find(r => r.userId === localUser.id)
+	const localRsvp = eventData.rsvps.find(r => r.userId === localUser.id)
 	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
 	otherRsvp.sort((a, b) => {
@@ -62,19 +64,19 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 				<div className={styles.userContainer}>
 					<div className={styles.userItem}>
 						<Avatar>
-							<AvatarImage src={localUser.user_metadata.picture} />
-							<AvatarFallback>{localUser.user_metadata.full_name.substring(0, 2)}</AvatarFallback>
+							<AvatarImage src={localUser.avatarUrl!} />
+							<AvatarFallback>{localUser.username!.substring(0, 2)}</AvatarFallback>
 						</Avatar>
-						<div className={styles.userName}>{localUser.user_metadata.full_name}</div>
+						<div className={styles.userName}>{localUser.username}</div>
 					</div>
 
-					{otherRsvp.map((rsvpUser) => {
-						return <div key={rsvpUser.user.id} className={styles.userItem}>
+					{attendees.map((user) => {
+						return <div key={user.id} className={styles.userItem}>
 							<Avatar>
-								<AvatarImage src={rsvpUser.user.avatarUrl ?? undefined} />
-								<AvatarFallback>{rsvpUser.user.username ?? "user".substring(0, 2)}</AvatarFallback>
+								<AvatarImage src={user.avatarUrl ?? undefined} />
+								<AvatarFallback>{user.username ?? "user".substring(0, 2)}</AvatarFallback>
 							</Avatar>
-							<div className={styles.userName}>{rsvpUser.user.username ?? "user"}</div>
+							<div className={styles.userName}>{user.username ?? "user"}</div>
 						</div>
 					})}
 				</div>
@@ -90,7 +92,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 					</div>
 				</ScrollableContainer>
 			</div>
-			{/* <EventDetails localUser={localUser!} event={eventData} localRsvp={localRsvp} otherRsvp={otherRsvp} /> */}
+			<EventDetails localUser={localUser} event={eventData} localRsvp={localRsvp} otherRsvp={otherRsvp} />
 		</div>
 	)
 

@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
       <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
         <Navbar />
-        <div className="pt-24" style={{ height: "100%" }}>{children}</div>
+        <div style={{ height: "100%" }} className="pt-24">{children}</div>
       </body>
     </html>
   );
