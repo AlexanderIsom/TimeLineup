@@ -1,4 +1,4 @@
-import styles from "@/styles/pages/Events.module.scss";
+import styles from "./events.module.scss";
 import { EventData } from "@/lib/types";
 import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns";
 import Link from "next/link";
