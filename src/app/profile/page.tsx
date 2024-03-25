@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import styles from "./profile.module.scss"
 
-import { createClient } from '@/utils/supabase/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getUserProfile } from './actions'
 import { Button } from '@/components/ui/button'
@@ -14,7 +13,7 @@ export default async function PrivatePage() {
 		redirect("/login")
 	}
 
-	return <div className='flex flex-col items-center gap-4 h-full mt-36'>
+	return <div className='flex flex-col items-center gap-4 mt-32'>
 		<Avatar className='w-16 h-16'>
 			<AvatarImage src={profile.avatarUrl ?? undefined} />
 			<AvatarFallback>{profile.username!.substring(0, 2)}</AvatarFallback>

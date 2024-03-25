@@ -1,11 +1,13 @@
 'use client'
 import { Profile } from "@/db/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { LogOut, Settings2, User } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+import styles from "./ProfileButton.module.scss"
 
 interface Props {
 	profile: Profile;
@@ -46,7 +48,7 @@ export default function ProfileButton({ profile }: Props) {
 				</Link>
 
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={handleLogout}>
+				<DropdownMenuItem onClick={handleLogout} className={styles.Logout}>
 					<LogOut className="mr-2 h-4 w-4" />
 					<span>Log out</span>
 				</DropdownMenuItem>

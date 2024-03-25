@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import ProfileButton from "./ProfileButton";
+import ProfileButton from "./ProfileButton/ProfileButton";
 import { getUserProfile } from "@/app/profile/actions";
 import { Profile } from "@/db/schema";
 // import { useEffect, useState } from "react";
