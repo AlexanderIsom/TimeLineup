@@ -2,13 +2,13 @@
 
 import styles from "@/styles/Components/Events/id.module.scss";
 import { Button } from "../ui/button";
-import { RxZoomIn, RxZoomOut } from "react-icons/rx";
 import TimelineNumbers from "../events/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
 import { saveRsvp } from "@/app/events/[id]/actions"
 import { useRouter } from "next/navigation";
+import { ZoomIn, ZoomOut } from "lucide-react";
 
 interface Props {
 	localRSVP?: Rsvp
@@ -34,8 +34,8 @@ export default function ScrollableContainer({ localRSVP, eventData, children, du
 					<div className={styles.magnify}>
 						{/* <div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
 							<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div> */}
-						<div className={styles.buttonLeft} >< RxZoomIn className={styles.zoomIcon} /></div>
-						<div className={styles.buttonRight} ><RxZoomOut className={styles.zoomIcon} /></div>
+						<div className={styles.buttonLeft} >< ZoomIn className={styles.zoomIcon} /></div>
+						<div className={styles.buttonRight} ><ZoomOut className={styles.zoomIcon} /></div>
 						<Button onClick={() => {
 							saveRsvp({ eventId: eventData.id, schedules: scheduleState, rejected: false, rsvpId: localRSVP?.id })
 							router.refresh();

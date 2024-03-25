@@ -40,12 +40,6 @@ export default function ProfileButton({ profile }: Props) {
 						<span>Profile</span>
 					</DropdownMenuItem>
 				</Link>
-				<Link href={"/profile"}>
-					<DropdownMenuItem>
-						<Settings2 className="mr-2 h-4 w-4" />
-						<span>Settings</span>
-					</DropdownMenuItem>
-				</Link>
 
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={handleLogout} className={styles.Logout}>
