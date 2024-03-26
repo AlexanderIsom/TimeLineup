@@ -1,8 +1,8 @@
 'use client'
 import { Profile } from "@/db/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { LogOut, Settings2, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { HeartHandshake, LogOut, Settings2, User } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -38,6 +38,13 @@ export default function ProfileButton({ profile }: Props) {
 					<DropdownMenuItem>
 						<User className="mr-2 h-4 w-4" />
 						<span>Profile</span>
+					</DropdownMenuItem>
+				</Link>
+
+				<Link href={"/addfriend"}>
+					<DropdownMenuItem>
+						<HeartHandshake className="mr-2 h-4 w-4" />
+						<span>Add friends</span>
 					</DropdownMenuItem>
 				</Link>
 

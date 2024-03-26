@@ -106,6 +106,10 @@ export async function acceptFriendRequest(id: string) {
 		.where(and(eq(friendships.user_1, id), eq(friendships.user_2, user.id)));
 }
 
+export async function rejectFriendRequest(id: string) {
+	//
+}
+
 export async function getFriends() {
 	const supabase = createClient()
 

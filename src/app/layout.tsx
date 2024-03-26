@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Inter, Roboto_Mono } from "next/font/google";
-import Navbar from "@/components/Navbar";
+import { Inter } from "next/font/google";
+import Navbar from "@/components/navbar/navbar";
 import 'overlayscrollbars/overlayscrollbars.css'
 
 var cn = require("classnames");

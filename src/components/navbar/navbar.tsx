@@ -1,13 +1,14 @@
-import styles from "@/styles/Components/Navbar.module.scss";
-import { Button } from "./ui/button";
+import styles from "./navbar.module.scss";
+import { Button } from "../ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import ProfileButton from "./ProfileButton/ProfileButton";
 import { getUserProfile } from "@/app/profile/actions";
 import { Profile } from "@/db/schema";
+import MessagesButton from "./messagesButton/messagesButton";
 // import { useEffect, useState } from "react";
 
 export default async function Navbar() {
@@ -29,15 +30,18 @@ export default async function Navbar() {
           <span className="underline">Lineup.</span>
         </div>
         {signedIn &&
-          <div className="font-medium text-xl">
-            <div>
-              <Link href="/events">Events</Link>
-            </div>
+          <div>
+            <Link href="/events"><Button variant="ghost">
+              <div className="font-medium text-xl">Events</div>
+            </Button></Link>
           </div>
         }
       </div>
-      {signedIn && <ProfileButton profile={profile!} />}
-      {!signedIn && <Link href="/login"><Button>Login</Button></Link>}
+      <div className="flex gap-8 items-center">
+        <MessagesButton />
+        {signedIn && <ProfileButton profile={profile!} />}
+        {!signedIn && <Link href="/login"><Button>Login</Button></Link>}
+      </div>
       {/* {!isMobile && (
           <SignedIn>
             <div className="font-medium text-xl">
