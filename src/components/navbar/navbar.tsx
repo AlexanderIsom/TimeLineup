@@ -1,15 +1,13 @@
 import styles from "./navbar.module.scss";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import ProfileButton from "./ProfileButton/ProfileButton";
 import { getUserProfile } from "@/app/profile/actions";
 import { Profile } from "@/db/schema";
-import MessagesButton from "./messagesButton/messagesButton";
-// import { useEffect, useState } from "react";
+import InboxPopover from "./inbox/inboxPopover";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -37,10 +35,17 @@ export default async function Navbar() {
           </div>
         }
       </div>
+
+
+
       <div className="flex gap-8 items-center">
-        <MessagesButton />
-        {signedIn && <ProfileButton profile={profile!} />}
-        {!signedIn && <Link href="/login"><Button>Login</Button></Link>}
+        {signedIn ? <>
+          <InboxPopover />
+          <ProfileButton profile={profile!} />
+        </>
+          : <Link href="/login">
+            <Button>Login</Button>
+          </Link>}
       </div>
       {/* {!isMobile && (
           <SignedIn>

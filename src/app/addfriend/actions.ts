@@ -1,6 +1,6 @@
-'use server'
+"use server"
 import { db } from "@/db";
-import { friendshipStatus, friendships, profiles } from "@/db/schema";
+import { friendships, profiles } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, exists, or } from "drizzle-orm";
 
@@ -124,7 +124,10 @@ export async function getFriends() {
 
 	const users = await db.query.profiles.findMany({
 		where: exists(query)
-	})
+	}).then((values) => { return values.filter(u => u.id !== user.id) })
 
-	return users.filter(u => u.id !== user.id)
+	return { success: users }
 }
+
+
+

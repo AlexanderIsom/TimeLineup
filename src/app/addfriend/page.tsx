@@ -7,8 +7,8 @@ import { Separator } from "@/components/ui/separator";
 export default async function AddFriend() {
 	const user = await getUser();
 	const outgoingRequests = await getOutgoingRequests();
-	const IncomingRequests = await getIncomingRequests();
-	const friends = await getFriends();
+	const data = await getFriends();
+	const friends = data?.success
 
 	return (
 		<div className="flex flex-col w-80">
@@ -29,7 +29,6 @@ export default async function AddFriend() {
 					</div>
 					<div className="flex justify-end">
 						<Button formAction={addFriend}>Add Friend</Button>
-
 					</div>
 				</div>
 			</form >

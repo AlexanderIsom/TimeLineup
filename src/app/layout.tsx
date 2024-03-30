@@ -3,6 +3,8 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
 import 'overlayscrollbars/overlayscrollbars.css'
+import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
 
 var cn = require("classnames");
 
@@ -19,11 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
-      <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
-        <Navbar />
-        <div style={{ height: "100%" }} className="pt-24">{children}</div>
-      </body>
-    </html>
+    <ReactQueryClientProvider>
+      <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
+          <Navbar />
+          <div style={{ height: "100%" }} className="pt-24">{children}</div>
+          <Toaster />
+        </body>
+      </html>
+    </ReactQueryClientProvider>
   );
 }

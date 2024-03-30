@@ -1,12 +1,12 @@
-import { differenceInSeconds } from "date-fns";
+import { NearestMinutes, differenceInSeconds } from "date-fns";
 
 export default class Timeline {
 	private static widthInPixels: number;
 	private static durationInSeconds: number;
 	private static startDateTime: Date;
-	private static snapToNearestMinutes: number;
+	private static snapToNearestMinutes: NearestMinutes;
 
-	constructor(startDateTime: Date, duration: number, canvasWidth: number, snapToNearestMinutes: number) {
+	constructor(startDateTime: Date, duration: number, canvasWidth: number, snapToNearestMinutes: NearestMinutes) {
 		Timeline.startDateTime = startDateTime;
 		Timeline.durationInSeconds = duration * 60;
 		Timeline.widthInPixels = canvasWidth;
@@ -17,7 +17,7 @@ export default class Timeline {
 		this.widthInPixels = width;
 	}
 
-	static getSnapToNearestMinutes(): number {
+	static getSnapToNearestMinutes(): NearestMinutes {
 		return this.snapToNearestMinutes;
 	}
 

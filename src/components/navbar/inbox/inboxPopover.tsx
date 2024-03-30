@@ -6,9 +6,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 
-export default async function MessagesButton() {
+export default async function InboxPopover() {
 	const requests = await getIncomingFriendRequests();
-	const nofifications = 0;
+	const nofifications = 5;
 	const notificationCount = (requests?.length ?? 0) + nofifications;
 	const notificationText = notificationCount > 0 ? notificationCount < 99 ? notificationCount : "99+" : undefined;
 
@@ -27,7 +27,7 @@ export default async function MessagesButton() {
 				<TabsList className="flex ">
 					<TabsTrigger value="messages" className="flex gap-2">
 						Messages
-						<Badge variant="default" className="pl-2 pr-2">5</Badge>
+						<Badge variant="default" className="pl-2 pr-2">{nofifications}</Badge>
 					</TabsTrigger>
 					<TabsTrigger value="requests" className="flex gap-2">
 						Requests

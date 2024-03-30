@@ -3,12 +3,12 @@ import { EventData } from "@/lib/types";
 import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns";
 import Link from "next/link";
 import { db } from "@/db";
-import CreateEventDialog from "@/components/events/CreateEventDialog";
 import { eq, or, arrayOverlaps } from "drizzle-orm";
 import { events } from "@/db/schema"
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { User } from "@supabase/supabase-js";
+import EventServerDialog from "@/components/events/newEventForm/eventServerDialog";
 
 
 async function getData(user: User) {
@@ -37,7 +37,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
   return (
     <div className={styles.wrapper}>
       <div className={styles.dateHeader}>
-        <div className={styles.datePadding} ><CreateEventDialog /></div>
+        <div className={styles.datePadding} ><EventServerDialog /></div>
         <div className={styles.dateGrid}>
           {days.map((day: Date, index) => {
             return (
