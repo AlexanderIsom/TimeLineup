@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import DateCard from "@/components/landingPage/dateCard";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import LoginDialog from "@/components/login/loginDialog";
 
 export default function Home() {
   const [isAnimatiedDivShown, setAnimatedDivShown] = useState(true);
@@ -45,13 +46,7 @@ export default function Home() {
               </h2>
               <p className={"titleDescription"}>Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
               <div className="flex w-full gap-4 buttonsContainer">
-                <Button size={"lg"}>
-                  <Link href="/login">Get started</Link>
-                </Button>
-
-                <Button variant={"outline"} size={"lg"}>
-                  <Link href="/login">Find out more</Link>
-                </Button>
+                <LoginDialog><Button size={"lg"}>Get started</Button></LoginDialog>
               </div>
             </div>
           </div>
@@ -289,13 +284,7 @@ export default function Home() {
           <h4>Get started with TimeLineup today</h4>
           <p className="subText mb-8">Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
-            <Button size={"lg"} className="footerButton">
-              Get started
-            </Button>
-
-            <Button variant={"outline"} size={"lg"} className="footerButton">
-              <Link href="/sign-in">Find out more</Link>
-            </Button>
+            <LoginDialog><Button size={"lg"} className="footerButton">Get started</Button></LoginDialog>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
 
   const { data, error } = await supabase.auth.getUser()
   if (error || !data?.user) {
-    redirect('/login')
+    redirect('/')
   }
 
   const userEvents = await getData(data?.user);

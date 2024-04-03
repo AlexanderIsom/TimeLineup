@@ -1,13 +1,16 @@
+"use server"
 import styles from "./navbar.module.scss";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import ProfileButton from "./ProfileButton/ProfileButton";
+import ProfileDropdown from "./profile/profileDropdown";
 import { getUserProfile } from "@/app/profile/actions";
 import { Profile } from "@/db/schema";
 import InboxPopover from "./inbox/inboxPopover";
+import LoginDialog from "../login/loginDialog";
+import { getFriends, getFriendsType } from "@/app/addfriend/actions";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -16,8 +19,10 @@ export default async function Navbar() {
   const user = data?.user
   const signedIn = user !== null;
   let profile: Profile | undefined;
+  let friends: getFriendsType
   if (signedIn) {
     profile = await getUserProfile();
+    friends = await getFriends();
   }
 
   return (
@@ -41,11 +46,9 @@ export default async function Navbar() {
       <div className="flex gap-8 items-center">
         {signedIn ? <>
           <InboxPopover />
-          <ProfileButton profile={profile!} />
+          <ProfileDropdown profile={profile!} friends={friends} />
         </>
-          : <Link href="/login">
-            <Button>Login</Button>
-          </Link>}
+          : <LoginDialog><Button>Login</Button></LoginDialog>}
       </div>
       {/* {!isMobile && (
           <SignedIn>

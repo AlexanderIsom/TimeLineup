@@ -11,7 +11,7 @@ import { createEvent, newEventData } from "@/app/events/actions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
-import { CalendarIcon, Clock, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Clock, LoaderCircle, Minus, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
 import { useGetFriends } from "@/app/addfriend/hooks";
 import { Profile } from "@/db/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   title: z.string().min(4, {
@@ -41,7 +41,6 @@ const formSchema = z.object({
 }).refine(data => {
   return data.endDate >= addMinutes(data.startDate, 30)
 }, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
-
 
 const steps = [
   {
@@ -79,15 +78,16 @@ export default function CreateEventDialog() {
   function processForm(values: z.infer<typeof formSchema>) {
     const users = invitedUsers.map(u => { return u.id });
     const data: newEventData = { userId: "", title: values.title, start: values.startDate, end: values.endDate, description: values.description, invitedUsers: users };
-    createEvent(data).then(() => {
+    createEvent(data).then((newEventId) => {
+      console.log(newEventId);
       setOpen(false);
-      setCurrentStep(0);
-      form.reset();
-      toast("Event has been created", {
+      toast.message("Event has been created", {
         description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
         action: {
           label: "Goto",
-          onClick: () => console.log("Undo"),
+          onClick: () => {
+            router.push(`/events/${newEventId}`)
+          },
         },
       })
       router.refresh();
@@ -128,10 +128,9 @@ export default function CreateEventDialog() {
   return (
     <Dialog open={open} onOpenChange={(value) => {
       setOpen(value);
-      if (!value) {
+      if (value) {
         form.reset();
         setCurrentStep(0);
-      } else {
         form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
         form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
       }
@@ -158,7 +157,7 @@ export default function CreateEventDialog() {
           </DialogHeader>
 
           <Form {...form}>
-            <form className="space-y-8">
+            <div className="space-y-8 flex flex-col h-full">
               {currentStep === 0 && <>
                 <FormField
                   control={form.control}
@@ -221,7 +220,6 @@ export default function CreateEventDialog() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="endDate"
@@ -288,7 +286,7 @@ export default function CreateEventDialog() {
                 <Tabs defaultValue="friends" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="friends">Friends</TabsTrigger>
-                    <TabsTrigger value="invited">Invited</TabsTrigger>
+                    <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
                   </TabsList>
                   <TabsContent value="friends">
                     {isLoading ? <div>Loading...</div> :
@@ -302,12 +300,13 @@ export default function CreateEventDialog() {
                   </TabsContent>
                 </Tabs>
               </div>}
-              {currentStep === 2 && <>
-                <div>
+              {currentStep === 2 &&
+                <div className="flex w-full justify-center gap-2 m-auto items-center">
+                  <LoaderCircle className="animate-spin" />
                   Complete!
                 </div>
-              </>}
-            </form>
+              }
+            </div>
           </Form>
         </div>
         <DialogFooter className="sm:justify-between">

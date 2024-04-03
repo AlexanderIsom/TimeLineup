@@ -59,18 +59,18 @@ export const profileRelations = relations(profiles, ({ many, one }) => ({
 
 export const friendships = pgTable('friendship', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
-	user_1: uuid("user_1").notNull().references(() => profiles.id, { onDelete: "cascade" }),
-	user_2: uuid("user_2").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+	sending_user: uuid("sending_user").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+	receiving_user: uuid("receiving_user").notNull().references(() => profiles.id, { onDelete: "cascade" }),
 	status: friendshipStatus("status").default('pending').notNull(),
 })
 
 export const friendshipRelations = relations(friendships, ({ one }) => ({
 	sendingUser: one(profiles, {
-		fields: [friendships.user_1],
+		fields: [friendships.sending_user],
 		references: [profiles.id]
 	}),
 	targetUser: one(profiles, {
-		fields: [friendships.user_2],
+		fields: [friendships.receiving_user],
 		references: [profiles.id]
 	}),
 }));

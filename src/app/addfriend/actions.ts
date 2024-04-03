@@ -1,10 +1,11 @@
 "use server"
 import { db } from "@/db";
-import { friendships, profiles } from "@/db/schema";
+import { Profile, friendships, profiles } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
-import { and, eq, exists, or } from "drizzle-orm";
+import { and, eq, exists, ilike, or, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
-export async function addFriend(formData: FormData) {
+export async function addFriend(usernameQuery: string) {
 	const supabase = createClient()
 
 	const { data, error } = await supabase.auth.getUser()
@@ -14,28 +15,40 @@ export async function addFriend(formData: FormData) {
 
 	const user = data.user;
 	const targetFriend = await db.query.profiles.findFirst({
-		where: eq(profiles.username, formData.get('username') as string)
+		where: ilike(profiles.username, usernameQuery!.toLowerCase())
 	})
 
 	if (targetFriend === undefined || user.id === targetFriend.id) {
 		return;
 	}
 
-	const areFriends = await db.query.friendships.findFirst({
-		where: or(and(eq(friendships.user_1, user.id), eq(friendships.user_2, targetFriend.id)), and(eq(friendships.user_1, targetFriend.id), eq(friendships.user_2, user.id)))
+	const pendingRequest = await db.query.friendships.findFirst({
+		where:
+			or(
+				and(
+					eq(friendships.sending_user, user.id),
+					eq(friendships.receiving_user, targetFriend.id)
+				),
+				and(
+					eq(friendships.sending_user, targetFriend.id),
+					eq(friendships.receiving_user, user.id)
+				)
+			)
 	})
 
-	if (areFriends !== undefined) {
-		if (areFriends.status === "pending") {
+	if (pendingRequest !== undefined) {
+		if (pendingRequest.status === "pending") {
 			acceptFriendRequest(targetFriend.id)
 		}
 		return;
 	}
 
 	await db.insert(friendships).values({
-		user_1: user.id,
-		user_2: targetFriend.id
+		sending_user: user.id,
+		receiving_user: targetFriend.id
 	});
+
+	revalidatePath("/")
 }
 
 export async function getUser() {
@@ -63,13 +76,18 @@ export async function getOutgoingRequests() {
 
 	const user = data.user;
 
-	const query = db.select().from(friendships).where(and(eq(friendships.user_1, user.id), eq(friendships.status, "pending")))
+	const query = db.select().from(friendships).where(and(eq(friendships.sending_user, user.id), eq(friendships.status, "pending")))
 
 	const users = await db.query.profiles.findMany({
 		where: exists(query)
 	})
 
 	return users.filter(u => u.id !== user.id)
+}
+
+export interface friendRequest {
+	id: string
+	profile: Profile
 }
 
 export async function getIncomingRequests() {
@@ -81,33 +99,39 @@ export async function getIncomingRequests() {
 	}
 
 	const user = data.user;
+	// const query = db.select().from(friendships).where(and(eq(friendships.receiving_user, user.id), eq(friendships.status, "pending")))
 
-	const query = db.select().from(friendships).where(and(eq(friendships.user_2, user.id), eq(friendships.status, "pending")))
+	// const users = await db.query.profiles.findMany({
+	// 	where: exists(query),
+	// })
 
-	const users = await db.query.profiles.findMany({
-		where: exists(query)
+	const friendRequests: Array<friendRequest> = [];
+
+	const query = await db.query.friendships.findMany({
+		where: and(eq(friendships.receiving_user, user.id), eq(friendships.status, "pending")),
+		with: { sendingUser: true }
 	})
 
-	return users.filter(u => u.id !== user.id)
+	query.forEach(q => {
+		const newRequest: friendRequest = { id: q.id, profile: q.sendingUser }
+		friendRequests.push(newRequest);
+	})
+
+	return friendRequests
 }
 
 export async function acceptFriendRequest(id: string) {
-	const supabase = createClient()
-
-	const { data, error } = await supabase.auth.getUser()
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-
 	await db.update(friendships)
 		.set({ status: "accepted" })
-		.where(and(eq(friendships.user_1, id), eq(friendships.user_2, user.id)));
+		.where(eq(friendships.id, id));
+
+	revalidatePath("/")
 }
 
-export async function rejectFriendRequest(id: string) {
-	//
+export async function removeFriend(id: string) {
+	await db.delete(friendships).where(eq(friendships.id, id))
+
+	revalidatePath("/")
 }
 
 export async function getFriends() {
@@ -120,14 +144,36 @@ export async function getFriends() {
 
 	const user = data.user;
 
-	const query = db.select().from(friendships).where(and(or(eq(friendships.user_1, user.id), eq(friendships.user_2, user.id)), eq(friendships.status, "accepted")))
+	// const query = db.select().from(friendships).where(and(or(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, user.id)), eq(friendships.status, "accepted")))
 
-	const users = await db.query.profiles.findMany({
-		where: exists(query)
-	}).then((values) => { return values.filter(u => u.id !== user.id) })
+	// const users = await db.query.profiles.findMany({
+	// 	where: exists(query)
+	// }).then((values) => { return values.filter(u => u.id !== user.id) })
 
-	return { success: users }
+	const userId = user.id
+
+	const queryResult = await db
+		.select({
+			id: friendships.id,
+			status: friendships.status,
+			profile: {
+				username: profiles.username,
+				userId: profiles.id,
+				avatarUrl: profiles.avatarUrl
+			}
+		}).from(friendships).leftJoin(profiles, sql`(
+			friendship.sending_user != ${userId}
+			AND friendship.sending_user = profile.id
+		  ) OR (
+			friendship.receiving_user != ${userId}
+			AND friendship.receiving_user = profile.id
+		  )`)
+		.where(sql`friendship.sending_user = ${userId} OR friendship.receiving_user = ${userId}`);
+
+	return queryResult
 }
+
+export type getFriendsType = Awaited<ReturnType<typeof getFriends>> | undefined
 
 
 

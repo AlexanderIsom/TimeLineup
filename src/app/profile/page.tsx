@@ -10,7 +10,7 @@ export default async function PrivatePage() {
 	const profile = await getUserProfile();
 
 	if (profile === undefined) {
-		redirect("/login")
+		redirect("/")
 	}
 
 	return <div className='flex justify-center mt-32'>

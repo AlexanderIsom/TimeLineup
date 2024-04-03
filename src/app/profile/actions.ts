@@ -23,38 +23,26 @@ export async function getUserProfile() {
 	return user;
 }
 
-export async function updateUserProfile(_currentState: unknown, formData: FormData) {
+export async function isUsernameAvaliable(usernameQuery: string) {
 	const localUser = await getUserProfile();
-	const usernameQuery = formData.get("username") as string
-	const urlQuery = formData.get("url") as string
-	console.log("BLAC" + urlQuery);
-	let update;
-	if (usernameQuery !== null && usernameQuery !== "") {
+
+	if (usernameQuery) {
 		const user = await db.query.profiles.findFirst({
 			where: ilike(profiles.username, usernameQuery!.toLowerCase())
 		})
 
-		if (user !== undefined && user?.id !== localUser?.id) {
-			return 'Username is taken'
+		if (user === undefined) {
+			return true
+		} else {
+			return user?.id === localUser?.id
 		}
-
-		if (update === undefined) {
-			update = {};
-		}
-
-		update = { ...update, username: usernameQuery }
 	}
+}
 
-	if (urlQuery !== null) {
-		if (update === undefined) {
-			update = {};
-		}
-
-		update = { ...update, avatarUrl: urlQuery }
-	}
-
-	if (update !== undefined) {
-		console.log(update);
-		await db.update(profiles).set(update).where(eq(profiles.id, localUser!.id))
-	}
+export async function updateUserProfile(values: {
+	username?: string;
+	avatarUrl?: string;
+}) {
+	const localUser = await getUserProfile();
+	await db.update(profiles).set(values).where(eq(profiles.id, localUser!.id))
 }

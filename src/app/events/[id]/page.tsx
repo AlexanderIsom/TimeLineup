@@ -45,7 +45,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	assert(eventData, "Event data returned undefined")
 
 	if (localUser === undefined) {
-		redirect("/login");
+		redirect("/");
 	}
 
 	const duration = differenceInMinutes(eventData.end, eventData.start);

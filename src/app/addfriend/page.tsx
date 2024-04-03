@@ -8,7 +8,7 @@ export default async function AddFriend() {
 	const user = await getUser();
 	const outgoingRequests = await getOutgoingRequests();
 	const data = await getFriends();
-	const friends = data?.success
+	const friends = data
 
 	return (
 		<div className="flex flex-col w-80">

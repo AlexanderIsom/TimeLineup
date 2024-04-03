@@ -1,5 +1,5 @@
 import { getIncomingRequests as getIncomingFriendRequests } from "@/app/addfriend/actions";
-import FriendRequestCard from "@/components/friends/friendRequestCard";
+import FriendRequests from "@/components/friends/friendRequests";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,9 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 
 export default async function InboxPopover() {
-	const requests = await getIncomingFriendRequests();
+	const friendRequests = await getIncomingFriendRequests();
 	const nofifications = 5;
-	const notificationCount = (requests?.length ?? 0) + nofifications;
+	const notificationCount = (friendRequests?.length ?? 0) + nofifications;
 	const notificationText = notificationCount > 0 ? notificationCount < 99 ? notificationCount : "99+" : undefined;
 
 	return <Popover>
@@ -19,31 +19,29 @@ export default async function InboxPopover() {
 				{notificationText}
 			</Button>
 		</PopoverTrigger>
-		<PopoverContent className="w-auto">
+		<PopoverContent className="min-w-[300px]">
 			<div className="flex flex-row items-center">
 				<h2 className="text-sm font-semibold">Inbox</h2>
 			</div>
 			<Tabs defaultValue="messages">
 				<TabsList className="flex ">
-					<TabsTrigger value="messages" className="flex gap-2">
+					<TabsTrigger value="messages" className="flex gap-2 w-full">
 						Messages
 						<Badge variant="default" className="pl-2 pr-2">{nofifications}</Badge>
 					</TabsTrigger>
-					<TabsTrigger value="requests" className="flex gap-2">
+					<TabsTrigger value="requests" className="flex gap-2 w-full">
 						Requests
-						{requests !== undefined && requests.length > 0 && <Badge variant="secondary" className="pl-2 pr-2">{requests?.length}</Badge>}
+						{friendRequests !== undefined && friendRequests.length > 0 && <Badge variant="secondary" className="pl-2 pr-2">{friendRequests?.length}</Badge>}
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="messages">
 					<div>
-						<div>messages</div>
+						<h2 className="text-sm font-semibold">no messages</h2>
 					</div>
 				</TabsContent>
 				<TabsContent value="requests">
-					{(requests !== undefined && requests.length > 0) ? requests?.map((user) => {
-						return <FriendRequestCard user={user} key={`out-${user.id}`} />
-					}) : <h2 className="text-sm font-semibold">no pending friend requests</h2>}
+					<FriendRequests requests={friendRequests} />
 				</TabsContent>
 			</Tabs>
 		</PopoverContent>

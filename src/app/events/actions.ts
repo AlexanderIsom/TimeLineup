@@ -13,6 +13,7 @@ export interface newEventData {
 }
 
 export async function createEvent(eventData: newEventData) {
+
 	const supabase = createClient()
 
 	const { data, error } = await supabase.auth.getUser()
@@ -20,12 +21,14 @@ export async function createEvent(eventData: newEventData) {
 		return;
 	}
 
-	await db.insert(events).values({
+	const newEvent = await db.insert(events).values({
 		userId: data.user.id,
 		title: eventData.title,
 		start: new Date(eventData.start),
 		end: new Date(eventData.end),
 		description: eventData.description,
 		invitedUsers: eventData.invitedUsers
-	});
+	}).returning();
+
+	return newEvent[0].id
 }
