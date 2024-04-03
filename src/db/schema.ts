@@ -49,7 +49,6 @@ export const profiles = pgTable("profile", {
 	id: uuid("id").primaryKey().notNull(),
 	username: text("username"),
 	avatarUrl: text("avatar_url"),
-	email: text("email").notNull(),
 })
 
 export const profileRelations = relations(profiles, ({ many, one }) => ({

@@ -158,10 +158,10 @@ export async function getFriends() {
 			status: friendships.status,
 			profile: {
 				username: profiles.username,
-				userId: profiles.id,
+				id: profiles.id,
 				avatarUrl: profiles.avatarUrl
 			}
-		}).from(friendships).leftJoin(profiles, sql`(
+		}).from(friendships).innerJoin(profiles, sql`(
 			friendship.sending_user != ${userId}
 			AND friendship.sending_user = profile.id
 		  ) OR (

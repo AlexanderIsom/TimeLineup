@@ -65,6 +65,8 @@ export default function CreateEventDialog() {
   const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>([]);
   const { data: users, isError, isLoading, error } = useGetFriends();
 
+  const friends = users?.filter(u => u.status === "accepted").map(u => u.profile);
+
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -291,7 +293,7 @@ export default function CreateEventDialog() {
                   <TabsContent value="friends">
                     {isLoading ? <div>Loading...</div> :
                       <div>
-                        <FriendSelector list={users!.success.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
+                        <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
                       </div>
                     }
                   </TabsContent>
