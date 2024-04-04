@@ -14,7 +14,7 @@ import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getUserProfile } from "@/app/profile/actions";
+import { getUserProfile } from "@/actions/profileActions";
 
 async function GetEventData(eventId: string) {
 	const eventData = await db.query.events.findFirst({
