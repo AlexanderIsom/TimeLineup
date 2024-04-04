@@ -1,6 +1,6 @@
 "use client"
 import { Button } from '@/components/ui/button'
-import { acceptFriendRequest, friendRequest, removeFriend } from '@/app/addfriend/actions'
+import { acceptFriendRequest, friendRequest, removeFriend } from '@/actions/friendActions'
 import { Check, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { useState } from 'react'

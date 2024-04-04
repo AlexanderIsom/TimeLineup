@@ -2,26 +2,21 @@
 import styles from "./navbar.module.scss";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import ProfileDropdown from "./profile/profileDropdown";
-import { getUserProfile } from "@/app/profile/actions";
-import { Profile } from "@/db/schema";
+import { getUserProfile } from "@/actions/profileActions";
 import InboxPopover from "./inbox/inboxPopover";
 import LoginDialog from "../login/loginDialog";
-import { getFriends, getFriendsType } from "@/app/addfriend/actions";
+import { getFriends, FriendStatusAndProfile } from "@/actions/friendActions";
 
 export default async function Navbar() {
-  const supabase = createClient();
+  let profile = await getUserProfile();
+  let friends: FriendStatusAndProfile
 
-  const { data, error } = await supabase.auth.getUser();
-  const user = data?.user
-  const signedIn = user !== null;
-  let profile: Profile | undefined;
-  let friends: getFriendsType
-  if (signedIn) {
-    profile = await getUserProfile();
+  const signedIn = profile !== undefined;
+
+  if (profile !== undefined) {
     friends = await getFriends();
   }
 
@@ -41,11 +36,9 @@ export default async function Navbar() {
         }
       </div>
 
-
-
       <div className="flex gap-8 items-center">
         {signedIn ? <>
-          <InboxPopover />
+          <InboxPopover friendRequests={friends?.filter(f => f.status === "pending" && f.incoming)} />
           <ProfileDropdown profile={profile!} friends={friends} />
         </>
           : <LoginDialog><Button>Login</Button></LoginDialog>}

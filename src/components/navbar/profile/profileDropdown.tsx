@@ -9,11 +9,11 @@ import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } f
 import ProfileForm from "./profileForm";
 import { useState } from "react";
 import FriendList from "./friendList";
-import { getFriendsType } from "@/app/addfriend/actions";
+import { FriendStatusAndProfile } from "@/actions/friendActions";
 
 interface Props {
 	profile: Profile;
-	friends: getFriendsType
+	friends: FriendStatusAndProfile
 }
 
 export default function ProfileDropdown({ profile, friends }: Props) {

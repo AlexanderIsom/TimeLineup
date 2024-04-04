@@ -7,6 +7,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 export const friendshipStatus = pgEnum("friendship_status", ['accepted', 'pending', 'blocked'])
+export const notificationType = pgEnum("notification_type", ['event', 'friend',])
 
 export const events = pgTable('event', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
@@ -74,6 +75,18 @@ export const friendshipRelations = relations(friendships, ({ one }) => ({
 	}),
 }));
 
+export const notifications = pgTable('notification', {
+	id: uuid("id").defaultRandom().primaryKey().notNull(),
+	type: notificationType("type").default('event').notNull(),
+	message: text("message"),
+	seen: boolean("seen").notNull().default(false),
+	target: uuid("target").notNull(),
+	sender: uuid("sender").notNull(),
+	event: uuid("event"),
+})
+
+export type InsertNotification = typeof notifications.$inferInsert;
+export type Nofitications = typeof notifications.$inferSelect;
 export type Event = typeof events.$inferSelect;
 export type Rsvp = typeof rsvps.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;

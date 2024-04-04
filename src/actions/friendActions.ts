@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { Profile, friendships, profiles } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
-import { and, eq, exists, ilike, or, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function addFriend(usernameQuery: string) {
@@ -19,7 +19,7 @@ export async function addFriend(usernameQuery: string) {
 	})
 
 	if (targetFriend === undefined || user.id === targetFriend.id) {
-		return;
+		return { success: false, error: "Could not find username" };
 	}
 
 	const pendingRequest = await db.query.friendships.findFirst({
@@ -49,6 +49,7 @@ export async function addFriend(usernameQuery: string) {
 	});
 
 	revalidatePath("/")
+	return { success: true }
 }
 
 export async function getUser() {
@@ -66,58 +67,9 @@ export async function getUser() {
 	})
 }
 
-export async function getOutgoingRequests() {
-	const supabase = createClient()
-
-	const { data, error } = await supabase.auth.getUser()
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-
-	const query = db.select().from(friendships).where(and(eq(friendships.sending_user, user.id), eq(friendships.status, "pending")))
-
-	const users = await db.query.profiles.findMany({
-		where: exists(query)
-	})
-
-	return users.filter(u => u.id !== user.id)
-}
-
 export interface friendRequest {
 	id: string
 	profile: Profile
-}
-
-export async function getIncomingRequests() {
-	const supabase = createClient()
-
-	const { data, error } = await supabase.auth.getUser()
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-	// const query = db.select().from(friendships).where(and(eq(friendships.receiving_user, user.id), eq(friendships.status, "pending")))
-
-	// const users = await db.query.profiles.findMany({
-	// 	where: exists(query),
-	// })
-
-	const friendRequests: Array<friendRequest> = [];
-
-	const query = await db.query.friendships.findMany({
-		where: and(eq(friendships.receiving_user, user.id), eq(friendships.status, "pending")),
-		with: { sendingUser: true }
-	})
-
-	query.forEach(q => {
-		const newRequest: friendRequest = { id: q.id, profile: q.sendingUser }
-		friendRequests.push(newRequest);
-	})
-
-	return friendRequests
 }
 
 export async function acceptFriendRequest(id: string) {
@@ -144,36 +96,29 @@ export async function getFriends() {
 
 	const user = data.user;
 
-	// const query = db.select().from(friendships).where(and(or(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, user.id)), eq(friendships.status, "accepted")))
-
-	// const users = await db.query.profiles.findMany({
-	// 	where: exists(query)
-	// }).then((values) => { return values.filter(u => u.id !== user.id) })
-
-	const userId = user.id
-
 	const queryResult = await db
 		.select({
 			id: friendships.id,
 			status: friendships.status,
+			incoming: sql<boolean>`friendship.receiving_user = ${user.id}`,
 			profile: {
-				username: profiles.username,
 				id: profiles.id,
+				username: profiles.username,
 				avatarUrl: profiles.avatarUrl
 			}
 		}).from(friendships).innerJoin(profiles, sql`(
-			friendship.sending_user != ${userId}
+			friendship.sending_user != ${user.id}
 			AND friendship.sending_user = profile.id
 		  ) OR (
-			friendship.receiving_user != ${userId}
+			friendship.receiving_user != ${user.id}
 			AND friendship.receiving_user = profile.id
 		  )`)
-		.where(sql`friendship.sending_user = ${userId} OR friendship.receiving_user = ${userId}`);
+		.where(sql`friendship.sending_user = ${user.id} OR friendship.receiving_user = ${user.id}`);
 
 	return queryResult
 }
 
-export type getFriendsType = Awaited<ReturnType<typeof getFriends>> | undefined
+export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriends>> | undefined
 
 
 

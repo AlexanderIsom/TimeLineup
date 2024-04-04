@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { isUsernameAvaliable, updateUserProfile } from "@/app/profile/actions";
+import { isUsernameAvaliable, updateUserProfile } from "@/actions/profileActions";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

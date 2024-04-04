@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createEvent, newEventData } from "@/app/events/actions"
+import { createEvent, newEventData } from "@/actions/eventActions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import TimeSelector from "@/components/timeSelector/timeSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
-import { useGetFriends } from "@/app/addfriend/hooks";
+import { useGetFriends } from "@/actions/hooks";
 import { Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 
@@ -81,7 +81,6 @@ export default function CreateEventDialog() {
     const users = invitedUsers.map(u => { return u.id });
     const data: newEventData = { userId: "", title: values.title, start: values.startDate, end: values.endDate, description: values.description, invitedUsers: users };
     createEvent(data).then((newEventId) => {
-      console.log(newEventId);
       setOpen(false);
       toast.message("Event has been created", {
         description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
@@ -120,7 +119,6 @@ export default function CreateEventDialog() {
 
   const addSelectedUser = (profile: Profile) => {
     setInvitedUsers(prevItems => [...prevItems, profile])
-    console.log(invitedUsers);
   }
 
   const removeSelectedUser = (profile: Profile) => {
@@ -133,6 +131,7 @@ export default function CreateEventDialog() {
       if (value) {
         form.reset();
         setCurrentStep(0);
+        setInvitedUsers([]);
         form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
         form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
       }

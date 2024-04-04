@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/db";
-import { events } from "@/db/schema";
+import { InsertNotification, events, notificationType, notifications } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
 
 export interface newEventData {
@@ -29,6 +29,21 @@ export async function createEvent(eventData: newEventData) {
 		description: eventData.description,
 		invitedUsers: eventData.invitedUsers
 	}).returning();
+
+	const notificationsToCreate: Array<InsertNotification> = [];
+
+	eventData.invitedUsers.forEach(userString => {
+		notificationsToCreate.push({
+			type: "event",
+			message: "you have been invited to an event",
+			seen: false,
+			target: userString,
+			sender: data.user.id,
+			event: newEvent[0].id
+		})
+	});
+
+	await db.insert(notifications).values(notificationsToCreate);
 
 	return newEvent[0].id
 }

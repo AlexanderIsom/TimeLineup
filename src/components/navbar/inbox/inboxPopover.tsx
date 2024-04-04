@@ -1,4 +1,4 @@
-import { getIncomingRequests as getIncomingFriendRequests } from "@/app/addfriend/actions";
+import { FriendStatusAndProfile } from "@/actions/friendActions";
 import FriendRequests from "@/components/friends/friendRequests";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 
-export default async function InboxPopover() {
-	const friendRequests = await getIncomingFriendRequests();
+interface Props {
+	friendRequests: FriendStatusAndProfile
+}
+
+export default async function InboxPopover({ friendRequests }: Props) {
 	const nofifications = 5;
 	const notificationCount = (friendRequests?.length ?? 0) + nofifications;
 	const notificationText = notificationCount > 0 ? notificationCount < 99 ? notificationCount : "99+" : undefined;

@@ -1,6 +1,6 @@
 'use server'
 
-import { getFriends } from "@/app/addfriend/actions"
+import { getFriends } from "@/actions/friendActions"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
 import CreateEventDialog from "./createEventDialog"
 

@@ -14,7 +14,6 @@ import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getUser } from "@/app/addfriend/actions";
 import { getUserProfile } from "@/app/profile/actions";
 
 async function GetEventData(eventId: string) {
