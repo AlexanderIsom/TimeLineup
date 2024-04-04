@@ -6,7 +6,7 @@ import TimelineNumbers from "../events/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
-import { saveRsvp } from "@/app/events/[id]/actions"
+import { saveRsvp } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
 import { ZoomIn, ZoomOut } from "lucide-react";
 
