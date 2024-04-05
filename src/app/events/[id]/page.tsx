@@ -66,13 +66,13 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 						<div className={styles.userName}>{localUser.username}</div>
 					</div>
 
-					{attendees.map((user) => {
-						return <div key={user.id} className={styles.userItem}>
+					{otherRsvp.map((rsvp) => {
+						return <div key={rsvp.id} className={styles.userItem}>
 							<Avatar>
-								<AvatarImage src={user.avatarUrl ?? undefined} />
-								<AvatarFallback>{user.username ?? "user".substring(0, 2)}</AvatarFallback>
+								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
+								<AvatarFallback>{rsvp.user.username ?? "user".substring(0, 2)}</AvatarFallback>
 							</Avatar>
-							<div className={styles.userName}>{user.username ?? "user"}</div>
+							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
 						</div>
 					})}
 				</div>
