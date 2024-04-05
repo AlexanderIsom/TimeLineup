@@ -1,18 +1,15 @@
 import styles from "@/styles/Components/Events/id.module.scss"
 import React from "react";
 import StaticTimeCard from "@/components/events/StaticTimeCard";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import { Profile, Rsvp, events, profiles } from "@/db/schema"
+import { Profile, events, profiles } from "@/db/schema"
 import { db } from "@/db";
-import { arrayOverlaps, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
 import { differenceInMinutes } from "date-fns";
 import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
 

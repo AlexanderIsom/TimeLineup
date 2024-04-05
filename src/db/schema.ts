@@ -85,8 +85,19 @@ export const notifications = pgTable('notification', {
 	event: uuid("event"),
 })
 
+export const notificationRelations = relations(notifications, ({ one }) => ({
+	sender: one(profiles, {
+		fields: [notifications.sender],
+		references: [profiles.id]
+	}),
+	event: one(events, {
+		fields: [notifications.event],
+		references: [events.id]
+	})
+}))
+
 export type InsertNotification = typeof notifications.$inferInsert;
-export type Nofitications = typeof notifications.$inferSelect;
+export type Notifications = typeof notifications.$inferSelect;
 export type Event = typeof events.$inferSelect;
 export type Rsvp = typeof rsvps.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;

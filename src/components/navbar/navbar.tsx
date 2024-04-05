@@ -9,15 +9,18 @@ import { getUserProfile } from "@/actions/profileActions";
 import InboxPopover from "./inbox/inboxPopover";
 import LoginDialog from "../login/loginDialog";
 import { getFriends, FriendStatusAndProfile } from "@/actions/friendActions";
+import { NotificationQuery, getNotifications } from "@/actions/notificationAction";
 
 export default async function Navbar() {
   let profile = await getUserProfile();
   let friends: FriendStatusAndProfile
+  let notifications: NotificationQuery
 
   const signedIn = profile !== undefined;
 
   if (profile !== undefined) {
     friends = await getFriends();
+    notifications = await getNotifications();
   }
 
   return (
@@ -38,7 +41,7 @@ export default async function Navbar() {
 
       <div className="flex gap-8 items-center">
         {signedIn ? <>
-          <InboxPopover friendRequests={friends?.filter(f => f.status === "pending" && f.incoming)} />
+          <InboxPopover notifications={notifications?.filter(n => n.seen === false)} friendRequests={friends?.filter(f => f.status === "pending" && f.incoming)} />
           <ProfileDropdown profile={profile!} friends={friends} />
         </>
           : <LoginDialog><Button>Login</Button></LoginDialog>}
