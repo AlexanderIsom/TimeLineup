@@ -8,10 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { Trash } from "lucide-react";
-import { addFriend, friendRequest, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
+import { Check, Trash } from "lucide-react";
+import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 interface Props {
 	friends: FriendStatusAndProfile
@@ -29,6 +32,24 @@ export default function FriendList({ friends }: Props) {
 			username: "",
 		}
 	});
+
+	const router = useRouter();
+	const supabase = createClient();
+
+	useEffect(() => {
+
+		const friendChannel = supabase.channel('realtime-friendship').on('postgres_changes', {
+			event: '*',
+			schema: 'public',
+			table: 'friendship'
+		}, () => {
+			router.refresh();
+		}).subscribe();
+
+		return () => {
+			supabase.removeChannel(friendChannel)
+		}
+	}, [supabase, router])
 
 	async function processForm(values: z.infer<typeof formSchema>) {
 		const result = await addFriend(values.username)
@@ -89,15 +110,22 @@ function FriendButton({ friendship }: FriendButtonProps) {
 					{friendship.status === "pending" && <span className="text-xs">{friendship.incoming ? "pending" : "waiting for response"}</span>}
 				</div>}
 			</div>
-			<AlertDialog>
+
+			{(friendship.status === "pending" && friendship.incoming) && <Button size={"icon"} variant={"secondary"} className="group hover:bg-blue-600" onClick={async () => {
+				await acceptFriendRequest(friendship.id)
+			}}><Check className="group-hover:stroke-white stroke-gray-700" /></Button>}
+
+			{((friendship.status === "pending" && !friendship.incoming) || friendship.status === "accepted") && <AlertDialog>
 				<AlertDialogTrigger asChild>
-					<Button size={"icon"} variant={"secondary"} className="hover:bg-red-500"><Trash /></Button>
+					<Button size={"icon"} variant={"secondary"} className="hover:bg-red-500"><Trash className="stroke-gray-700" /></Button>
 				</AlertDialogTrigger>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove friend?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This action cannot be undone. This remove this user from your friends, you will not be able to invite them to events
+							{friendship.status === "pending" ?
+								"Do you want to cancel this friend request?"
+								: "Are you sure you want to remove this friend, you cannot invite them to events without re adding them"}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -107,7 +135,7 @@ function FriendButton({ friendship }: FriendButtonProps) {
 						}}>Continue</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
-			</AlertDialog>
+			</AlertDialog>}
 		</div>
 	)
 }

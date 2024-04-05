@@ -1,3 +1,4 @@
+"use client"
 import { FriendStatusAndProfile } from "@/actions/friendActions";
 import { NotificationQuery } from "@/actions/notificationAction";
 import FriendRequests from "./friendRequests";
@@ -7,17 +8,46 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 import Messages from "./messages";
+import { useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface Props {
 	friendRequests: FriendStatusAndProfile
 	notifications: NotificationQuery
 }
 
-export default async function InboxPopover({ friendRequests, notifications }: Props) {
+export default function InboxPopover({ friendRequests, notifications }: Props) {
 	const friendRequestCount = (friendRequests?.length ?? 0);
 	const notificationsCount = (notifications?.length ?? 0);
 	const messageCount = friendRequestCount + notificationsCount;
 	const messageText = messageCount > 0 ? messageCount < 99 ? messageCount : "99+" : undefined;
+
+	const router = useRouter();
+	const supabase = createClient();
+
+	useEffect(() => {
+		const notificationChannel = supabase.channel('realtime-notifications').on('postgres_changes', {
+			event: '*',
+			schema: 'public',
+			table: 'notification'
+		}, () => {
+			router.refresh();
+		}).subscribe();
+
+		const friendChannel = supabase.channel('realtime-friendship').on('postgres_changes', {
+			event: '*',
+			schema: 'public',
+			table: 'friendship'
+		}, () => {
+			router.refresh();
+		}).subscribe();
+
+		return () => {
+			supabase.removeChannel(notificationChannel)
+			supabase.removeChannel(friendChannel)
+		}
+	}, [supabase, router])
 
 	return <Popover>
 		<PopoverTrigger asChild>
