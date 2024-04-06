@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { Profile, friendships, profiles } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function addFriend(usernameQuery: string) {
@@ -101,24 +101,27 @@ export async function getFriends() {
 			id: friendships.id,
 			status: friendships.status,
 			incoming: sql<boolean>`friendship.receiving_user = ${user.id}`,
-			profile: {
-				id: profiles.id,
-				username: profiles.username,
-				avatarUrl: profiles.avatarUrl
-			}
-		}).from(friendships).innerJoin(profiles, sql`(
-			friendship.sending_user != ${user.id}
-			AND friendship.sending_user = profile.id
-		  ) OR (
-			friendship.receiving_user != ${user.id}
-			AND friendship.receiving_user = profile.id
-		  )`)
-		.where(sql`friendship.sending_user = ${user.id} OR friendship.receiving_user = ${user.id}`);
+			profile: { ...profiles }
+		}).from(friendships)
+		.innerJoin(profiles,
+			or(
+				and(
+					ne(friendships.sending_user, user.id),
+					eq(friendships.sending_user, profiles.id)
+				)
+				,
+				and(
+					ne(friendships.receiving_user, user.id),
+					eq(friendships.receiving_user, profiles.id)
+				)
+			))
+		.where(or(
+			eq(friendships.sending_user, user.id),
+			eq(friendships.receiving_user, user.id)
+		));
 
 	return queryResult
 }
 
 export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriends>> | undefined
-
-
 

@@ -9,16 +9,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import EventServerDialog from "@/components/events/newEventForm/eventServerDialog";
-
-
-async function getData(user: User) {
-
-  const query = await db.query.events.findMany({
-    where: or(eq(events.userId, user.id), arrayOverlaps(events.invitedUsers, [user.id]))
-  });
-
-  return query as Array<EventData>;
-}
+import { GetLocalUserEvents } from "@/actions/eventActions";
 
 export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
   const supabase = createClient()
@@ -28,7 +19,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
     redirect('/')
   }
 
-  const userEvents = await getData(data?.user);
+  const userEvents = await GetLocalUserEvents();
 
   const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : new Date();
   const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : addDays(startDay, 6);
@@ -73,7 +64,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
                 return (
                   <div key={index} >
                     <div className={styles.eventList}>
-                      {userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e: EventData) => {
+                      {userEvents !== undefined && userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e: EventData) => {
                         return <div key={e.id}><Link href={`/events/${e.id}`}>
                           {e.title}
                         </Link></div>

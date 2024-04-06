@@ -1,7 +1,7 @@
 import styles from "@/styles/Components/Events/EventDetails.module.scss";
-import { formatDateRange } from "@/utils/TimeUtils"
-import { AgendaItem, EventData, ResponseState } from "@/lib/types/Events"
-import React from "react";
+import { formatDateRange } from "@/utils/dateUtils"
+import { AgendaItem, EventData } from "@/lib/types/Events"
+import React, { useMemo } from "react";
 import { addMinutes, format } from "date-fns";
 import Image from "next/image"
 import { Profile, Rsvp } from "@/db/schema";
@@ -10,28 +10,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventWithRsvpAndUser } from "@/db/schemaTypes";
 import { CalendarRange } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { EventDataQuery } from "@/actions/eventActions";
+import { NotUndefined } from "@/utils/TypeUtils";
 
 interface Props {
-	localUser: Profile
-	event: EventWithRsvpAndUser
-	localRsvp?: Rsvp
-	otherRsvp: Array<Rsvp>
-	// responseState: ResponseState;
-	// onStateChange: (newState: ResponseState) => void;
+	event: NotUndefined<EventDataQuery>
 }
 
-export default async function EventDetails({ event, localRsvp, otherRsvp }: Props) {
-	// const declinedUsers = otherRsvp.filter((reponse) => {
-	// 	return reponse.rejected === true;
-	// })
-
-	// const invitedUsers = event.userResponses.filter((reponse) => {
-	// 	return reponse.state === ResponseState.pending
-	// })
+export default async function EventDetails({ event }: Props) {
+	const declinedUsers = useMemo(() => event.data.rsvps.filter((reponse) => {
+		return reponse.rejected === true;
+	}), [event]);
 
 	// const attendingUsers = event.userResponses.filter((reponse) => {
 	// 	return reponse.state === ResponseState.attending
 	// })
+
+	// const invitedUsers = useMemo(() => event.data.rsvps.filter((reponse) => {
+	// 	return reponse.state === ResponseState.pending
+	// }), [event]);
 
 	// var attendingCount = attendingUsers.length;
 	// var invitedCount = invitedUsers.length;
@@ -39,130 +37,76 @@ export default async function EventDetails({ event, localRsvp, otherRsvp }: Prop
 	// var showButtons = event.userId !== ResponseState.hosting;
 
 	return (
-		<div className={styles.container} >
-			<div className={styles.heading}>
-				<div className={styles.eventTitle}>
-					<h1>{event.title}</h1>
+		<Card className="w-full max-w-md mx-auto shadow-lg">
+			<CardHeader className="rounded-t-lg">
+				<CardTitle>Event Details</CardTitle>
+				<CardDescription>The details of the event including the name, date, and location.</CardDescription>
+			</CardHeader>
+			<CardContent className="flex flex-col gap-4 p-6">
+				<div className="flex items-start gap-4">
+					<div className="flex rounded-md bg-gray-100 w-16 h-16 text-center justify-center items-center">
+						<span className="text-2xl font-bold">
+							{event.data.title!.substring(0, 2)}
+						</span>
+					</div>
+					<div className="grid gap-1">
+						<h3 className="text-lg font-bold">{event.data.title}</h3>
+						{/* <p className="text-sm font-medium leading-none">Jun 21 - 25, 2023</p> */}
+						<p className="text-sm font-medium leading-none">{formatDateRange(event.data.start, event.data.end)}</p>
+					</div>
 				</div>
-				<div className={styles.eventHostInformation}>
-					<Avatar>
-						<AvatarImage src={event.host.avatarUrl!} />
-						<AvatarFallback>{event.host.username!.substring(0, 2)}</AvatarFallback>
-					</Avatar>
-					{event.host.username}
+			</CardContent>
+			<CardContent className="flex flex-col gap-4 p-6">
+				<div className="grid gap-4">
+					<h3 className="text-sm font-medium leading-none">Organizer</h3>
+					<div className="flex items-center gap-2">
+						<Avatar>
+							<AvatarImage src={event.data.host.avatarUrl!} />
+							<AvatarFallback>{event.data.host.username!.substring(0, 2)}</AvatarFallback>
+						</Avatar>
+						<span className="text-sm font-medium leading-none">{event.data.host.username}</span>
+					</div>
 				</div>
-			</div>
-			<Separator />
-			<div className={styles.eventDate}>
-				<CalendarRange className={styles.calendarIcon} />
-				{formatDateRange(new Date(event.start), event.end)}
-			</div>
+			</CardContent>
+			<CardContent className={`flex flex-col gap-4 p-6`}>
+				<div className="grid gap-1">
+					<h3 className="text-sm font-medium leading-none">Description</h3>
+					<div className="prose prose-sm max-w-none">
+						<p className={`${event.data.description === "" && "text-sm"}`}>
+							{event.data.description === "" ? "no description provided" : event.data.description}
+						</p>
+					</div>
+				</div>
+			</CardContent>
 
-			<div className={styles.eventDescription}>
-				<div className={styles.sectionHeading}>Description</div>
-				{event.description}
-			</div>
-			<Separator />
-
-			<div className={styles.agenda}>
-				<div className={styles.sectionHeading}>Agenda</div>
-				<div className={styles.agendaContent}>
-					{/* {event.agenda.map((e: AgendaItem, index) => {
-						return (
-							<React.Fragment key={index}>
-								<div style={{ gridRow: index + 1, gridColumn: 1 }}>{`${format(new Date(e.start), "h:mmaaa")} - ${format(new Date(e.end), "h:mmaaa")}`}</div>
-								<div style={{ gridRow: index + 1, gridColumn: 3 }}>{e.description}</div>
-							</React.Fragment>
-						)
-					})} */}
-					{/* <Separator className={styles.separator} orientation={"vertical"} style={{ gridRowStart: 1, gridRowEnd: event.agenda.length + 1, gridColumn: 2 }} /> */}
-					<Separator className={styles.separator} orientation={"vertical"} />
-				</div>
-			</div>
-			<Separator />
-			<div className={styles.sectionHeading}>Options</div>
-			<div className={styles.sectionPadding}>
-				{/* <small>Status: {ResponseState[responseState]}</small> */}
-				<div className={`${styles.buttonOptions}`}>
-					{/* <div className={`${styles.button} ${styles.attend}`} onClick={() => {
-						// if (responseState !== ResponseState.attending) {
-						// 	onStateChange(ResponseState.attending);
-						// }
-					}}>Attend</div>
-					<div className={`${styles.button} ${styles.pending}`} onClick={() => {
-						// if (responseState !== ResponseState.pending) {
-						// 	onStateChange(ResponseState.pending);
-						// }
-					}} >Unsure</div>
-					<div className={`${styles.button} ${styles.decline}`} onClick={() => {
-						// if (responseState !== ResponseState.declined) {
-						// 	onStateChange(ResponseState.declined);
-						// }
-					}} >Decline</div> */}
-				</div>
-			</div>
-
-			<Separator />
-			<div className={styles.invites}>
-				<div className={styles.sectionHeading}>Invites</div>
+			<CardContent className="flex flex-col gap-4 p-6">
 				<Tabs defaultValue="attending">
-					<TabsList className={styles.tabContainer}>
-						<TabsTrigger className={styles.tab} value="attending">
+					<TabsList className={"w-full"}>
+						<TabsTrigger className={"w-full"} value="attending">
 							Attending
 							{/* <small className={styles.attendingCount}>{attendingCount}</small> */}
 						</TabsTrigger>
-						<TabsTrigger className={styles.tab} value="tab2">
+						<TabsTrigger className={"w-full"} value="invited">
 							Invited
 							{/* <small className={styles.inviteCount}>{invitedCount}</small> */}
 						</TabsTrigger>
-						<TabsTrigger className={styles.tab} value="tab3">
+						<TabsTrigger className={"w-full"} value="declined">
 							Declined
 							{/* <small className={styles.declinedCount}>{declinedCount}</small> */}
 						</TabsTrigger>
 					</TabsList>
-					<TabsContent value="tab1">
-						{/* {responseState === ResponseState.attending && <div className={styles.userItem}>
-							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
-							<div className={styles.userName}>Demo user</div>
-						</div>
-						}
-						{attendingUsers.map((response, index) => {
-							return <div key={response.user._id.toString()} className={styles.userItem}>
-								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
-								<div className={styles.userName}>{response.user.name}</div>
-							</div>
-						})} */}
+					<TabsContent value="attending">
+						Attending
 					</TabsContent>
-					<TabsContent value="tab2">
-						{/* {responseState === ResponseState.pending && <div className={styles.userItem}>
-							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
-							<div className={styles.userName}>Demo user</div>
-						</div>
-						}
-						{invitedUsers.map((response) => {
-							return <div key={response.user._id.toString()} className={styles.userItem}>
-								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
-								<div className={styles.userName}>{response.user.name}</div>
-							</div>
-						})} */}
+					<TabsContent value="invited">
+						Invited
 					</TabsContent>
-					<TabsContent value="tab3">
-						{/* {responseState === ResponseState.declined && <div className={styles.userItem}>
-							<Image className={styles.avatarRoot} src={`/UserIcons/demo.png`} alt={"Demo user"} width={980} height={980} />
-							<div className={styles.userName}>Demo user</div>
-						</div>
-						}
-						{declinedUsers.map((response) => {
-							return <div key={response.user._id.toString()} className={styles.userItem}>
-								<Image className={styles.avatarRoot} src={`/UserIcons/${response.user.image}.png`} alt={"Demo user"} width={500} height={500} />
-								<div className={styles.userName}>{response.user.name}</div>
-							</div>
-						})} */}
+					<TabsContent value="declined">
+						Declined
 					</TabsContent>
 				</Tabs>
-			</div>
-
-		</div>
+			</CardContent>
+		</Card>
 	)
 }
 

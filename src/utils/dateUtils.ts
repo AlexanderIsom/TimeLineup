@@ -12,5 +12,5 @@ export function formatDateRange(start: Date, end: Date): string {
 	if (!isSameDay(start, end)) {
 		endFormatString += "do ";
 	}
-	return `${format(start, formatString + "MMM do hh:mmaaa")} - ${format(end, formatString + endFormatString + "hh:mmaaa")}`;
+	return `${format(start, formatString + "MMM d h:mm")} - ${format(end, formatString + endFormatString + "h:mm")}`;
 }

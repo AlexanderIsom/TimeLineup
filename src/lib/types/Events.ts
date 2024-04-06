@@ -1,10 +1,3 @@
-export enum ResponseState {
-    attending,
-    pending,
-    declined,
-    hosting
-}
-
 export interface EventData {
     id: string,
     userId: string,
@@ -49,5 +42,4 @@ export interface EventResponse {
     userId: string,
     user: User,
     schedule: Array<TimeDuration>
-    state: ResponseState
 }

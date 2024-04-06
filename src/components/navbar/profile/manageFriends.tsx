@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { Check, Trash } from "lucide-react";
+import { Check, Cross, Trash, X } from "lucide-react";
 import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
@@ -25,7 +25,7 @@ const formSchema = z.object({
 })
 
 
-export default function FriendList({ friends }: Props) {
+export default function ManageFriends({ friends }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -116,31 +116,39 @@ function FriendButton({ friendship, onRemoveFriend }: FriendButtonProps) {
 				</div>}
 			</div>
 
-			{(friendship.status === "pending" && friendship.incoming) && <Button size={"icon"} variant={"secondary"} className="group hover:bg-blue-600" onClick={async () => {
-				await acceptFriendRequest(friendship.id)
-			}}><Check className="group-hover:stroke-white stroke-gray-700" /></Button>}
+			<div className="flex gap-2">
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button size={"icon"} variant={"secondary"} className="group hover:bg-red-500">
+							{(friendship.status === "pending" && friendship.incoming) ? <X className="group-hover:stroke-white" /> : <Trash className="group-hover:stroke-white stroke-gray-700" />}
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Remove friend ?</AlertDialogTitle>
+							<AlertDialogDescription>
+								{friendship.status === "pending" ?
+									`Do you want to ${friendship.incoming ? "reject" : "cancel"} this friend request ?`
+									: "Are you sure you want to remove this friend, you cannot invite them to events without re adding them"}
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction onClick={() => {
+								onRemoveFriend(friendship);
+							}}>Continue</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 
-			{((friendship.status === "pending" && !friendship.incoming) || friendship.status === "accepted") && <AlertDialog>
-				<AlertDialogTrigger asChild>
-					<Button size={"icon"} variant={"secondary"} className="hover:bg-red-500"><Trash className="stroke-gray-700" /></Button>
-				</AlertDialogTrigger>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Remove friend?</AlertDialogTitle>
-						<AlertDialogDescription>
-							{friendship.status === "pending" ?
-								"Do you want to cancel this friend request?"
-								: "Are you sure you want to remove this friend, you cannot invite them to events without re adding them"}
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={() => {
-							onRemoveFriend(friendship);
-						}}>Continue</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>}
+				{(friendship.status === "pending" && friendship.incoming) &&
+					<Button size={"icon"} variant={"secondary"} className="group hover:bg-blue-600" onClick={async () => {
+						await acceptFriendRequest(friendship.id)
+					}}>
+						<Check className="group-hover:stroke-white stroke-gray-700" />
+					</Button>
+				}
+			</div>
 		</div>
 	)
 }

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ProfileForm from "./profileForm";
 import { useState } from "react";
-import FriendList from "./friendList";
+import ManageFriends from "./manageFriends";
 import { FriendStatusAndProfile } from "@/actions/friendActions";
 
 interface Props {
@@ -93,7 +93,7 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 					<DialogHeader >
 						<DialogTitle>Manage friends</DialogTitle>
 					</DialogHeader>
-					<FriendList friends={friends} />
+					<ManageFriends friends={friends} />
 				</DialogContent>
 			</Dialog>
 		</>

@@ -1,7 +1,9 @@
 'use server'
 import { db } from "@/db";
-import { InsertNotification, events, notificationType, notifications } from "@/db/schema";
+import { InsertNotification, Profile, events, notificationType, notifications, profiles } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
+import { error } from "console";
+import { arrayOverlaps, eq, inArray, or } from "drizzle-orm";
 
 export interface newEventData {
 	title: string;
@@ -48,3 +50,64 @@ export async function createEvent(eventData: newEventData) {
 
 	return newEvent[0].id
 }
+
+export async function GetLocalUserEvents() {
+	const supabase = createClient()
+
+	const { data, error } = await supabase.auth.getUser()
+
+	if (error || !data?.user) {
+		return;
+	}
+
+	const query = await db.query.events.findMany({
+		where: or(eq(events.userId, data.user.id), arrayOverlaps(events.invitedUsers, [data.user.id]))
+	});
+
+	return query;
+}
+
+export async function GetEventData(eventId: string) {
+	const supabase = createClient()
+
+	const { data, error } = await supabase.auth.getUser()
+
+	if (error || !data?.user) {
+		return;
+	}
+
+	const eventData = await db.query.events.findFirst({
+		where: eq(events.id, eventId),
+		with: {
+			rsvps: {
+				with: { user: true }
+			},
+			host: true
+		},
+	});
+
+
+	if (eventData === undefined) {
+		Error("could not find event data");
+	}
+
+	if (eventData === undefined) {
+		return;
+	}
+
+	if (data.user.id !== eventData.host.id && !eventData.invitedUsers.includes(data.user.id)) {
+		return;
+	}
+
+
+	let attendees: Array<Profile> = [];
+	if (eventData?.invitedUsers !== undefined && eventData.invitedUsers.length > 0) {
+		attendees = await db.query.profiles.findMany({
+			where: inArray(profiles.id, eventData?.invitedUsers)
+		})
+	}
+
+	return { data: eventData, attendees: attendees }
+}
+
+export type EventDataQuery = Awaited<ReturnType<typeof GetEventData>> | undefined

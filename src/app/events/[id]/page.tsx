@@ -2,9 +2,6 @@ import styles from "@/styles/Components/Events/id.module.scss"
 import React from "react";
 import StaticTimeCard from "@/components/events/StaticTimeCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Profile, events, profiles } from "@/db/schema"
-import { db } from "@/db";
-import { eq, inArray } from "drizzle-orm";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
 import { differenceInMinutes } from "date-fns";
@@ -12,37 +9,18 @@ import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
-
-async function GetEventData(eventId: string) {
-	const eventData = await db.query.events.findFirst({
-		where: eq(events.id, eventId),
-		with: {
-			rsvps: {
-				with: { user: true }
-			},
-			host: true
-		}
-	});
-
-	let attendees: Array<Profile> = [];
-	if (eventData?.invitedUsers !== undefined && eventData.invitedUsers.length > 0) {
-		attendees = await db.query.profiles.findMany({
-			where: inArray(profiles.id, eventData?.invitedUsers)
-		})
-	}
-
-	return { eventData, attendees }
-}
+import { GetEventData } from "@/actions/eventActions";
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
 	const localUser = await getUserProfile()
 
-	const { eventData, attendees } = await GetEventData(params.id);
-	assert(eventData, "Event data returned undefined")
-
 	if (localUser === undefined) {
 		redirect("/");
 	}
+
+	const eventQuery = await GetEventData(params.id);
+	assert(eventQuery && eventQuery.data, "Event data returned undefined")
+	const eventData = eventQuery.data
 
 	const duration = differenceInMinutes(eventData.end, eventData.start);
 	new Timeline(eventData.start, duration, 1920, 5)
@@ -88,7 +66,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 					</div>
 				</ScrollableContainer>
 			</div>
-			<EventDetails localUser={localUser} event={eventData} localRsvp={localRsvp} otherRsvp={otherRsvp} />
+			<EventDetails event={eventQuery} />
 		</div>
 	)
 
