@@ -63,9 +63,9 @@ export default function CreateEventDialog() {
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>([]);
-  const { data: users, isError, isLoading, error } = useGetFriends();
+  const { data: friendships, isError, isLoading, error } = useGetFriends();
 
-  const friends = users?.filter(u => u.status === "accepted").map(u => u.profile);
+  const friends = friendships?.filter(u => u.status === "accepted").map(u => u.profile);
 
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -79,7 +79,7 @@ export default function CreateEventDialog() {
 
   function processForm(values: z.infer<typeof formSchema>) {
     const users = invitedUsers.map(u => { return u.id });
-    const data: newEventData = { userId: "", title: values.title, start: values.startDate, end: values.endDate, description: values.description, invitedUsers: users };
+    const data: newEventData = { title: values.title, start: values.startDate, end: values.endDate, description: values.description, invitedUsers: users };
     createEvent(data).then((newEventId) => {
       setOpen(false);
       toast.message("Event has been created", {

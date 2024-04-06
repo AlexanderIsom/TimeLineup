@@ -4,7 +4,6 @@ import { InsertNotification, events, notificationType, notifications } from "@/d
 import { createClient } from "@/utils/supabase/server";
 
 export interface newEventData {
-	userId: string;
 	title: string;
 	start: Date;
 	end: Date;
@@ -13,7 +12,6 @@ export interface newEventData {
 }
 
 export async function createEvent(eventData: newEventData) {
-
 	const supabase = createClient()
 
 	const { data, error } = await supabase.auth.getUser()
@@ -43,7 +41,10 @@ export async function createEvent(eventData: newEventData) {
 		})
 	});
 
-	await db.insert(notifications).values(notificationsToCreate);
+	if (notificationsToCreate.length > 0) {
+		await db.insert(notifications).values(notificationsToCreate);
+	}
+
 
 	return newEvent[0].id
 }
