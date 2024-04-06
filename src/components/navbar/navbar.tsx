@@ -41,7 +41,7 @@ export default async function Navbar() {
 
       <div className="flex gap-8 items-center">
         {signedIn ? <>
-          <InboxPopover notifications={notifications?.filter(n => n.seen === false)} friendRequests={friends?.filter(f => f.status === "pending" && f.incoming)} />
+          <InboxPopover notifications={notifications} friends={friends} />
           <ProfileDropdown profile={profile!} friends={friends} />
         </>
           : <LoginDialog><Button>Login</Button></LoginDialog>}

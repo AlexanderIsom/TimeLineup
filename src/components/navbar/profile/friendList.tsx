@@ -12,7 +12,7 @@ import { Check, Trash } from "lucide-react";
 import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
@@ -36,8 +36,9 @@ export default function FriendList({ friends }: Props) {
 	const router = useRouter();
 	const supabase = createClient();
 
-	useEffect(() => {
+	const [currentFriends, setCurrentFriends] = useState<FriendStatusAndProfile>(friends);
 
+	useEffect(() => {
 		const friendChannel = supabase.channel('realtime-friendship').on('postgres_changes', {
 			event: '*',
 			schema: 'public',
@@ -85,19 +86,23 @@ export default function FriendList({ friends }: Props) {
 			<Separator />
 			<Label>Friend list</Label>
 
-			{friends !== undefined && friends.map((friendship) => {
+			{currentFriends !== undefined && currentFriends.map((friendship) => {
 				if (friendship === undefined) return;
-				return <FriendButton key={friendship.id} friendship={friendship} />
+				return <FriendButton key={friendship.id} friendship={friendship} onRemoveFriend={async (friendToRemove) => {
+					setCurrentFriends(currentFriends.filter(f => f.id !== friendToRemove.id))
+					await removeFriend(friendToRemove.id)
+				}} />
 			})}
 		</div>
 	)
 }
 
 interface FriendButtonProps {
-	friendship: NotUndefined<WithoutArray<FriendStatusAndProfile>>
+	friendship: NotUndefined<WithoutArray<FriendStatusAndProfile>>;
+	onRemoveFriend: (friend: NotUndefined<WithoutArray<FriendStatusAndProfile>>) => void;
 }
 
-function FriendButton({ friendship }: FriendButtonProps) {
+function FriendButton({ friendship, onRemoveFriend }: FriendButtonProps) {
 	return (
 		<div className="flex items-center justify-between">
 			<div className="flex gap-2 items-center">
@@ -130,8 +135,8 @@ function FriendButton({ friendship }: FriendButtonProps) {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={async () => {
-							await removeFriend(friendship.id)
+						<AlertDialogAction onClick={() => {
+							onRemoveFriend(friendship);
 						}}>Continue</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

@@ -8,18 +8,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 import Messages from "./messages";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
 interface Props {
-	friendRequests: FriendStatusAndProfile
+	friends: FriendStatusAndProfile
 	notifications: NotificationQuery
 }
 
-export default function InboxPopover({ friendRequests, notifications }: Props) {
-	const friendRequestCount = (friendRequests?.length ?? 0);
-	const notificationsCount = (notifications?.length ?? 0);
+export default function InboxPopover({ friends, notifications }: Props) {
+	const newNotifications = useMemo(() => notifications?.filter(n => n.seen === false), [notifications])
+	const newFriendRequests = useMemo(() => friends?.filter(f => f.status === "pending" && f.incoming), [friends])
+
+	const friendRequestCount = (newFriendRequests?.length ?? 0);
+	const notificationsCount = (newNotifications?.length ?? 0);
 	const messageCount = friendRequestCount + notificationsCount;
 	const messageText = messageCount > 0 ? messageCount < 99 ? messageCount : "99+" : undefined;
 
@@ -70,15 +73,15 @@ export default function InboxPopover({ friendRequests, notifications }: Props) {
 					<TabsTrigger value="requests" className="flex gap-2 w-full">
 						Requests
 						{friendRequestCount > 0 &&
-							<Badge variant="secondary" className="pl-2 pr-2">{friendRequests?.length}</Badge>}
+							<Badge variant="secondary" className="pl-2 pr-2">{friendRequestCount}</Badge>}
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="messages">
-					<Messages notifications={notifications} />
+					<Messages notifications={newNotifications} />
 				</TabsContent>
 				<TabsContent value="requests">
-					<FriendRequests requests={friendRequests} />
+					<FriendRequests requests={newFriendRequests} />
 				</TabsContent>
 			</Tabs>
 		</PopoverContent>

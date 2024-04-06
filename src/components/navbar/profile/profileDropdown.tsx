@@ -48,7 +48,7 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 						setDialogOption("friends")
 					}}>
 						<HeartHandshake className="mr-2 h-4 w-4" />
-						<span>Add friends</span>
+						<span>Manage friends</span>
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
@@ -91,7 +91,7 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 			}}>
 				<DialogContent>
 					<DialogHeader >
-						<DialogTitle>Friends</DialogTitle>
+						<DialogTitle>Manage friends</DialogTitle>
 					</DialogHeader>
 					<FriendList friends={friends} />
 				</DialogContent>
