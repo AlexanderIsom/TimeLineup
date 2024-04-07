@@ -18,9 +18,9 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 		redirect("/");
 	}
 
-	const eventQuery = await GetEventData(params.id);
-	assert(eventQuery && eventQuery.data, "Event data returned undefined")
-	const eventData = eventQuery.data
+	const eventData = await GetEventData(params.id);
+	assert(eventData !== undefined, "Event data returned undefined")
+
 
 	const duration = differenceInMinutes(eventData.end, eventData.start);
 	new Timeline(eventData.start, duration, 1920, 5)
@@ -66,7 +66,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 					</div>
 				</ScrollableContainer>
 			</div>
-			<EventDetails event={eventQuery} />
+			<EventDetails event={eventData} />
 		</div>
 	)
 

@@ -7,16 +7,16 @@ import {
 } from 'drizzle-orm/pg-core';
 
 export const friendshipStatus = pgEnum("friendship_status", ['accepted', 'pending', 'blocked'])
-export const notificationType = pgEnum("notification_type", ['event', 'friend',])
+export const notificationType = pgEnum("notification_type", ['event', 'friend'])
+export const rsvpStatus = pgEnum("rsvp_status", ["accepted", "pending", "declined"])
 
 export const events = pgTable('event', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
 	userId: uuid("user_id").notNull(),
-	start: timestamp('start', { mode: 'date' }).defaultNow().notNull(),
-	end: timestamp('end', { mode: 'date' }).defaultNow().notNull(),
-	title: varchar('title', { length: 50 }).default("Title").notNull(),
+	start: timestamp('start', { mode: 'date' }).notNull(),
+	end: timestamp('end', { mode: 'date' }).notNull(),
+	title: varchar('title', { length: 50 }).notNull(),
 	description: varchar('description', { length: 500 }).default("").notNull(),
-	invitedUsers: uuid('invited_users').array().notNull(),
 });
 
 export const eventRelations = relations(events, ({ many, one }) => ({
@@ -32,7 +32,7 @@ export const rsvps = pgTable('rsvp', {
 	userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
 	eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: "cascade" }),
 	schedules: json("schedules").$type<{ id: string, start: number, duration: number }[]>().default([]).notNull(),
-	rejected: boolean('rejected').default(false).notNull()
+	status: rsvpStatus("status").default("pending").notNull(),
 });
 
 export const rsvpRelations = relations(rsvps, ({ one }) => ({
@@ -98,7 +98,12 @@ export const notificationRelations = relations(notifications, ({ one }) => ({
 
 export type InsertNotification = typeof notifications.$inferInsert;
 export type Notifications = typeof notifications.$inferSelect;
+
 export type Event = typeof events.$inferSelect;
+export type InsertEvent = typeof events.$inferInsert;
+
 export type Rsvp = typeof rsvps.$inferSelect;
+export type InsertRsvp = typeof rsvps.$inferInsert;
+
 export type Profile = typeof profiles.$inferSelect;
 export type Friendship = typeof friendships.$inferSelect;

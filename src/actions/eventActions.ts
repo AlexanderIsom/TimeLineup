@@ -1,19 +1,10 @@
 'use server'
 import { db } from "@/db";
-import { InsertNotification, Profile, events, notificationType, notifications, profiles } from "@/db/schema";
+import { InsertEvent, InsertNotification, InsertRsvp, Profile, events, notificationType, notifications, profiles, rsvps } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
-import { error } from "console";
-import { arrayOverlaps, eq, inArray, or } from "drizzle-orm";
+import { and, arrayOverlaps, eq, getTableColumns, inArray, or } from "drizzle-orm";
 
-export interface newEventData {
-	title: string;
-	start: Date;
-	end: Date;
-	description?: string;
-	invitedUsers: Array<string>;
-}
-
-export async function createEvent(eventData: newEventData) {
+export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Profile>) {
 	const supabase = createClient()
 
 	const { data, error } = await supabase.auth.getUser()
@@ -27,19 +18,23 @@ export async function createEvent(eventData: newEventData) {
 		start: new Date(eventData.start),
 		end: new Date(eventData.end),
 		description: eventData.description,
-		invitedUsers: eventData.invitedUsers
 	}).returning();
 
 	const notificationsToCreate: Array<InsertNotification> = [];
+	const rsvpsToCreate: Array<InsertRsvp> = [];
 
-	eventData.invitedUsers.forEach(userString => {
+	invitedUsers.forEach(user => {
 		notificationsToCreate.push({
 			type: "event",
 			message: "you have been invited to an event",
-			seen: false,
-			target: userString,
+			target: user.id,
 			sender: data.user.id,
 			event: newEvent[0].id
+		})
+
+		rsvpsToCreate.push({
+			eventId: newEvent[0].id,
+			userId: user.id,
 		})
 	});
 
@@ -47,6 +42,9 @@ export async function createEvent(eventData: newEventData) {
 		await db.insert(notifications).values(notificationsToCreate);
 	}
 
+	if (rsvpsToCreate.length > 0) {
+		await db.insert(rsvps).values(rsvpsToCreate);
+	}
 
 	return newEvent[0].id
 }
@@ -60,9 +58,9 @@ export async function GetLocalUserEvents() {
 		return;
 	}
 
-	const query = await db.query.events.findMany({
-		where: or(eq(events.userId, data.user.id), arrayOverlaps(events.invitedUsers, [data.user.id]))
-	});
+	const query = await db.select({
+		...getTableColumns(events)
+	}).from(events).innerJoin(rsvps, eq(events.id, rsvps.eventId)).where(or(eq(events.userId, data.user.id), eq(rsvps.userId, data.user.id)))
 
 	return query;
 }
@@ -76,8 +74,17 @@ export async function GetEventData(eventId: string) {
 		return;
 	}
 
+	const sq = db.select({ event_id: rsvps.eventId }).from(rsvps).where(and(eq(rsvps.userId, data.user.id)));
+
 	const eventData = await db.query.events.findFirst({
-		where: eq(events.id, eventId),
+		where:
+			and(
+				eq(events.id, eventId),
+				or(
+					eq(events.userId, data.user.id),
+					eq(sq, eventId)
+				)
+			),
 		with: {
 			rsvps: {
 				with: { user: true }
@@ -86,28 +93,7 @@ export async function GetEventData(eventId: string) {
 		},
 	});
 
-
-	if (eventData === undefined) {
-		Error("could not find event data");
-	}
-
-	if (eventData === undefined) {
-		return;
-	}
-
-	if (data.user.id !== eventData.host.id && !eventData.invitedUsers.includes(data.user.id)) {
-		return;
-	}
-
-
-	let attendees: Array<Profile> = [];
-	if (eventData?.invitedUsers !== undefined && eventData.invitedUsers.length > 0) {
-		attendees = await db.query.profiles.findMany({
-			where: inArray(profiles.id, eventData?.invitedUsers)
-		})
-	}
-
-	return { data: eventData, attendees: attendees }
+	return eventData
 }
 
 export type EventDataQuery = Awaited<ReturnType<typeof GetEventData>> | undefined

@@ -19,17 +19,17 @@ interface Props {
 }
 
 export default async function EventDetails({ event }: Props) {
-	const declinedUsers = useMemo(() => event.data.rsvps.filter((reponse) => {
-		return reponse.rejected === true;
+	const declinedUsers = useMemo(() => event.rsvps.filter((reponse) => {
+		return reponse.status === "declined";
 	}), [event]);
 
-	// const attendingUsers = event.userResponses.filter((reponse) => {
-	// 	return reponse.state === ResponseState.attending
-	// })
+	const attendingUsers = useMemo(() => event.rsvps.filter((reponse) => {
+		return reponse.status === "accepted";
+	}), [event]);
 
-	// const invitedUsers = useMemo(() => event.data.rsvps.filter((reponse) => {
-	// 	return reponse.state === ResponseState.pending
-	// }), [event]);
+	const invitedUsers = useMemo(() => event.rsvps.filter((reponse) => {
+		return reponse.status === "pending";
+	}), [event]);
 
 	// var attendingCount = attendingUsers.length;
 	// var invitedCount = invitedUsers.length;
@@ -46,13 +46,13 @@ export default async function EventDetails({ event }: Props) {
 				<div className="flex items-start gap-4">
 					<div className="flex rounded-md bg-gray-100 w-16 h-16 text-center justify-center items-center">
 						<span className="text-2xl font-bold">
-							{event.data.title!.substring(0, 2)}
+							{event.title!.substring(0, 2)}
 						</span>
 					</div>
 					<div className="grid gap-1">
-						<h3 className="text-lg font-bold">{event.data.title}</h3>
+						<h3 className="text-lg font-bold">{event.title}</h3>
 						{/* <p className="text-sm font-medium leading-none">Jun 21 - 25, 2023</p> */}
-						<p className="text-sm font-medium leading-none">{formatDateRange(event.data.start, event.data.end)}</p>
+						<p className="text-sm font-medium leading-none">{formatDateRange(event.start, event.end)}</p>
 					</div>
 				</div>
 			</CardContent>
@@ -61,10 +61,10 @@ export default async function EventDetails({ event }: Props) {
 					<h3 className="text-sm font-medium leading-none">Organizer</h3>
 					<div className="flex items-center gap-2">
 						<Avatar>
-							<AvatarImage src={event.data.host.avatarUrl!} />
-							<AvatarFallback>{event.data.host.username!.substring(0, 2)}</AvatarFallback>
+							<AvatarImage src={event.host.avatarUrl!} />
+							<AvatarFallback>{event.host.username!.substring(0, 2)}</AvatarFallback>
 						</Avatar>
-						<span className="text-sm font-medium leading-none">{event.data.host.username}</span>
+						<span className="text-sm font-medium leading-none">{event.host.username}</span>
 					</div>
 				</div>
 			</CardContent>
@@ -72,8 +72,8 @@ export default async function EventDetails({ event }: Props) {
 				<div className="grid gap-1">
 					<h3 className="text-sm font-medium leading-none">Description</h3>
 					<div className="prose prose-sm max-w-none">
-						<p className={`${event.data.description === "" && "text-sm"}`}>
-							{event.data.description === "" ? "no description provided" : event.data.description}
+						<p className={`${event.description === "" && "text-sm"}`}>
+							{event.description === "" ? "no description provided" : event.description}
 						</p>
 					</div>
 				</div>
@@ -96,17 +96,37 @@ export default async function EventDetails({ event }: Props) {
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="attending">
-						Attending
+						{attendingUsers.map((attendee) => {
+							return <AttendeeCard key={attendee.id} user={attendee.user} />
+						})}
 					</TabsContent>
 					<TabsContent value="invited">
-						Invited
+						{invitedUsers.map((attendee) => {
+							return <AttendeeCard key={attendee.id} user={attendee.user} />
+						})}
 					</TabsContent>
 					<TabsContent value="declined">
-						Declined
+						{declinedUsers.map((attendee) => {
+							return <AttendeeCard key={attendee.id} user={attendee.user} />
+						})}
 					</TabsContent>
 				</Tabs>
 			</CardContent>
 		</Card>
 	)
+}
+
+interface AttendeeCardProps {
+	user: Profile,
+}
+
+function AttendeeCard({ user }: AttendeeCardProps) {
+	return <div className="flex items-center gap-2 ml-2">
+		<Avatar>
+			<AvatarImage src={user.avatarUrl ?? undefined} />
+			<AvatarFallback>{user.username ?? "user".substring(0, 2)}</AvatarFallback>
+		</Avatar>
+		<div className={styles.userName}>{user.username ?? "user"}</div>
+	</div>
 }
 

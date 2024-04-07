@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createEvent, newEventData } from "@/actions/eventActions"
+import { createEvent } from "@/actions/eventActions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
@@ -20,7 +20,7 @@ import TimeSelector from "@/components/timeSelector/timeSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
 import { useGetFriends } from "@/actions/hooks";
-import { Profile } from "@/db/schema";
+import { InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
@@ -78,9 +78,8 @@ export default function CreateEventDialog() {
   });
 
   function processForm(values: z.infer<typeof formSchema>) {
-    const users = invitedUsers.map(u => { return u.id });
-    const data: newEventData = { title: values.title, start: values.startDate, end: values.endDate, description: values.description, invitedUsers: users };
-    createEvent(data).then((newEventId) => {
+    const data: InsertEvent = { title: values.title, start: values.startDate, end: values.endDate, description: values.description } as InsertEvent;
+    createEvent(data, invitedUsers).then((newEventId) => {
       setOpen(false);
       toast.message("Event has been created", {
         description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),

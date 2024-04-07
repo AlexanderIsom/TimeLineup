@@ -64,7 +64,7 @@ export default async function Events({ searchParams }: { searchParams?: { start:
                 return (
                   <div key={index} >
                     <div className={styles.eventList}>
-                      {userEvents !== undefined && userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e: EventData) => {
+                      {userEvents !== undefined && userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e) => {
                         return <div key={e.id}><Link href={`/events/${e.id}`}>
                           {e.title}
                         </Link></div>
