@@ -47,9 +47,6 @@ export async function addFriend(usernameQuery: string) {
 		sending_user: user.id,
 		receiving_user: targetFriend.id
 	});
-
-	revalidatePath("/")
-	return { success: true }
 }
 
 export async function getUser() {
@@ -76,14 +73,10 @@ export async function acceptFriendRequest(id: string) {
 	await db.update(friendships)
 		.set({ status: "accepted" })
 		.where(eq(friendships.id, id));
-
-	revalidatePath("/")
 }
 
 export async function removeFriend(id: string) {
 	await db.delete(friendships).where(eq(friendships.id, id))
-
-	revalidatePath("/")
 }
 
 export async function getFriends() {
@@ -123,5 +116,5 @@ export async function getFriends() {
 	return queryResult
 }
 
-export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriends>> | undefined
+export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriends>>
 

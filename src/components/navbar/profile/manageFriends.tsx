@@ -12,7 +12,7 @@ import { Check, Cross, Trash, X } from "lucide-react";
 import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
@@ -25,7 +25,7 @@ const formSchema = z.object({
 })
 
 
-export default function ManageFriends({ friends }: Props) {
+export default function ManageFriends(props: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -36,7 +36,8 @@ export default function ManageFriends({ friends }: Props) {
 	const router = useRouter();
 	const supabase = createClient();
 
-	const [currentFriends, setCurrentFriends] = useState<FriendStatusAndProfile>(friends);
+	const [currentFriends, setCurrentFriends] = useState<FriendStatusAndProfile>();
+	useMemo(() => setCurrentFriends(props.friends), [props.friends])
 
 	useEffect(() => {
 		const friendChannel = supabase.channel('realtime-friendship').on('postgres_changes', {

@@ -1,16 +1,16 @@
-"use client"
+'use client'
 import { Button } from '@/components/ui/button'
-import { acceptFriendRequest, friendRequest, removeFriend } from '@/actions/friendActions'
+import { FriendStatusAndProfile, acceptFriendRequest, friendRequest, removeFriend } from '@/actions/friendActions'
 import { Check, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useState } from 'react'
 
 interface Props {
-	requests: Array<friendRequest> | undefined
+	requests: FriendStatusAndProfile
+	onClick: (id: string) => void;
 }
 
-export default function FriendRequests(props: Props) {
-	const [requests, setRequests] = useState(props.requests);
+export default function FriendRequests({ requests, onClick }: Props) {
 
 	if (requests === undefined || requests.length <= 0) {
 		return <h2 className="text-sm font-semibold">no pending friend requests</h2>
@@ -29,12 +29,14 @@ export default function FriendRequests(props: Props) {
 					</div>
 					<div className='flex items-center gap-4' >
 						<Button size="icon" variant={"secondary"} className={"rounded-full w-6 h-6"} onClick={async () => {
-							setRequests(requests.filter(r => r.id !== request.id))
+							onClick(request.id);
+							// setRequests(requests.filter(r => r.id !== request.id))
 							await removeFriend(request.id);
 						}}><X className='w-4 h-4' /></Button>
 
 						<Button size="icon" variant={"default"} className={"rounded-full w-6 h-6"} onClick={async () => {
-							setRequests(requests.filter(r => r.id !== request.id))
+							onClick(request.id);
+							// setRequests(requests.filter(r => r.id !== request.id))
 							await acceptFriendRequest(request.id);
 						}}><Check className='w-4 h-4' /></Button>
 					</div>

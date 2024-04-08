@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 import Messages from "./messages";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -17,12 +17,15 @@ interface Props {
 	notifications: NotificationQuery
 }
 
-export default function InboxPopover({ friends, notifications }: Props) {
-	const newNotifications = useMemo(() => notifications?.filter(n => n.seen === false), [notifications])
-	const newFriendRequests = useMemo(() => friends?.filter(f => f.status === "pending" && f.incoming), [friends])
+export default function InboxPopover(props: Props) {
+	const [friendRequests, setFriendRequests] = useState<FriendStatusAndProfile>();
+	const [notifications, setNotifications] = useState<NotificationQuery>();
 
-	const friendRequestCount = (newFriendRequests?.length ?? 0);
-	const notificationsCount = (newNotifications?.length ?? 0);
+	useMemo(() => setNotifications(props.notifications?.filter(n => n.seen === false)), [props.notifications])
+	useMemo(() => setFriendRequests(props.friends?.filter(f => f.status === "pending" && f.incoming)), [props.friends])
+
+	const friendRequestCount = (friendRequests?.length ?? 0);
+	const notificationsCount = (notifications?.length ?? 0);
 	const messageCount = friendRequestCount + notificationsCount;
 	const messageText = messageCount > 0 ? messageCount < 99 ? messageCount : "99+" : undefined;
 
@@ -43,6 +46,7 @@ export default function InboxPopover({ friends, notifications }: Props) {
 			schema: 'public',
 			table: 'friendship'
 		}, () => {
+			console.log("friendsChanged")
 			router.refresh();
 		}).subscribe();
 
@@ -51,6 +55,14 @@ export default function InboxPopover({ friends, notifications }: Props) {
 			supabase.removeChannel(friendChannel)
 		}
 	}, [supabase, router])
+
+	const removeFriendRequest = (id: string) => {
+		setFriendRequests(friendRequests?.filter(r => r.id !== id))
+	}
+
+	const removeNotification = (id: string) => {
+		setNotifications(notifications?.filter(n => n.id !== id))
+	}
 
 	return <Popover>
 		<PopoverTrigger asChild>
@@ -78,10 +90,10 @@ export default function InboxPopover({ friends, notifications }: Props) {
 				</TabsList>
 
 				<TabsContent value="messages">
-					<Messages notifications={newNotifications} />
+					<Messages notifications={notifications} onClick={removeNotification} />
 				</TabsContent>
 				<TabsContent value="requests">
-					<FriendRequests requests={newFriendRequests} />
+					<FriendRequests requests={friendRequests} onClick={removeFriendRequest} />
 				</TabsContent>
 			</Tabs>
 		</PopoverContent>

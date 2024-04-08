@@ -7,10 +7,10 @@ import { useState } from "react";
 
 interface Props {
 	notifications: NotificationQuery
+	onClick: (id: string) => void;
 }
 
-export default function Messages(props: Props) {
-	const [notifications, setNotifications] = useState(props.notifications);
+export default function Messages({ notifications, onClick }: Props) {
 
 	if (notifications === undefined || notifications.length <= 0) {
 		return <h2 className="text-sm font-semibold">no messages</h2>
@@ -38,7 +38,7 @@ export default function Messages(props: Props) {
 						</div>
 					</div>
 					<Button size={"icon"} variant={"ghost"} className="w-8 h-8" onClick={async () => {
-						setNotifications(notifications.filter(n => n.id !== notification.id))
+						onClick(notification.id);
 						await markNoticiationAsRead(notification.id);
 					}}><MailOpen className="stroke-gray-600" /></Button>
 				</div>
