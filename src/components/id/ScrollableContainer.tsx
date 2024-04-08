@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import styles from "@/styles/Components/Events/id.module.scss";
 import { Button } from "../ui/button";
@@ -9,16 +9,15 @@ import React, { useState } from "react";
 import { saveRsvp } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
 import { ZoomIn, ZoomOut } from "lucide-react";
+import Timeline from "@/utils/Timeline";
 
 interface Props {
 	localRSVP?: Rsvp
 	eventData: Event
 	children: React.ReactNode
-	duration: number
 }
 
-export default function ScrollableContainer({ localRSVP, eventData, children, duration }: Props) {
-	const designSize = 1920
+export default function ScrollableContainer({ localRSVP, eventData, children }: Props) {
 	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])
 
 	const router = useRouter();
@@ -26,6 +25,8 @@ export default function ScrollableContainer({ localRSVP, eventData, children, du
 	const updateScheduleState = (newSchedule: Schedule[]) => {
 		setScheduleState(newSchedule);
 	}
+
+	new Timeline(eventData.start, eventData.end, 5)
 
 	return (
 		<div className={styles.timelineContainer}>
@@ -46,10 +47,10 @@ export default function ScrollableContainer({ localRSVP, eventData, children, du
 			{/* <div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}> */}
 			<div className={styles.timelineContent} >
 				<div style={{
-					width: `${designSize}px`,
-					backgroundSize: `${designSize / Math.round(duration / 60)}px`
+					width: `${Timeline.getWidth()}px`,
+					backgroundSize: `${Timeline.widthPerHour}px`
 				}} className={`${styles.gridBackground} `} >
-					<TimelineNumbers start={new Date(eventData.start)} end={new Date(eventData.end)} />
+					<TimelineNumbers start={eventData.start} end={eventData.end} />
 					<ClientCardContainer schedules={scheduleState} eventStartDate={eventData.start} eventEndDate={eventData.end} updateState={updateScheduleState} />
 					{children}
 				</div>

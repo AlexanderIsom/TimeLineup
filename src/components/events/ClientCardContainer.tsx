@@ -1,11 +1,10 @@
-'use client'
+"use client"
 
 import { useRef } from "react"
 import ResizableTimeCard from "./ResizableTimeCard"
 import { nanoid } from "nanoid"
 import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
-import { differenceInMinutes } from "date-fns"
 import styles from "@/styles/Components/Events/id.module.scss"
 
 export interface Schedule {
@@ -22,11 +21,7 @@ interface Props {
 }
 
 export default function ClientCardContainer(props: Props) {
-	const designSize = 1920
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
-
-	const eventDurationMinutes = differenceInMinutes(props.eventEndDate, props.eventStartDate)
-	new Timeline(props.eventStartDate, eventDurationMinutes, designSize, 5)
 
 	function handleCreate(start: number, duration: number, table: Schedule[]): Schedule[] {
 		const newSchedule = Array.from(table);
@@ -58,17 +53,17 @@ export default function ClientCardContainer(props: Props) {
 			return s.id !== id
 		});
 
-		const overlappingEvents = findOverlappingResponses(otherResponses, startTime, duration);
+		const overlaps = findOverlappingResponses(otherResponses, startTime, duration);
 
-		if (overlappingEvents.length > 0) {
-			const startTimes = overlappingEvents.map(e => e.start)
-			const endTimes = overlappingEvents.map(e => e.start + e.duration)
+		if (overlaps.length > 0) {
+			const startTimes = overlaps.map(e => e.start)
+			const endTimes = overlaps.map(e => e.start + e.duration)
 			startTimes.push(startTime);
 			endTimes.push(startTime + duration)
 			const start = Math.min(...startTimes)
 			const end = Math.max(...endTimes)
 
-			overlappingEvents.forEach(event => {
+			overlaps.forEach(event => {
 				otherResponses = deleteIdFromTable(event.id, otherResponses);
 			});
 			otherResponses = handleCreate(start, end - start, otherResponses)
@@ -84,9 +79,9 @@ export default function ClientCardContainer(props: Props) {
 		const offsetFromStart = MathUtils.roundToNearest(Timeline.xPositionToMinutes(width), 5)
 		const duration = 60;
 
-		const lapping = findOverlappingResponses(props.schedules, offsetFromStart, duration);
+		const overlaps = findOverlappingResponses(props.schedules, offsetFromStart, duration);
 
-		if (lapping.length === 0) {
+		if (overlaps.length === 0) {
 			const newSchedule = handleCreate(offsetFromStart, duration, props.schedules)
 			props.updateState(newSchedule);
 		}

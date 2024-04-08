@@ -1,15 +1,18 @@
-import { NearestMinutes, differenceInSeconds } from "date-fns";
+import { NearestMinutes, differenceInHours, differenceInMinutes, differenceInSeconds } from "date-fns";
 
 export default class Timeline {
 	private static widthInPixels: number;
 	private static durationInSeconds: number;
+	private static durationInMinutes: number;
 	private static startDateTime: Date;
 	private static snapToNearestMinutes: NearestMinutes;
+	public static widthPerHour = 100;
 
-	constructor(startDateTime: Date, duration: number, canvasWidth: number, snapToNearestMinutes: NearestMinutes) {
-		Timeline.startDateTime = startDateTime;
-		Timeline.durationInSeconds = duration * 60;
-		Timeline.widthInPixels = canvasWidth;
+	constructor(startDate: Date, endDate: Date, snapToNearestMinutes: NearestMinutes) {
+		Timeline.startDateTime = startDate;
+		const durationInHours = differenceInHours(endDate, startDate);
+		Timeline.durationInMinutes = differenceInMinutes(endDate, startDate);
+		Timeline.widthInPixels = durationInHours * Timeline.widthPerHour;
 		Timeline.snapToNearestMinutes = snapToNearestMinutes;
 	}
 
@@ -22,16 +25,16 @@ export default class Timeline {
 	}
 
 	static dateToXPosition(from: Date): number {
-		return ((differenceInSeconds(from, this.startDateTime)) / this.durationInSeconds) * this.widthInPixels
+		return ((differenceInMinutes(from, this.startDateTime)) / this.durationInMinutes) * this.widthInPixels
 	}
 
 	static minutesToXPosition(minutes: number) {
-		const value = Math.round(((minutes * 60) / this.durationInSeconds) * this.widthInPixels)
+		const value = Math.round((minutes / this.durationInMinutes) * this.widthInPixels)
 		return value
 	}
 
 	static xPositionToMinutes(x: number) {
-		return (x / this.widthInPixels * this.durationInSeconds) / 60
+		return x / this.widthInPixels * this.durationInMinutes
 	}
 
 	static getWidth(): number {

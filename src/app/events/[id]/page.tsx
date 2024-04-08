@@ -21,10 +21,6 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	const eventData = await GetEventData(params.id);
 	assert(eventData !== undefined, "Event data returned undefined")
 
-
-	const duration = differenceInMinutes(eventData.end, eventData.start);
-	new Timeline(eventData.start, duration, 1920, 5)
-
 	const localRsvp = eventData.rsvps.find(r => r.userId === localUser.id)
 	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
@@ -54,7 +50,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 						</div>
 					})}
 				</div>
-				<ScrollableContainer localRSVP={localRsvp} eventData={eventData} duration={duration}>
+				<ScrollableContainer localRSVP={localRsvp} eventData={eventData}>
 					<div className={styles.userResponses}>
 						{otherRsvp.map((value, index: number) => {
 							return <div key={index} className={styles.staticRow}>{

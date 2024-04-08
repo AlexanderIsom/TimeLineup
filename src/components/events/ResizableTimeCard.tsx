@@ -69,7 +69,7 @@ export default function ResizableTimeCard(props: Props) {
 
 	return (
 		<ContextMenu>
-			<ContextMenuTrigger><Draggable
+			<Draggable
 				axis="x"
 				position={{ x: Timeline.minutesToXPosition(state.start), y: 0 }}
 				handle=".dragHandle"
@@ -92,7 +92,9 @@ export default function ResizableTimeCard(props: Props) {
 						</div>
 					</Resizable>
 				</div>
-			</Draggable></ContextMenuTrigger>
+			</Draggable>
+			<ContextMenuTrigger>
+			</ContextMenuTrigger>
 			<ContextMenuContent>
 				<ContextMenuItem onSelect={() => {
 					props.handleDelete(props.schedule.id);
