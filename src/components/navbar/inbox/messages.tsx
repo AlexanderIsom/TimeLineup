@@ -2,8 +2,7 @@
 import { NotificationQuery, markNoticiationAsRead } from "@/actions/notificationAction";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MailOpen } from "lucide-react";
-import { useState } from "react";
+import { MailOpen, User } from "lucide-react";
 
 interface Props {
 	notifications: NotificationQuery
@@ -24,7 +23,7 @@ export default function Messages({ notifications, onClick }: Props) {
 						<div className='flex items-center gap-4'>
 							<Avatar>
 								<AvatarImage src={notification.sender.avatarUrl ?? undefined} />
-								<AvatarFallback>{notification.sender.username!.substring(0, 2)}</AvatarFallback>
+								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 							</Avatar>
 						</div>
 						<div className="items-center">

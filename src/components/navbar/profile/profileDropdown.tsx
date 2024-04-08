@@ -32,7 +32,7 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 				<DropdownMenuTrigger asChild >
 					<Avatar>
 						<AvatarImage src={profile.avatarUrl ?? undefined} />
-						<AvatarFallback>{profile.username!.substring(0, 2)}</AvatarFallback>
+						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
 				</DropdownMenuTrigger >
 				<DropdownMenuContent className="w-80">

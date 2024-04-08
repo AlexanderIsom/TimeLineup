@@ -1,9 +1,8 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { FriendStatusAndProfile, acceptFriendRequest, friendRequest, removeFriend } from '@/actions/friendActions'
-import { Check, X } from 'lucide-react'
+import { Check, User, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useState } from 'react'
 
 interface Props {
 	requests: FriendStatusAndProfile
@@ -23,7 +22,7 @@ export default function FriendRequests({ requests, onClick }: Props) {
 					<div className='flex items-center gap-4'>
 						<Avatar>
 							<AvatarImage src={request.profile.avatarUrl ?? undefined} />
-							<AvatarFallback>{request.profile.username!.substring(0, 2)}</AvatarFallback>
+							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 						</Avatar>
 						{request.profile.username}
 					</div>

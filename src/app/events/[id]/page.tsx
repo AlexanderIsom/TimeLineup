@@ -10,6 +10,7 @@ import EventDetails from "@/components/events/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
 import { GetEventData } from "@/actions/eventActions";
+import { User } from "lucide-react";
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
 	const localUser = await getUserProfile()
@@ -35,7 +36,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 					<div className={styles.userItem}>
 						<Avatar>
 							<AvatarImage src={localUser.avatarUrl!} />
-							<AvatarFallback>{localUser.username!.substring(0, 2)}</AvatarFallback>
+							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 						</Avatar>
 						<div className={styles.userName}>{localUser.username}</div>
 					</div>
@@ -44,7 +45,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 						return <div key={rsvp.id} className={styles.userItem}>
 							<Avatar>
 								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
-								<AvatarFallback>{rsvp.user.username ?? "user".substring(0, 2)}</AvatarFallback>
+								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 							</Avatar>
 							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
 						</div>

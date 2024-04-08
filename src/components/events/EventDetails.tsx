@@ -10,7 +10,7 @@ import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventWithRsvpAndUser } from "@/db/schemaTypes";
-import { CalendarRange, Check, CircleHelp, Cross, X } from "lucide-react";
+import { CalendarRange, Check, CircleHelp, Cross, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { EventDataQuery } from "@/actions/eventActions";
 import { NotUndefined } from "@/utils/TypeUtils";
@@ -159,7 +159,7 @@ function AttendeeCard({ user }: AttendeeCardProps) {
 	return <div className="flex items-center gap-2 ml-2">
 		<Avatar>
 			<AvatarImage src={user.avatarUrl ?? undefined} />
-			<AvatarFallback>{user.username ?? "user".substring(0, 2)}</AvatarFallback>
+			<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 		</Avatar>
 		<div className={styles.userName}>{user.username ?? "user"}</div>
 	</div>
