@@ -62,9 +62,11 @@ export async function GetLocalUserEvents() {
 		return;
 	}
 
-	const query = await db.select({
-		...getTableColumns(events)
-	}).from(events).innerJoin(rsvps, eq(events.id, rsvps.eventId)).where(or(eq(events.userId, data.user.id), eq(rsvps.userId, data.user.id)))
+	const sq = db.select({ event_id: rsvps.eventId }).from(rsvps).where(and(eq(rsvps.userId, data.user.id)));
+
+	const query = await db.query.events.findMany({
+		where: or(eq(events.userId, data.user.id), eq(sq, events.id))
+	})
 
 	return query;
 }
