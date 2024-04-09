@@ -2,17 +2,16 @@ import { NearestMinutes, differenceInHours, differenceInMinutes, differenceInSec
 
 export default class Timeline {
 	private static widthInPixels: number;
-	private static durationInSeconds: number;
 	private static durationInMinutes: number;
 	private static startDateTime: Date;
 	private static snapToNearestMinutes: NearestMinutes;
-	public static widthPerHour = 100;
+	public static cellWidth = 100;
 
 	constructor(startDate: Date, endDate: Date, snapToNearestMinutes: NearestMinutes) {
 		Timeline.startDateTime = startDate;
 		const durationInHours = differenceInHours(endDate, startDate);
 		Timeline.durationInMinutes = differenceInMinutes(endDate, startDate);
-		Timeline.widthInPixels = durationInHours * Timeline.widthPerHour;
+		Timeline.widthInPixels = durationInHours * Timeline.cellWidth;
 		Timeline.snapToNearestMinutes = snapToNearestMinutes;
 	}
 
@@ -39,5 +38,9 @@ export default class Timeline {
 
 	static getWidth(): number {
 		return this.widthInPixels;
+	}
+
+	static getCellWidth(): number {
+		return this.cellWidth
 	}
 }

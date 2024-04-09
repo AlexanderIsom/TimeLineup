@@ -48,7 +48,7 @@ export default function ScrollableContainer({ localRSVP, eventData, children }: 
 			<div className={styles.timelineContent} >
 				<div style={{
 					width: `${Timeline.getWidth()}px`,
-					backgroundSize: `${Timeline.widthPerHour}px`
+					backgroundSize: `${Timeline.cellWidth}px`
 				}} className={`${styles.gridBackground} `} >
 					<TimelineNumbers start={eventData.start} end={eventData.end} />
 					<ClientCardContainer schedules={scheduleState} eventStartDate={eventData.start} eventEndDate={eventData.end} updateState={updateScheduleState} />
