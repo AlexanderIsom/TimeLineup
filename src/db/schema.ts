@@ -8,7 +8,7 @@ import {
 
 export const friendshipStatus = pgEnum("friendship_status", ['accepted', 'pending', 'blocked'])
 export const notificationType = pgEnum("notification_type", ['event', 'friend'])
-export const rsvpStatus = pgEnum("rsvp_status", ["accepted", "pending", "declined"])
+export const rsvpStatus = pgEnum("rsvp_status", ["attending", "pending", "declined"])
 
 export const events = pgTable('event', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),

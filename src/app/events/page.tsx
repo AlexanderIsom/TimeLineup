@@ -78,6 +78,5 @@ export default async function Events({ searchParams }: { searchParams?: { start:
         </div>
       </div>
     </div >
-
   );
 }

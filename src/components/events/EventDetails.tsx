@@ -30,7 +30,7 @@ export default function EventDetails({ event, localUser }: Props) {
 	}), [event]);
 
 	const attendingUsers = useMemo(() => event.rsvps.filter((reponse) => {
-		return reponse.status === "accepted";
+		return reponse.status === "attending";
 	}), [event]);
 
 	const invitedUsers = useMemo(() => event.rsvps.filter((reponse) => {
@@ -97,9 +97,9 @@ export default function EventDetails({ event, localUser }: Props) {
 						<UpdateEventDialog event={event} />
 						:
 						<div className="flex justify-between items-center w-full">
-							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "accepted" && "bg-blue-200"}`}
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "attending" && "bg-blue-200"}`}
 								onClick={() => {
-									updateStatus("accepted");
+									updateStatus("attending");
 								}}>
 								<div className="flex flex-col w-full items-center m-2 gap-1">
 									<Check className="h-full" />
@@ -107,14 +107,20 @@ export default function EventDetails({ event, localUser }: Props) {
 								</div>
 							</Button>
 
-							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}>
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}
+								onClick={() => {
+									updateStatus("pending");
+								}}>
 								<div className="flex flex-col w-full items-center m-2 gap-1">
 									<CircleHelp className="h-full" />
 									<div className="min-w-max h-full">Maybe</div>
 								</div>
 							</Button>
 
-							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}>
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}
+								onClick={() => {
+									updateStatus("declined");
+								}}>
 								<div className="flex flex-col w-full items-center m-2 gap-1">
 									<X className="h-full" />
 									<div className="min-w-max h-full">Can&apos;t go</div>

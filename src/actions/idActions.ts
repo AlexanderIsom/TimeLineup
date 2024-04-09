@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { InsertRsvp, RsvpStatus, rsvpStatus, rsvps } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export async function saveRsvp(rsvp: InsertRsvp) {
 	const supabase = createClient()
@@ -33,4 +34,5 @@ export async function updateRsvpStatus(eventId: string, status: RsvpStatus) {
 	if (!user) return;
 
 	await db.update(rsvps).set({ status: status }).where(and(eq(rsvps.eventId, eventId), eq(rsvps.userId, user.id)))
+	revalidatePath('/');
 }
