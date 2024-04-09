@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/db";
-import { InsertEvent, InsertNotification, InsertRsvp, Profile, events, notificationType, notifications, profiles, rsvps } from "@/db/schema";
+import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notificationType, notifications, profiles, rsvps } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
 import { and, arrayOverlaps, eq, getTableColumns, inArray, or } from "drizzle-orm";
 
@@ -47,6 +47,10 @@ export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Pr
 	}
 
 	return newEvent[0].id
+}
+
+export async function UpdateEvent(eventData: Event, invitedUsers: Array<Profile>) {
+	//
 }
 
 export async function GetLocalUserEvents() {

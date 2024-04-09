@@ -5,7 +5,7 @@ import { AgendaItem, EventData } from "@/lib/types/Events"
 import React, { useMemo, useState } from "react";
 import { addMinutes, format } from "date-fns";
 import Image from "next/image"
-import { Profile, Rsvp } from "@/db/schema";
+import { Profile, RsvpStatus, rsvpStatus } from "@/db/schema";
 import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -16,6 +16,8 @@ import { EventDataQuery } from "@/actions/eventActions";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { Button } from "../ui/button";
 import { createClient } from "@/utils/supabase/client";
+import UpdateEventDialog from "./newEventForm/updateEventDialog";
+import { updateRsvpStatus } from "@/actions/idActions";
 
 interface Props {
 	event: NotUndefined<EventDataQuery>
@@ -42,6 +44,10 @@ export default function EventDetails({ event, localUser }: Props) {
 	// var invitedCount = invitedUsers.length;
 	// var declinedCount = declinedUsers.length;
 	// var showButtons = event.userId !== ResponseState.hosting;
+
+	const updateStatus = async (state: RsvpStatus) => {
+		await updateRsvpStatus(event.id, state);
+	}
 
 	return (
 		<Card className="flex flex-col w-full max-w-md mx-auto shadow-lg justify-between">
@@ -86,32 +92,37 @@ export default function EventDetails({ event, localUser }: Props) {
 						</div>
 					</div>
 				</CardContent>
-				{!isHost && <CardContent className="flex items-center justify-between pl-6 pr-6">
-					<div className="flex justify-between items-center w-full">
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "accepted" && "bg-blue-200"}`}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<Check className="h-full" />
-								<div className="min-w-max h-full">Going</div>
-							</div>
-						</Button>
+				<CardContent className="flex items-center justify-between pl-6 pr-6">
+					{isHost ?
+						<UpdateEventDialog event={event} />
+						:
+						<div className="flex justify-between items-center w-full">
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "accepted" && "bg-blue-200"}`}
+								onClick={() => {
+									updateStatus("accepted");
+								}}>
+								<div className="flex flex-col w-full items-center m-2 gap-1">
+									<Check className="h-full" />
+									<div className="min-w-max h-full">Going</div>
+								</div>
+							</Button>
 
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<CircleHelp className="h-full" />
-								<div className="min-w-max h-full">Maybe</div>
-							</div>
-						</Button>
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}>
+								<div className="flex flex-col w-full items-center m-2 gap-1">
+									<CircleHelp className="h-full" />
+									<div className="min-w-max h-full">Maybe</div>
+								</div>
+							</Button>
 
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<X className="h-full" />
-								<div className="min-w-max h-full">Can&apos;t go</div>
-							</div>
-						</Button>
+							<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}>
+								<div className="flex flex-col w-full items-center m-2 gap-1">
+									<X className="h-full" />
+									<div className="min-w-max h-full">Can&apos;t go</div>
+								</div>
+							</Button>
+						</div>}
 
-
-					</div>
-				</CardContent>}
+				</CardContent>
 				<CardContent className="flex flex-col gap-4 p-6">
 					<Tabs defaultValue="invited">
 						<TabsList className={"w-full"}>

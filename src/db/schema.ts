@@ -104,6 +104,7 @@ export type InsertEvent = typeof events.$inferInsert;
 
 export type Rsvp = typeof rsvps.$inferSelect;
 export type InsertRsvp = typeof rsvps.$inferInsert;
+export type RsvpStatus = typeof rsvpStatus.enumValues[number];
 
 export type Profile = typeof profiles.$inferSelect;
 export type Friendship = typeof friendships.$inferSelect;

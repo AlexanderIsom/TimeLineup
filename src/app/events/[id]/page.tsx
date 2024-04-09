@@ -63,7 +63,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 					</div>
 				</ScrollableContainer>
 			</div>
-			<EventDetails event={eventData} localUser={localUser} />
+			<EventDetails event={eventData} localProfile={localUser} />
 		</div>
 	)
 
