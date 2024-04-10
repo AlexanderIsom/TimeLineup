@@ -28,6 +28,21 @@ interface Props {
 	event: NotUndefined<EventDataQuery>
 }
 
+const formSchema = (event: NotUndefined<EventDataQuery>) => z.object({
+	title: z.string().min(4, {
+		message: "Title must be at least 4 characters",
+	}),
+	startDate: z.date({
+		required_error: "date is required",
+	}).refine((value) => value.valueOf() === event.start.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
+	endDate: z.date({
+		required_error: "date is required",
+	}).refine((value) => value.valueOf() === event.end.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
+	description: z.string().optional(),
+}).refine(data => {
+	return data.endDate >= addMinutes(data.startDate, 30)
+}, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
+
 export default function UpdateEventDialog({ event }: Props) {
 	const [open, setOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState(0);
@@ -40,21 +55,6 @@ export default function UpdateEventDialog({ event }: Props) {
 	const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>(() => {
 		return event.rsvps.map((rsvp) => rsvp.user);
 	});
-
-	const formSchema = z.object({
-		title: z.string().min(4, {
-			message: "Title must be at least 4 characters",
-		}),
-		startDate: z.date({
-			required_error: "date is required",
-		}).refine((value) => value.valueOf() === event.start.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
-		endDate: z.date({
-			required_error: "date is required",
-		}).refine((value) => value.valueOf() === event.end.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
-		description: z.string().optional(),
-	}).refine(data => {
-		return data.endDate >= addMinutes(data.startDate, 30)
-	}, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
 
 	const steps = [
 		{
@@ -74,8 +74,8 @@ export default function UpdateEventDialog({ event }: Props) {
 	]
 
 	const router = useRouter();
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
+		resolver: zodResolver(formSchema(event)),
 		defaultValues: {
 			title: event.title,
 			startDate: event.start,
@@ -84,7 +84,7 @@ export default function UpdateEventDialog({ event }: Props) {
 		},
 	});
 
-	function processForm(values: z.infer<typeof formSchema>) {
+	function processForm(values: z.infer<ReturnType<typeof formSchema>>) {
 		const data: NotUndefined<EventDataQuery> = { ...event, title: values.title, start: values.startDate, end: values.endDate, description: values.description } as NotUndefined<EventDataQuery>;
 		UpdateEvent(data, invitedUsers).then(() => {
 			setOpen(false);
@@ -95,7 +95,7 @@ export default function UpdateEventDialog({ event }: Props) {
 		});
 	}
 
-	type FieldName = keyof z.infer<typeof formSchema>;
+	type FieldName = keyof z.infer<ReturnType<typeof formSchema>>;
 
 	const next = async () => {
 		const fields = steps[currentStep].fields
