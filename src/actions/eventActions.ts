@@ -127,26 +127,41 @@ export async function GetEventData(eventId: string) {
 		return;
 	}
 
-	const sq = db.select({ event_id: rsvps.eventId }).from(rsvps).where(and(eq(rsvps.userId, data.user.id)));
+	const attendingEventData = await db.query.rsvps.findFirst({
+		where: and(eq(rsvps.eventId, eventId), eq(rsvps.userId, data.user.id)),
+		with: {
+			event: {
+				with: {
+					rsvps: {
+						with: { user: true }
+					},
+					host: true,
+				}
+			}
+		}
+	}).then((values) => {
+		return values?.event
+	})
 
-	const eventData = await db.query.events.findFirst({
-		where:
-			and(
-				eq(events.id, eventId),
-				or(
-					eq(events.userId, data.user.id),
-					eq(sq, eventId)
-				)
-			),
+	if (attendingEventData !== undefined) {
+		return attendingEventData
+	}
+
+	const hostedEvents = await db.query.events.findFirst({
+		where: and(eq(events.userId, data.user.id), eq(events.id, eventId)),
 		with: {
 			rsvps: {
 				with: { user: true }
 			},
-			host: true
-		},
-	});
+			host: true,
+		}
+	})
 
-	return eventData
+	if (hostedEvents !== undefined) {
+		return hostedEvents;
+	}
+
+	return
 }
 
 export type EventDataQuery = Awaited<ReturnType<typeof GetEventData>> | undefined
