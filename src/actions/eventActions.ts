@@ -102,13 +102,20 @@ export async function GetLocalUserEvents() {
 		return;
 	}
 
-	const sq = db.select({ event_id: rsvps.eventId }).from(rsvps).where(and(eq(rsvps.userId, data.user.id)));
-
-	const query = await db.query.events.findMany({
-		where: or(eq(events.userId, data.user.id), eq(sq, events.id))
+	const attendingEvents = await db.query.rsvps.findMany({
+		where: eq(rsvps.userId, data.user.id),
+		with: { event: true },
+	}).then((values) => {
+		return values.map(v => v.event)
 	})
 
-	return query;
+	const hostedEvents = await db.query.events.findMany({
+		where: or(eq(events.userId, data.user.id))
+	})
+
+	const result = [...hostedEvents, ...attendingEvents]
+
+	return result;
 }
 
 export async function GetEventData(eventId: string) {
