@@ -50,9 +50,7 @@ export default function UpdateEventDialog({ event }: Props) {
 		}).refine((value) => value.valueOf() === event.start.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
 		endDate: z.date({
 			required_error: "date is required",
-		}).refine((value) => {
-			return value !== event.end && value >= new Date();
-		}, { message: "Cannot be in the past" }),
+		}).refine((value) => value.valueOf() === event.end.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
 		description: z.string().optional(),
 	}).refine(data => {
 		return data.endDate >= addMinutes(data.startDate, 30)
