@@ -7,58 +7,22 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EventDataQuery, createEvent } from "@/actions/eventActions"
+import { EventDataQuery, UpdateEvent, createEvent } from "@/actions/eventActions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { addMinutes, format, roundToNearestMinutes } from "date-fns";
+import { addMinutes, format } from "date-fns";
 import { CalendarIcon, Clock, LoaderCircle, Minus, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner"
 import TimeSelector from "@/components/timeSelector/timeSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
 import { useGetFriends } from "@/actions/hooks";
-import { InsertEvent, Profile } from "@/db/schema";
+import { Event, InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { NotUndefined } from "@/utils/TypeUtils";
-
-const formSchema = z.object({
-	title: z.string().min(4, {
-		message: "Title must be at least 4 characters",
-	}),
-	startDate: z.date({
-		required_error: "date is required",
-	}).refine((value) => {
-		return value >= new Date();
-	}, { message: "Cannot be in the past" }),
-	endDate: z.date({
-		required_error: "date is required",
-	}).refine((value) => {
-		return value >= new Date();
-	}, { message: "Cannot be in the past" }),
-	description: z.string().optional(),
-}).refine(data => {
-	return data.endDate >= addMinutes(data.startDate, 30)
-}, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
-
-const steps = [
-	{
-		id: 'Step 1',
-		name: 'Event details',
-		fields: ['title', 'startDate', 'endDate', 'description']
-	},
-	{
-		id: 'Step 2',
-		name: 'Invite friends',
-		fields: ['invitedFriends']
-	},
-	{
-		id: 'Step 3',
-		name: 'Complete',
-	}
-]
 
 interface Props {
 	event: NotUndefined<EventDataQuery>
@@ -67,10 +31,49 @@ interface Props {
 export default function UpdateEventDialog({ event }: Props) {
 	const [open, setOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState(0);
-	const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>([]);
-	const { data: friendships, isLoading, } = useGetFriends();
+	const { data: friendships, isLoading } = useGetFriends();
 
-	const friends = friendships?.filter(u => u.status === "accepted").map(u => u.profile);
+	const friends = useMemo(() => {
+		return friendships?.filter(u => u.status === "accepted").map(u => u.profile);
+	}, [friendships]);
+
+	const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>(() => {
+		return event.rsvps.map((rsvp) => rsvp.user);
+	});
+
+	const formSchema = z.object({
+		title: z.string().min(4, {
+			message: "Title must be at least 4 characters",
+		}),
+		startDate: z.date({
+			required_error: "date is required",
+		}).refine((value) => value.valueOf() === event.start.valueOf() || value >= new Date(), { message: "Cannot be in the past" }),
+		endDate: z.date({
+			required_error: "date is required",
+		}).refine((value) => {
+			return value !== event.end && value >= new Date();
+		}, { message: "Cannot be in the past" }),
+		description: z.string().optional(),
+	}).refine(data => {
+		return data.endDate >= addMinutes(data.startDate, 30)
+	}, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
+
+	const steps = [
+		{
+			id: 'Step 1',
+			name: 'Event details',
+			fields: ['title', 'startDate', 'endDate', 'description']
+		},
+		{
+			id: 'Step 2',
+			name: 'Invite friends',
+			fields: ['invitedFriends']
+		},
+		{
+			id: 'Step 3',
+			name: 'Complete',
+		}
+	]
 
 	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -84,17 +87,11 @@ export default function UpdateEventDialog({ event }: Props) {
 	});
 
 	function processForm(values: z.infer<typeof formSchema>) {
-		const data: InsertEvent = { title: values.title, start: values.startDate, end: values.endDate, description: values.description } as InsertEvent;
-		createEvent(data, invitedUsers).then((newEventId) => {
+		const data: NotUndefined<EventDataQuery> = { ...event, title: values.title, start: values.startDate, end: values.endDate, description: values.description } as NotUndefined<EventDataQuery>;
+		UpdateEvent(data, invitedUsers).then(() => {
 			setOpen(false);
 			toast.message("Event has been updated", {
 				description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
-				action: {
-					label: "Goto",
-					onClick: () => {
-						router.push(`/events/${newEventId}`)
-					},
-				},
 			})
 			router.refresh();
 		});
@@ -136,9 +133,9 @@ export default function UpdateEventDialog({ event }: Props) {
 			if (value) {
 				form.reset();
 				setCurrentStep(0);
-				setInvitedUsers([]);
-				form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
-				form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
+				setInvitedUsers(() => {
+					return event.rsvps.map(rsvp => rsvp.user)
+				});
 			}
 		}}>
 			<DialogTrigger asChild>
@@ -196,7 +193,7 @@ export default function UpdateEventDialog({ event }: Props) {
 														</FormControl>
 													</PopoverTrigger>
 													<PopoverContent className="w-auto p-0" align="start">
-														<Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+														<Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < event.start} />
 													</PopoverContent>
 												</Popover>
 												<Popover modal={true}>
@@ -243,7 +240,7 @@ export default function UpdateEventDialog({ event }: Props) {
 														</FormControl>
 													</PopoverTrigger>
 													<PopoverContent className="w-auto p-0" align="start">
-														<Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+														<Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < event.start} />
 													</PopoverContent>
 												</Popover>
 												<Popover modal={true}>
@@ -296,9 +293,7 @@ export default function UpdateEventDialog({ event }: Props) {
 									</TabsList>
 									<TabsContent value="friends">
 										{isLoading ? <div>Loading...</div> :
-											<div>
-												<FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
-											</div>
+											<FriendSelector list={friends!.filter(u => !invitedUsers.find(i => i.id === u.id))} icon={<Plus />} onClick={addSelectedUser} />
 										}
 									</TabsContent>
 									<TabsContent value="invited">

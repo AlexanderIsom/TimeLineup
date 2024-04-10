@@ -4,8 +4,6 @@ import StaticTimeCard from "@/components/events/StaticTimeCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
-import { differenceInMinutes } from "date-fns";
-import Timeline from "@/utils/Timeline";
 import EventDetails from "@/components/events/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";

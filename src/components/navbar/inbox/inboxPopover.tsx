@@ -46,7 +46,6 @@ export default function InboxPopover(props: Props) {
 			schema: 'public',
 			table: 'friendship'
 		}, () => {
-			console.log("friendsChanged")
 			router.refresh();
 		}).subscribe();
 

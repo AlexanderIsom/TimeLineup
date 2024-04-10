@@ -1,6 +1,7 @@
 'use server'
 import { db } from "@/db";
 import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notificationType, notifications, profiles, rsvps } from "@/db/schema";
+import { NotUndefined } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
 import { and, arrayOverlaps, eq, getTableColumns, inArray, or } from "drizzle-orm";
 
@@ -49,8 +50,47 @@ export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Pr
 	return newEvent[0].id
 }
 
-export async function UpdateEvent(eventData: Event, invitedUsers: Array<Profile>) {
-	//
+export async function UpdateEvent(eventData: NotUndefined<EventDataQuery>, invitedUsers: Array<Profile>) {
+	const supabase = createClient()
+
+	const { data, error } = await supabase.auth.getUser()
+	if (error || !data?.user) {
+		return;
+	}
+
+	const rsvpsToRemove = eventData.rsvps.filter(rsvp => !invitedUsers.find(user => user.id === rsvp.userId))
+	const newInvitees = invitedUsers.filter(user => !eventData.rsvps.find(rsvp => rsvp.userId === user.id))
+
+	const notificationsToCreate: Array<InsertNotification> = [];
+	const rsvpsToCreate: Array<InsertRsvp> = [];
+
+	rsvpsToRemove.forEach(async (rsvp) => {
+		await db.delete(rsvps).where(eq(rsvps.id, rsvp.id));
+	})
+
+	newInvitees.forEach(user => {
+		notificationsToCreate.push({
+			type: "event",
+			message: "you have been invited to an event",
+			target: user.id,
+			sender: data.user.id,
+			event: eventData.id
+		})
+
+		rsvpsToCreate.push({
+			eventId: eventData.id,
+			userId: user.id,
+		})
+	});
+
+	if (notificationsToCreate.length > 0) {
+		await db.insert(notifications).values(notificationsToCreate);
+	}
+
+	if (rsvpsToCreate.length > 0) {
+		await db.insert(rsvps).values(rsvpsToCreate);
+	}
+	await db.update(events).set({ title: eventData.title, start: eventData.start, end: eventData.end, description: eventData.description }).where(eq(events.id, eventData.id))
 }
 
 export async function GetLocalUserEvents() {
