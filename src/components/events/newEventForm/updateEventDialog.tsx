@@ -43,6 +43,23 @@ const formSchema = (event: NotUndefined<EventDataQuery>) => z.object({
 	return data.endDate >= addMinutes(data.startDate, 30)
 }, { message: "Events must be at least 30 minutes long", path: ["endDate"] });
 
+const steps = [
+	{
+		id: 'Step 1',
+		name: 'Event details',
+		fields: ['title', 'startDate', 'endDate', 'description']
+	},
+	{
+		id: 'Step 2',
+		name: 'Invite friends',
+		fields: ['invitedFriends']
+	},
+	{
+		id: 'Step 3',
+		name: 'Complete',
+	}
+]
+
 export default function UpdateEventDialog({ event }: Props) {
 	const [open, setOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState(0);
@@ -55,23 +72,6 @@ export default function UpdateEventDialog({ event }: Props) {
 	const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>(() => {
 		return event.rsvps.map((rsvp) => rsvp.user);
 	});
-
-	const steps = [
-		{
-			id: 'Step 1',
-			name: 'Event details',
-			fields: ['title', 'startDate', 'endDate', 'description']
-		},
-		{
-			id: 'Step 2',
-			name: 'Invite friends',
-			fields: ['invitedFriends']
-		},
-		{
-			id: 'Step 3',
-			name: 'Complete',
-		}
-	]
 
 	const router = useRouter();
 	const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
