@@ -1,17 +1,13 @@
 import styles from "./events.module.scss";
-import { EventData } from "@/lib/types";
-import { addDays, eachDayOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns";
-import Link from "next/link";
-import { db } from "@/db";
-import { eq, or, arrayOverlaps } from "drizzle-orm";
-import { events } from "@/db/schema"
+import { addDays, areIntervalsOverlapping, eachDayOfInterval } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 import EventServerDialog from "@/components/events/newEventForm/eventServerDialog";
 import { GetLocalUserEvents } from "@/actions/eventActions";
+import EventCard from "@/components/events/EventCard";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
-export default async function Events({ searchParams }: { searchParams?: { start: string | undefined; end: string | undefined } }) {
+export default async function Events() {
   const supabase = createClient()
 
   const { data, error } = await supabase.auth.getUser()
@@ -21,61 +17,25 @@ export default async function Events({ searchParams }: { searchParams?: { start:
 
   const userEvents = await GetLocalUserEvents();
 
-  const startDay = searchParams?.start !== undefined ? Date.parse(searchParams!.start) : new Date();
-  const endDay = searchParams?.end !== undefined ? Date.parse(searchParams!.end) : addDays(startDay, 6);
-  const days = eachDayOfInterval({ start: startDay, end: endDay });
+  const today = new Date();
+  const sevenDaysTime = addDays(today, 7);
+
+  const pastEvents = userEvents?.filter(event => event.end < today)
+  const currentEvents = userEvents?.filter(event => {
+    return areIntervalsOverlapping({ start: today, end: sevenDaysTime }, { start: event.start, end: event.end })
+  });
+
+  const upcomingEvents = userEvents?.filter(event => event.start > sevenDaysTime);
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.dateHeader}>
-        <div className={styles.datePadding} ><EventServerDialog /></div>
-        <div className={styles.dateGrid}>
-          {days.map((day: Date, index) => {
-            return (
-              <div key={index} >
-                <div className={` ${isSameDay(day, new Date()) ? styles.today : ""} ${styles.dateContainer}`}>
-                  <div className={styles.halfHeightBorder} />
-                  <div className={styles.date}>
-                    <div className={styles.dayText}>{format(day, "ccc")}</div>
-                    <div className={styles.dayNumber}>{format(day, "d")}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div className={styles.scrollContainer}>
-        <div className={styles.weekGrid}>
-          <div className={styles.time}>
-            {Array.from({ length: 23 }, (_, i) => i).map((number) => (
-              <div key={number + 1} className={styles.timeText}>{(number + 1).toString().padStart(2, '0')}:00</div>
-            ))}
-          </div>
-          <div className={styles.weekContainer}>
-            <div className={styles.rows}>
-              {Array.from({ length: 23 }, (_, i) => i).map((number) => (
-                <div className={styles.horizontalLine} key={number} ></div>
-              ))}
-            </div>
-            <div className={styles.columns}>
-              <div />
-              {days.map((day: Date, index) => {
-                return (
-                  <div key={index} >
-                    <div className={styles.eventList}>
-                      {userEvents !== undefined && userEvents.filter((e) => { return ((isBefore(e.start, day) || isSameDay(e.start, day)) && (isAfter(e.end, day) || isSameDay(e.end, day))) }).map((e) => {
-                        return <div key={e.id}><Link href={`/events/${e.id}`}>
-                          {e.title}
-                        </Link></div>
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+    <div className="h-full">
+      <Card className="flex mx-4 mt-2 p-4 items-center align-middle">
+        <EventServerDialog />
+      </Card>
+      <div className="flex gap-4 p-4 h-[90%]">
+        <EventCard title={"Last 14 days"} description="Past events from the last 2 weeks." events={pastEvents} />
+        <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
+        <EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />
       </div>
     </div >
   );

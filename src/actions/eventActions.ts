@@ -104,13 +104,22 @@ export async function GetLocalUserEvents() {
 
 	const attendingEvents = await db.query.rsvps.findMany({
 		where: eq(rsvps.userId, data.user.id),
-		with: { event: true },
+		with: {
+			event: {
+				with: { host: true }
+			}
+		},
 	}).then((values) => {
-		return values.map(v => v.event)
+		return values.map(v => { return { ...v.event, status: v.status } })
 	})
 
 	const hostedEvents = await db.query.events.findMany({
-		where: or(eq(events.userId, data.user.id))
+		where: or(eq(events.userId, data.user.id)),
+		with: {
+			host: true
+		}
+	}).then((values) => {
+		return values.map(v => { return { ...v, status: "hosting" } })
 	})
 
 	const result = [...hostedEvents, ...attendingEvents]
@@ -165,3 +174,4 @@ export async function GetEventData(eventId: string) {
 }
 
 export type EventDataQuery = Awaited<ReturnType<typeof GetEventData>> | undefined
+export type GetLocalUserEventsType = Awaited<ReturnType<typeof GetLocalUserEvents>> | undefined; 

@@ -136,7 +136,7 @@ export default function CreateEventDialog() {
       }
     }}>
       <DialogTrigger asChild>
-        <Button >+</Button>
+        <Button size={"lg"}>New event</Button>
       </DialogTrigger>
 
       <DialogContent
