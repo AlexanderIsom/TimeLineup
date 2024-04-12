@@ -40,11 +40,6 @@ export default function EventDetails({ event, localUser }: Props) {
 	const isHost = event.userId === localUser.id
 	const [localRsvp, setLocalRsvp] = useState(event.rsvps.find(r => r.userId === localUser.id))
 
-	// var attendingCount = attendingUsers.length;
-	// var invitedCount = invitedUsers.length;
-	// var declinedCount = declinedUsers.length;
-	// var showButtons = event.userId !== ResponseState.hosting;
-
 	const updateStatus = async (state: RsvpStatus) => {
 		await updateRsvpStatus(event.id, state);
 	}

@@ -1,9 +1,9 @@
 'use server'
 import { db } from "@/db";
-import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notificationType, notifications, profiles, rsvps } from "@/db/schema";
+import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notifications, rsvps } from "@/db/schema";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
-import { and, arrayOverlaps, eq, getTableColumns, inArray, or } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Profile>) {
 	const supabase = createClient()

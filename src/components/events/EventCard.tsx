@@ -29,16 +29,16 @@ export default function EventCard({ title, description, events }: Props) {
 							router.push(`/events/${event.id}`)
 						}}>
 							<div className="flex gap-2 items-center h-12">
-								<div className="flex items-center gap-2 w-32">
+								<div className="flex items-center gap-2 w-40">
 									<Avatar>
 										<AvatarImage src={event.host.avatarUrl!} />
 										<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 									</Avatar>
-									<div>{event.host.username}</div>
+									<div className="truncate">{event.host.username}</div>
 								</div>
 								<Separator orientation="vertical" className="group-hover:bg-gray-300" />
-								<div className="flex flex-col gap-2 items-start min-w-64">
-									<span>{event.title}</span>
+								<div className="flex flex-col gap-2 items-start w-64">
+									<span className="max-w-64 truncate">{event.title}</span>
 									<span className="text-sm">Date: {formatDateRange(event.start, event.end)}</span>
 								</div>
 								<Separator orientation="vertical" className="group-hover:bg-gray-300" />

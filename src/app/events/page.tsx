@@ -1,11 +1,10 @@
-import styles from "./events.module.scss";
-import { addDays, areIntervalsOverlapping, eachDayOfInterval } from "date-fns";
+import { addDays, areIntervalsOverlapping } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import EventServerDialog from "@/components/events/newEventForm/eventServerDialog";
 import { GetLocalUserEvents } from "@/actions/eventActions";
 import EventCard from "@/components/events/EventCard";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 export default async function Events() {
   const supabase = createClient()
