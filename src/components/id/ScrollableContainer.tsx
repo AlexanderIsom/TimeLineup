@@ -38,7 +38,7 @@ export default function ScrollableContainer({ localRSVP, eventData, children }: 
 						<div className={styles.buttonLeft} >< ZoomIn className={styles.zoomIcon} /></div>
 						<div className={styles.buttonRight} ><ZoomOut className={styles.zoomIcon} /></div>
 						<Button onClick={() => {
-							saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "accepted", id: localRSVP?.id, userId: "" })
+							saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
 							router.refresh();
 						}}>Save</Button>
 					</div>
