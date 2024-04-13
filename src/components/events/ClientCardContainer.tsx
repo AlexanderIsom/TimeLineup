@@ -15,8 +15,6 @@ export interface Schedule {
 
 interface Props {
 	schedules: Array<Schedule>
-	eventStartDate: Date;
-	eventEndDate: Date;
 	updateState: (newSchedule: Schedule[]) => void;
 }
 
@@ -74,15 +72,20 @@ export default function ClientCardContainer(props: Props) {
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
-		var bounds = timelineContainerRef.current!.getBoundingClientRect();
-		const width = e.clientX - bounds.left;
-		const offsetFromStart = MathUtils.roundToNearest(Timeline.xPositionToMinutes(width), 5)
 		const duration = 60;
+		var rectBounds = timelineContainerRef.current!.getBoundingClientRect();
+		var timelineBounds = Timeline.getBounds();
+		let start = Math.max(e.clientX - rectBounds.left, timelineBounds.min)
+		const durationInX = Timeline.minutesToXPosition(duration);
+		if (start + durationInX > timelineBounds.max) {
+			start = timelineBounds.max - durationInX;
+		}
+		const startMinutes = MathUtils.roundToNearest(Timeline.xPositionToMinutes(start), 5)
 
-		const overlaps = findOverlappingResponses(props.schedules, offsetFromStart, duration);
+		const overlaps = findOverlappingResponses(props.schedules, startMinutes, duration);
 
 		if (overlaps.length === 0) {
-			const newSchedule = handleCreate(offsetFromStart, duration, props.schedules)
+			const newSchedule = handleCreate(startMinutes, duration, props.schedules)
 			props.updateState(newSchedule);
 		}
 	}
@@ -100,7 +103,6 @@ export default function ClientCardContainer(props: Props) {
 					schedule={schedule}
 					handleUpdate={handleUpdate}
 					handleDelete={handleDelete}
-					bounds={{ startDate: props.eventStartDate, endDate: props.eventEndDate }}
 				/>
 			})}
 		</div>

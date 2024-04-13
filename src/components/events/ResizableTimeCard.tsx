@@ -3,7 +3,7 @@ import React, { SyntheticEvent, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import Timeline from "@/utils/Timeline";
-import { NearestMinutes, addMinutes, format, roundToNearestMinutes } from "date-fns";
+import { addMinutes, format, roundToNearestMinutes } from "date-fns";
 import styles from "@/styles/Components/TimelineCard.module.scss";
 import MathUtils from "@/utils/MathUtils";
 import "@/styles/Components/Resizable.css"
@@ -14,7 +14,6 @@ interface Props {
 	schedule: Schedule;
 	handleUpdate: (id: string, startTime: number, duration: number) => void;
 	handleDelete: (id: string) => void;
-	bounds: { startDate: Date; endDate: Date };
 }
 
 export default function ResizableTimeCard(props: Props) {
@@ -25,21 +24,23 @@ export default function ResizableTimeCard(props: Props) {
 	});
 
 	const minWidth = Timeline.minutesToXPosition(30);
-	const maxBounds = Timeline.dateToXPosition(props.bounds.endDate);
+	const bounds = Timeline.getBounds();
 
-	const onResize = (e: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => {
+	const onResize = (e: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
 		setState((state) => {
-			let newOffset = state.start;
-			let newSize = size.width;
+			let newX = state.start;
+			let newWidth = size.width;
 			const deltaWidth = state.width - size.width;
 			if (handle === "w") {
-				newOffset = state.start + Timeline.xPositionToMinutes(deltaWidth);
+				newX = state.start + Timeline.xPositionToMinutes(deltaWidth)
+				if (Timeline.minutesToXPosition(newX) < bounds.min) {
+					return state
+				}
 			}
-			if (size.width < minWidth || newOffset < 0 || Timeline.minutesToXPosition(newOffset) + newSize > maxBounds) {
+			if (size.width < minWidth || Timeline.minutesToXPosition(newX) + newWidth > bounds.max) {
 				return state;
 			}
-
-			return { duration: Timeline.xPositionToMinutes(newSize), start: newOffset, width: newSize };
+			return { duration: Timeline.xPositionToMinutes(newWidth), start: newX, width: newWidth };
 		});
 	};
 
@@ -69,31 +70,32 @@ export default function ResizableTimeCard(props: Props) {
 
 	return (
 		<ContextMenu>
-			<Draggable
-				axis="x"
-				position={{ x: Timeline.minutesToXPosition(state.start), y: 0 }}
-				handle=".dragHandle"
-				onDrag={onDrag}
-				onStop={onDragStopped}
-				bounds={{ left: Timeline.dateToXPosition(props.bounds.startDate), right: Timeline.dateToXPosition(props.bounds.endDate) - state.width }}
-			>
-				<div
-					className={styles.container}
-					style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}
-				>
-					<Resizable className={styles.container} width={Timeline.minutesToXPosition(state.duration)} height={0} resizeHandles={["e", "w"]} onResize={onResize} onResizeStop={onResizeStop}>
-						<div style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}>
-							<div className={`dragHandle ${styles.timeContainer} ${styles.grabbable}`}>
-								<span className={styles.timeCue}>{format(roundToNearestMinutes(addMinutes(props.bounds.startDate, state.start), { nearestTo: Timeline.getSnapToNearestMinutes() }), "HH:mm")}</span>
-								<span className={styles.timeCue}>
-									{format(roundToNearestMinutes(addMinutes(props.bounds.startDate, state.start + state.duration), { nearestTo: Timeline.getSnapToNearestMinutes() }), "HH:mm")}
-								</span>
-							</div>
-						</div>
-					</Resizable>
-				</div>
-			</Draggable>
 			<ContextMenuTrigger>
+				<Draggable
+					axis="x"
+					position={{ x: Timeline.minutesToXPosition(state.start), y: 0 }}
+					handle=".dragHandle"
+					onDrag={onDrag}
+					onStop={onDragStopped}
+					bounds={{ left: bounds.min, right: bounds.max - state.width }}
+				>
+					<div
+						className={styles.container}
+						style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}
+					>
+						<Resizable className={styles.container} width={Timeline.minutesToXPosition(state.duration)} height={0} resizeHandles={["e", "w"]} onResize={onResize} onResizeStop={onResizeStop}>
+							<div style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}>
+								<div className={`dragHandle ${styles.timeContainer} ${"hover:cursor-grab active:cursor-grabbing"}`}>
+									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{Timeline.formatMinutes(state.start)}</span>
+									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>
+										{Timeline.formatMinutes(state.start + state.duration)}
+									</span>
+								</div>
+							</div>
+						</Resizable>
+					</div>
+				</Draggable>
+
 			</ContextMenuTrigger>
 			<ContextMenuContent>
 				<ContextMenuItem onSelect={() => {

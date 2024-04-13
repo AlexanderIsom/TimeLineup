@@ -51,7 +51,7 @@ export default function ScrollableContainer({ localRSVP, eventData, children }: 
 					backgroundSize: `${Timeline.cellWidth}px`
 				}} className={`${styles.gridBackground} `} >
 					<TimelineNumbers start={eventData.start} end={eventData.end} />
-					<ClientCardContainer schedules={scheduleState} eventStartDate={eventData.start} eventEndDate={eventData.end} updateState={updateScheduleState} />
+					<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
 					{children}
 				</div>
 			</div>

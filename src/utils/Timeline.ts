@@ -1,4 +1,4 @@
-import { NearestMinutes, differenceInHours, differenceInMinutes, differenceInSeconds } from "date-fns";
+import { NearestMinutes, addMinutes, differenceInHours, differenceInMinutes, format, roundToNearestHours, roundToNearestMinutes } from "date-fns";
 
 export default class Timeline {
 	private static widthInPixels: number;
@@ -6,13 +6,19 @@ export default class Timeline {
 	private static startDateTime: Date;
 	private static snapToNearestMinutes: NearestMinutes;
 	public static cellWidth = 100;
+	public static bounds = { min: 0, max: 0 };
+	public static minBoundary = 0;
+	public static maxBoundary = 0;
 
 	constructor(startDate: Date, endDate: Date, snapToNearestMinutes: NearestMinutes) {
-		Timeline.startDateTime = startDate;
-		const durationInHours = differenceInHours(endDate, startDate);
-		Timeline.durationInMinutes = differenceInMinutes(endDate, startDate);
+		const roundedStartTime = roundToNearestHours(startDate, { roundingMethod: "floor" });
+		const roundedEndTime = roundToNearestHours(endDate, { roundingMethod: "ceil" });
+		Timeline.startDateTime = roundedStartTime
+		const durationInHours = differenceInHours(roundedEndTime, roundedStartTime);
+		Timeline.durationInMinutes = differenceInMinutes(roundedEndTime, roundedStartTime);
 		Timeline.widthInPixels = durationInHours * Timeline.cellWidth;
 		Timeline.snapToNearestMinutes = snapToNearestMinutes;
+		Timeline.bounds = { min: Timeline.dateToXPosition(startDate), max: Timeline.dateToXPosition(endDate) }
 	}
 
 	static setWidth(width: number) {
@@ -36,11 +42,19 @@ export default class Timeline {
 		return x / this.widthInPixels * this.durationInMinutes
 	}
 
+	static formatMinutes(value: number) {
+		return format(roundToNearestMinutes(addMinutes(this.startDateTime, value), { nearestTo: this.getSnapToNearestMinutes() }), "HH:mm")
+	}
+
 	static getWidth(): number {
 		return this.widthInPixels;
 	}
 
+
 	static getCellWidth(): number {
 		return this.cellWidth
+	}
+	static getBounds() {
+		return this.bounds;
 	}
 }

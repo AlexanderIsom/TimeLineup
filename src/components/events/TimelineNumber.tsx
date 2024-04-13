@@ -1,5 +1,5 @@
 import Timeline from "@/utils/Timeline";
-import { eachDayOfInterval, eachHourOfInterval, format, formatDate, subMinutes } from "date-fns";
+import { eachDayOfInterval, eachHourOfInterval, format, formatDate } from "date-fns";
 
 interface Props {
   start: Date;
@@ -7,12 +7,12 @@ interface Props {
 }
 
 export default function TimelineNumbers({ start, end }: Props) {
-  const daysInRange = eachDayOfInterval({ start: start, end: subMinutes(end, 1) });
+  const daysInRange = eachDayOfInterval({ start: start, end: end });
 
   return (
     <div className={"flex sticky top-0"}>
       {daysInRange.map(date => {
-        return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={start} end={subMinutes(end, 1)} />
+        return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={start} end={end} />
       })}
     </div>
   );
