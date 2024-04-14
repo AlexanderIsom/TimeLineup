@@ -4,11 +4,12 @@ import StaticTimeCard from "@/components/events/StaticTimeCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
-import EventDetails from "@/components/events/EventDetails";
+import EventDetails from "@/components/id/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
 import { GetEventData } from "@/actions/eventActions";
 import { User } from "lucide-react";
+import Timeline from "@/utils/Timeline";
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
 	const localUser = await getUserProfile()
@@ -23,9 +24,17 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	const localRsvp = eventData.rsvps.find(r => r.userId === localUser.id)
 	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
+	if (otherRsvp.length > 0) {
+		for (let index = 0; index < 100; index++) {
+			otherRsvp.push(otherRsvp[0])
+		}
+	}
+
 	otherRsvp.sort((a, b) => {
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
 	})
+
+	new Timeline(eventData.start, eventData.end, 5)
 
 	return (
 		<div className={styles.wrapper}>

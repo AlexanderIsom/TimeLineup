@@ -16,7 +16,7 @@ import { EventDataQuery } from "@/actions/eventActions";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { Button } from "../ui/button";
 import { createClient } from "@/utils/supabase/client";
-import UpdateEventDialog from "./newEventForm/updateEventDialog";
+import UpdateEventDialog from "../events/newEventForm/updateEventDialog";
 import { updateRsvpStatus } from "@/actions/idActions";
 
 interface Props {

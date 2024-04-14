@@ -2,7 +2,7 @@
 
 import styles from "@/styles/Components/Events/id.module.scss";
 import { Button } from "../ui/button";
-import TimelineNumbers from "../events/TimelineNumber";
+import TimelineNumbers from "../id/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
 import { Event, Rsvp } from "@/db/schema";
 import React, { useState } from "react";
@@ -10,6 +10,7 @@ import { saveRsvp } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
 import { ZoomIn, ZoomOut } from "lucide-react";
 import Timeline from "@/utils/Timeline";
+import Blocker, { Side } from "./Blocker/Blocker";
 
 interface Props {
 	localRSVP?: Rsvp
@@ -50,6 +51,8 @@ export default function ScrollableContainer({ localRSVP, eventData, children }: 
 					width: `${Timeline.getWidth()}px`,
 					backgroundSize: `${Timeline.cellWidth}px`
 				}} className={`${styles.gridBackground} `} >
+					<Blocker side={Side.left} width={Timeline.getPadding().left} />
+					<Blocker side={Side.right} width={Timeline.getPadding().right} />
 					<TimelineNumbers start={eventData.start} end={eventData.end} />
 					<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
 					{children}

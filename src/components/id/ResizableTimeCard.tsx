@@ -7,7 +7,7 @@ import { addMinutes, format, roundToNearestMinutes } from "date-fns";
 import styles from "@/styles/Components/TimelineCard.module.scss";
 import MathUtils from "@/utils/MathUtils";
 import "@/styles/Components/Resizable.css"
-import { Schedule } from "./ClientCardContainer";
+import { Schedule } from "../events/ClientCardContainer";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
 
 interface Props {

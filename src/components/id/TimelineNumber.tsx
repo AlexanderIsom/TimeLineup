@@ -10,7 +10,7 @@ export default function TimelineNumbers({ start, end }: Props) {
   const daysInRange = eachDayOfInterval({ start: start, end: end });
 
   return (
-    <div className={"flex sticky top-0"}>
+    <div className={"sticky top-0 z-10"}>
       {daysInRange.map(date => {
         return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={start} end={end} />
       })}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import ResizableTimeCard from "./ResizableTimeCard"
+import ResizableTimeCard from "../id/ResizableTimeCard"
 import { nanoid } from "nanoid"
 import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
