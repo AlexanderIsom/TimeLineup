@@ -24,12 +24,6 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	const localRsvp = eventData.rsvps.find(r => r.userId === localUser.id)
 	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
-	if (otherRsvp.length > 0) {
-		for (let index = 0; index < 100; index++) {
-			otherRsvp.push(otherRsvp[0])
-		}
-	}
-
 	otherRsvp.sort((a, b) => {
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
 	})
