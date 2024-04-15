@@ -1,7 +1,7 @@
 'use server'
 import { db } from "@/db";
 import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notifications, rsvps } from "@/db/schema";
-import { NotUndefined } from "@/utils/TypeUtils";
+import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, or } from "drizzle-orm";
 
@@ -174,4 +174,5 @@ export async function GetEventData(eventId: string) {
 }
 
 export type EventDataQuery = Awaited<ReturnType<typeof GetEventData>> | undefined
-export type GetLocalUserEventsType = Awaited<ReturnType<typeof GetLocalUserEvents>> | undefined; 
+export type GetLocalUserEventsType = Awaited<ReturnType<typeof GetLocalUserEvents>> | undefined;
+export type EventRsvp = NonNullable<EventDataQuery>['rsvps'][number]

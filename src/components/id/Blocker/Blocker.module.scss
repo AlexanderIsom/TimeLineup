@@ -1,4 +1,6 @@
 .blocker {
-	background-image: linear-gradient(45deg, #ffb0b0 10%, #ffffff 10%, #ffffff 50%, #ffb0b0 50%, #ffb0b0 60%, #ffffff 60%, #ffffff 100%);
+	$redStripe: rgb(253, 114, 114);
+	$whiteTransparent: rgba(255, 255, 255, 0);
+	background-image: linear-gradient(45deg, $redStripe 10%, $whiteTransparent 10%, $whiteTransparent 50%, $redStripe 50%, $redStripe 60%, $whiteTransparent 60%, $whiteTransparent 100%);
 	background-size: 35.36px 35.36px;
 }

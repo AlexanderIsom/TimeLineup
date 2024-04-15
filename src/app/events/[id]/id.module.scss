@@ -1,0 +1,59 @@
+@use "Variables.scss";
+
+.wrapper {
+	display: grid;
+	grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+	height: 100%;
+}
+
+.userResponses {
+	display: block;
+}
+
+.staticRow {
+	display: block;
+	height: Variables.$cardHeight
+}
+
+.scrollable {
+	min-height: 0;
+	min-width: 0;
+	grid-column: 1;
+	display: grid;
+	grid-template-columns: 1fr 5fr;
+}
+
+.zoomIcon {
+	width: 30px;
+	height: 30px;
+}
+
+.contextMenu {
+	position: fixed;
+	background: white;
+	border: #505050;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 5px;
+	width: 100px;
+	height: fit-content;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.contextMenuItem {
+	width: 100%;
+	height: 20px;
+	text-align: center;
+
+	&:first-child {
+		margin-top: 10px;
+	}
+
+	&:hover {
+		cursor: pointer;
+		background: #505050;
+	}
+}

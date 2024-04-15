@@ -5,7 +5,6 @@ import ResizableTimeCard from "../id/ResizableTimeCard"
 import { nanoid } from "nanoid"
 import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
-import styles from "@/styles/Components/Events/id.module.scss"
 
 export interface Schedule {
 	id: string
@@ -95,8 +94,8 @@ export default function ClientCardContainer(props: Props) {
 		props.updateState(newSchedule);
 	}
 
-	return (<>
-		<div className={styles.localUserResponses} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+	return (
+		<div className="flex" onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{props.schedules.map((schedule: Schedule) => {
 				return <ResizableTimeCard
 					key={schedule.id}
@@ -106,7 +105,5 @@ export default function ClientCardContainer(props: Props) {
 				/>
 			})}
 		</div>
-	</>
-
 	)
 }

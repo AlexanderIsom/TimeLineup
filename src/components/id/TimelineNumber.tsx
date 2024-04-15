@@ -1,16 +1,19 @@
 import Timeline from "@/utils/Timeline";
 import { eachDayOfInterval, eachHourOfInterval, format, formatDate } from "date-fns";
+import styles from "./TimelineNumbers.module.scss"
+import { ForwardedRef, Ref } from "react";
 
 interface Props {
   start: Date;
   end: Date;
+  forwardedRef: ForwardedRef<HTMLDivElement>
 }
 
-export default function TimelineNumbers({ start, end }: Props) {
+export default function TimelineNumbers({ start, end, forwardedRef }: Props) {
   const daysInRange = eachDayOfInterval({ start: start, end: end });
 
   return (
-    <div className={"sticky top-0 z-10"}>
+    <div className={`sticky top-0 z-10 ${styles.wrapper}`} ref={forwardedRef}>
       {daysInRange.map(date => {
         return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={start} end={end} />
       })}

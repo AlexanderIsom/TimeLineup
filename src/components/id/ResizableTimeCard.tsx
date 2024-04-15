@@ -3,8 +3,7 @@ import React, { SyntheticEvent, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import Timeline from "@/utils/Timeline";
-import { addMinutes, format, roundToNearestMinutes } from "date-fns";
-import styles from "@/styles/Components/TimelineCard.module.scss";
+import styles from "./TimelineCard.module.scss";
 import MathUtils from "@/utils/MathUtils";
 import "@/styles/Components/Resizable.css"
 import { Schedule } from "../events/ClientCardContainer";

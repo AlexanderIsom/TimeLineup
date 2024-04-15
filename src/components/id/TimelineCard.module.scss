@@ -1,11 +1,12 @@
-@use "./Variables.scss";
+@use "Variables.scss";
 
 .container {
-	position: absolute;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: Variables.$cardHeight;
+	margin-top: 4px;
+	margin-bottom: 4px;
 }
 
 .timeContainer {
@@ -14,8 +15,7 @@
 	height: auto;
 	top: 0;
 	bottom: 0;
-	margin-top: 5px;
-	margin-bottom: 5px;
+
 	background: #e4e4e4;
 	border-radius: 5px;
 	width: 100%;

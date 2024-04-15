@@ -1,14 +1,12 @@
-import styles from "@/styles/Components/Events/id.module.scss"
+import styles from "./id.module.scss"
 import React from "react";
-import StaticTimeCard from "@/components/events/StaticTimeCard";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import StaticTimeCard from "@/components/id/StaticTimeCard";
 import assert from "assert";
 import ScrollableContainer from "@/components/id/ScrollableContainer";
 import EventDetails from "@/components/id/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
-import { GetEventData } from "@/actions/eventActions";
-import { User } from "lucide-react";
+import { EventRsvp, GetEventData } from "@/actions/eventActions";
 import Timeline from "@/utils/Timeline";
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
@@ -21,10 +19,10 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	const eventData = await GetEventData(params.id);
 	assert(eventData !== undefined, "Event data returned undefined")
 
-	const localRsvp = eventData.rsvps.find(r => r.userId === localUser.id)
-	const otherRsvp = eventData.rsvps.filter(r => r.userId !== localUser.id)
+	const localRsvp: EventRsvp = eventData.rsvps.find(r => r.userId === localUser.id) ?? {} as EventRsvp;
+	const otherRsvps: Array<EventRsvp> = eventData.rsvps.filter(r => r.userId !== localUser.id)
 
-	otherRsvp.sort((a, b) => {
+	otherRsvps.sort((a, b) => {
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
 	})
 
@@ -32,38 +30,18 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 
 	return (
 		<div className={styles.wrapper}>
-			<div className={styles.scrollable}>
-				<div className={styles.userContainer}>
-					<div className={styles.userItem}>
-						<Avatar>
-							<AvatarImage src={localUser.avatarUrl!} />
-							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
-						</Avatar>
-						<div className={styles.userName}>{localUser.username}</div>
-					</div>
-
-					{otherRsvp.map((rsvp) => {
-						return <div key={rsvp.id} className={styles.userItem}>
-							<Avatar>
-								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
-								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
-							</Avatar>
-							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
-						</div>
+			<ScrollableContainer localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps}>
+				<div className="flex flex-col gap-2">
+					{otherRsvps.map((value, index: number) => {
+						return <div key={index} className={styles.staticRow}>{
+							value.schedules.map((schedule) => {
+								return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
+							})
+						}</div>
 					})}
 				</div>
-				<ScrollableContainer localRSVP={localRsvp} eventData={eventData}>
-					<div className={styles.userResponses}>
-						{otherRsvp.map((value, index: number) => {
-							return <div key={index} className={styles.staticRow}>{
-								value.schedules.map((schedule) => {
-									return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
-								})
-							}</div>
-						})}
-					</div>
-				</ScrollableContainer>
-			</div>
+			</ScrollableContainer>
+
 			<EventDetails event={eventData} localUser={localUser} />
 		</div>
 	)

@@ -1,24 +1,28 @@
+
 "use client"
 
-import styles from "@/styles/Components/Events/id.module.scss";
+import styles from "./ScrollableContainer.module.scss";
 import { Button } from "../ui/button";
 import TimelineNumbers from "../id/TimelineNumber";
 import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
-import { Event, Rsvp } from "@/db/schema";
-import React, { useState } from "react";
+import { Event } from "@/db/schema";
+import React, { useEffect, useRef, useState } from "react";
 import { saveRsvp } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { User } from "lucide-react";
 import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { EventRsvp } from "@/actions/eventActions";
 
 interface Props {
-	localRSVP?: Rsvp
+	localRSVP: EventRsvp
+	otherRsvps: Array<EventRsvp>
 	eventData: Event
 	children: React.ReactNode
 }
 
-export default function ScrollableContainer({ localRSVP, eventData, children }: Props) {
+export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, children }: Props) {
 	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])
 
 	const router = useRouter();
@@ -27,35 +31,81 @@ export default function ScrollableContainer({ localRSVP, eventData, children }: 
 		setScheduleState(newSchedule);
 	}
 
+	const userDiv = useRef<HTMLDivElement>(null);
+	const contentDiv = useRef<HTMLDivElement>(null);
+	const timeDiv = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			if (contentDiv.current) {
+
+				if (userDiv.current) {
+					userDiv.current.scrollTop = contentDiv.current.scrollTop
+				}
+				if (timeDiv.current) {
+					timeDiv.current.scrollLeft = contentDiv.current.scrollLeft
+				}
+			}
+		}
+
+		if (contentDiv.current) {
+			contentDiv.current.addEventListener('scroll', handleScroll);
+		}
+
+		return () => {
+			if (contentDiv.current) {
+				contentDiv.current.removeEventListener('scroll', handleScroll);
+			}
+		};
+	}, [])
+
 	new Timeline(eventData.start, eventData.end, 5)
 
 	return (
-		<div className={styles.timelineContainer}>
-			<div className={styles.timelineHeader}>
-				<div className={styles.timelineTools}>
-					<div className={styles.magnify}>
-						{/* <div className={styles.buttonLeft} onClick={handleZoomIn}>< RxZoomIn className={styles.zoomIcon} /></div>
-							<div className={styles.buttonRight} onClick={handleZoomOut}><RxZoomOut className={styles.zoomIcon} /></div> */}
-						<div className={styles.buttonLeft} >< ZoomIn className={styles.zoomIcon} /></div>
-						<div className={styles.buttonRight} ><ZoomOut className={styles.zoomIcon} /></div>
-						<Button onClick={() => {
-							saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
-							router.refresh();
-						}}>Save</Button>
-					</div>
+		<div className={styles.wrapper}>
+			<div className={`${styles.tools} `}>
+				<div className={styles.magnify}>
+					<Button onClick={() => {
+						saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
+						router.refresh();
+					}}>Save</Button>
 				</div>
 			</div>
-			{/* <div className={styles.timelineContent} onScroll={onContentScroll} ref={timelineScrollingContainerRef}> */}
-			<div className={styles.timelineContent} >
+
+			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} />
+
+			<div className={`flex flex-col ${styles.users}`} ref={userDiv}>
+				<div className={`${styles.userItem}`}>
+					<Avatar>
+						<AvatarImage src={localRSVP?.user.avatarUrl!} />
+						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
+					</Avatar>
+					<div className={styles.userName}>{localRSVP?.user.username}</div>
+				</div>
+
+				{otherRsvps.map((rsvp) => {
+					return <div key={rsvp.id} className={styles.userItem}>
+						<Avatar>
+							<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
+							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
+						</Avatar>
+						<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
+					</div>
+				})}
+			</div>
+
+			<div className={styles.content} ref={contentDiv}>
+
 				<div style={{
 					width: `${Timeline.getWidth()}px`,
 					backgroundSize: `${Timeline.cellWidth}px`
 				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
-					<TimelineNumbers start={eventData.start} end={eventData.end} />
-					<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
-					{children}
+					<div className="flex flex-col">
+						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
+						{children}
+					</div>
 				</div>
 			</div>
 		</div>
