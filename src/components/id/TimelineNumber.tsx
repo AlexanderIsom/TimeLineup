@@ -1,7 +1,7 @@
 import Timeline from "@/utils/Timeline";
 import { eachDayOfInterval, eachHourOfInterval, format, formatDate } from "date-fns";
 import styles from "./TimelineNumbers.module.scss"
-import { ForwardedRef, Ref } from "react";
+import { ForwardedRef } from "react";
 
 interface Props {
   start: Date;

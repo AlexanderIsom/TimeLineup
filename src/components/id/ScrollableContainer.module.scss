@@ -15,6 +15,7 @@
 	align-items: center;
 	display: flex;
 	justify-content: center;
+	border-right: Variables.$gridColor 1px solid;
 }
 
 .magnify {
