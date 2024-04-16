@@ -1,0 +1,8 @@
+@use "Variables.scss";
+
+.container {
+	display: flex;
+	align-items: center;
+	height: Variables.$outerCardHeight;
+	background-color: blue;
+}

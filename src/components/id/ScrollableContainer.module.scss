@@ -50,8 +50,8 @@
 	grid-column: 1;
 	border-top: Variables.$gridColor 1px solid;
 	border-right: Variables.$gridColor 1px solid;
-	padding-left: 8px;
-	padding-right: 8px;
+	// padding-left: 8px;
+	// padding-right: 8px;
 	overflow: hidden;
 }
 
@@ -76,7 +76,9 @@
 	align-items: center;
 	width: 100%;
 	padding-left: 50px;
-	min-height: Variables.$cardHeight + 8px;
+	min-height: Variables.$outerCardHeight;
+	border-bottom: Variables.$gridColor 1px solid;
+
 }
 
 .userName {

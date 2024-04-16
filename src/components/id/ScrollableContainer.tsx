@@ -83,7 +83,6 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 					</Avatar>
 					<div className={styles.userName}>{localRSVP?.user.username}</div>
 				</div>
-				<Separator />
 
 				{otherRsvps.map((rsvp) => {
 					return <div key={rsvp.id}>
@@ -94,23 +93,19 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 							</Avatar>
 							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
 						</div>
-						<Separator />
 					</div>
 				})}
 			</div>
 
 			<div className={styles.content} ref={contentDiv}>
-
 				<div style={{
 					width: `${Timeline.getWidth()}px`,
 					backgroundSize: `${Timeline.cellWidth}px`
 				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
-					<div className="flex flex-col">
-						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
-						{children}
-					</div>
+					<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
+					{children}
 				</div>
 			</div>
 		</div >

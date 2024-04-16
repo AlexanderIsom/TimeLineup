@@ -31,15 +31,13 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	return (
 		<div className={styles.wrapper}>
 			<ScrollableContainer localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps}>
-				<div className="flex flex-col gap-2">
-					{otherRsvps.map((value, index: number) => {
-						return <div key={index} className={styles.staticRow}>{
-							value.schedules.map((schedule) => {
-								return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
-							})
-						}</div>
-					})}
-				</div>
+				{otherRsvps.map((value, index: number) => {
+					return <div key={index} className={styles.staticRow}>{
+						value.schedules.map((schedule) => {
+							return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
+						})
+					}</div>
+				})}
 			</ScrollableContainer>
 
 			<EventDetails event={eventData} localUser={localUser} />

@@ -11,8 +11,9 @@
 }
 
 .staticRow {
-	display: block;
-	height: Variables.$cardHeight
+	display: flex;
+	height: Variables.$outerCardHeight;
+	align-items: center;
 }
 
 .scrollable {
