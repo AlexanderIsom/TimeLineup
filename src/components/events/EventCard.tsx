@@ -15,13 +15,13 @@ interface Props {
 
 export default function EventCard({ title, description, events }: Props) {
 	const router = useRouter();
-	return <Card className="flex flex-col w-full mx-auto shadow-lg justify-between">
+	return <Card className="flex flex-1 flex-col w-full max-w-[33%] mx-auto shadow-lg justify-between">
 		<div>
 			<CardHeader className="rounded-t-lg">
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>{description}</CardDescription>
 			</CardHeader>
-			<CardContent className="flex flex-col gap-1 p-6">
+			<CardContent className="flex flex-col gap-1 p-6 overflow-hidden">
 				{events?.map((event, index) => {
 					return <>
 						{index > 0 && <Separator />}

@@ -13,7 +13,7 @@ export default function TimelineNumbers({ start, end, forwardedRef }: Props) {
   const daysInRange = eachDayOfInterval({ start: start, end: end });
 
   return (
-    <div className={`sticky top-0 z-10 ${styles.wrapper}`} ref={forwardedRef}>
+    <div className={`${styles.wrapper}`} ref={forwardedRef}>
       {daysInRange.map(date => {
         return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={start} end={end} />
       })}
@@ -38,12 +38,15 @@ function DayHeaderAndHours({ date, start, end }: DayHeaderAndHoursProps) {
   }
   const numberList = eachHourOfInterval({ start: startTime, end: endTime });
   return (
-    <div className="bg-white border-gray-200 border-t min-w-max">
-      <span className="sticky left-0 right-0 px-8">{format(date, "LLL do")}</span>
-      <div className={"flex w-full h-8 self-end border-y border-gray-200"}>
+    <div className="h-full border-gray-200 min-w-max">
+      <div className="h-1/2 flex items-end">
+        <span className="sticky left-0 right-0 px-8">{format(date, "LLL do")}</span>
+      </div>
+
+      <div className={"h-1/2 w-full self-end border-t border-gray-200"}>
         {numberList.map((hour: Date, index: number) => {
           return (
-            <div className={`flex-1 h-full justify-center items-center bg-white inline-flex border-r border-gray-200 w-[${Timeline.getCellWidth()}px]`} key={index}>
+            <div className={`flex-1 h-full justify-center items-center inline-flex border-r border-gray-200 w-[${Timeline.getCellWidth()}px]`} key={index}>
               <div className={"justify-center text-center font-normal text-base"}>{`${hour.getHours()}:00`}</div>
             </div>
           );

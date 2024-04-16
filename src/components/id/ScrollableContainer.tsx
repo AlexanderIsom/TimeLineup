@@ -14,6 +14,7 @@ import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
+import { Separator } from "../ui/separator";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -82,14 +83,18 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 					</Avatar>
 					<div className={styles.userName}>{localRSVP?.user.username}</div>
 				</div>
+				<Separator />
 
 				{otherRsvps.map((rsvp) => {
-					return <div key={rsvp.id} className={styles.userItem}>
-						<Avatar>
-							<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
-							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
-						</Avatar>
-						<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
+					return <div key={rsvp.id}>
+						<div className={styles.userItem}>
+							<Avatar>
+								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
+								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
+							</Avatar>
+							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
+						</div>
+						<Separator />
 					</div>
 				})}
 			</div>
@@ -108,6 +113,6 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 					</div>
 				</div>
 			</div>
-		</div>
+		</div >
 	)
 }
