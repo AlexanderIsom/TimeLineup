@@ -20,10 +20,11 @@ interface Props {
 	localRSVP: EventRsvp
 	otherRsvps: Array<EventRsvp>
 	eventData: Event
-	children: React.ReactNode
+	isHost: boolean
+	children?: React.ReactNode
 }
 
-export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, children }: Props) {
+export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, isHost, children }: Props) {
 	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])
 
 	const router = useRouter();
@@ -76,13 +77,13 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} />
 
 			<div className={`flex flex-col ${styles.users}`} ref={userDiv}>
-				<div className={`${styles.userItem}`}>
+				{!isHost && <div className={`${styles.userItem}`}>
 					<Avatar>
 						<AvatarImage src={localRSVP?.user.avatarUrl!} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
 					<div className={styles.userName}>{localRSVP?.user.username}</div>
-				</div>
+				</div>}
 
 				{otherRsvps.map((rsvp) => {
 					return <div key={rsvp.id}>
@@ -104,7 +105,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
-					<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
+					{!isHost && < ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />}
 					{children}
 				</div>
 			</div>

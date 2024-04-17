@@ -46,7 +46,7 @@ function DayHeaderAndHours({ date, start, end }: DayHeaderAndHoursProps) {
       <div className={"h-1/2 w-full self-end border-t border-gray-200"}>
         {numberList.map((hour: Date, index: number) => {
           return (
-            <div className={`flex-1 h-full justify-center items-center inline-flex border-r border-gray-200 w-[${Timeline.getCellWidth()}px]`} key={index}>
+            <div className={`flex-1 h-full -translate-x-1/2 justify-center items-center inline-flex border-gray-200 w-[${Timeline.getCellWidth()}px]`} key={index}>
               <div className={"justify-center text-center font-normal text-base"}>{`${hour.getHours()}:00`}</div>
             </div>
           );
