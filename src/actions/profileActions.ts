@@ -46,3 +46,8 @@ export async function updateUserProfile(values: {
 	const localUser = await getUserProfile();
 	await db.update(profiles).set(values).where(eq(profiles.id, localUser!.id))
 }
+
+export async function deleteProfile() {
+	const localUser = await getUserProfile();
+	await db.delete(profiles).where(eq(profiles.id, localUser!.id))
+}

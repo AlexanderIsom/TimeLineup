@@ -98,7 +98,6 @@ export default function ClientCardContainer(props: Props) {
 	return (
 		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{props.schedules.map((schedule: Schedule) => {
-				// return <div key={schedule.id} className="w-32 h-full bg-red-200"></div>
 				return <ResizableTimeCard
 					key={schedule.id}
 					schedule={schedule}

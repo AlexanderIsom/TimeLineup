@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import DeleteProfile from "./deleteProfile";
 
 
 const formSchema = z.object({
@@ -70,7 +71,10 @@ export default function ProfileForm() {
 				)}
 			/>
 			<div className="flex justify-between">
-				<Button type='button' variant="outline">Cancel</Button>
+				<div className="flex gap-2">
+					<Button type='button' variant="outline">Cancel</Button>
+					<DeleteProfile />
+				</div>
 				<Button type='submit'>Update</Button>
 			</div>
 		</form>
