@@ -23,7 +23,7 @@ export default function EventCard({ title, description, events }: Props) {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-1 p-6 overflow-hidden">
 				{events?.map((event, index) => {
-					return <>
+					return <div key={event.id}>
 						{index > 0 && <Separator />}
 						<button key={event.id} className="group flex hover:bg-gray-100 px-4 py-2 rounded-md" onClick={() => {
 							router.push(`/events/${event.id}`)
@@ -45,7 +45,7 @@ export default function EventCard({ title, description, events }: Props) {
 								<span>{event.status}</span>
 							</div>
 						</button>
-					</>
+					</div>
 				})}
 			</CardContent>
 		</div>

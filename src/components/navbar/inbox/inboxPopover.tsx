@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Inbox } from "lucide-react";
 import Messages from "./messages";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useOptimistic, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -18,11 +18,8 @@ interface Props {
 }
 
 export default function InboxPopover(props: Props) {
-	const [friendRequests, setFriendRequests] = useState<FriendStatusAndProfile>();
-	const [notifications, setNotifications] = useState<NotificationQuery>();
-
-	useMemo(() => setNotifications(props.notifications?.filter(n => n.seen === false)), [props.notifications])
-	useMemo(() => setFriendRequests(props.friends?.filter(f => f.status === "pending" && f.incoming)), [props.friends])
+	const notifications = useMemo(() => props.notifications?.filter(n => n.seen === false), [props.notifications])
+	const friendRequests = useMemo(() => props.friends?.filter(f => f.status === "pending" && f.incoming), [props.friends])
 
 	const friendRequestCount = (friendRequests?.length ?? 0);
 	const notificationsCount = (notifications?.length ?? 0);
@@ -55,14 +52,6 @@ export default function InboxPopover(props: Props) {
 		}
 	}, [supabase, router])
 
-	const removeFriendRequest = (id: string) => {
-		setFriendRequests(friendRequests?.filter(r => r.id !== id))
-	}
-
-	const removeNotification = (id: string) => {
-		setNotifications(notifications?.filter(n => n.id !== id))
-	}
-
 	return <Popover>
 		<PopoverTrigger asChild>
 			<Button variant="outline" className={`gap-2 pl-4 pr-4 h-10 rounded-full `}>
@@ -89,10 +78,10 @@ export default function InboxPopover(props: Props) {
 				</TabsList>
 
 				<TabsContent value="messages">
-					<Messages notifications={notifications} onClick={removeNotification} />
+					<Messages notifications={notifications} />
 				</TabsContent>
 				<TabsContent value="requests">
-					<FriendRequests requests={friendRequests} onClick={removeFriendRequest} />
+					<FriendRequests requests={friendRequests} />
 				</TabsContent>
 			</Tabs>
 		</PopoverContent>

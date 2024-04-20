@@ -3,22 +3,30 @@ import { NotificationQuery, markNoticiationAsRead } from "@/actions/notification
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MailOpen, User } from "lucide-react";
+import { useOptimistic } from "react";
 
 interface Props {
 	notifications: NotificationQuery
-	onClick: (id: string) => void;
+
 }
 
-export default function Messages({ notifications, onClick }: Props) {
+export default function Messages(props: Props) {
+	const [notifications, removeRequest] = useOptimistic(props.notifications, (state, messageIdToRemove) => {
+		return state?.filter(({ id }) => id !== messageIdToRemove)
+	});
 
 	if (notifications === undefined || notifications.length <= 0) {
 		return <h2 className="text-sm font-semibold">no messages</h2>
+	}
+	async function onSubmit(id: string) {
+		removeRequest(id);
+		await markNoticiationAsRead(id);
 	}
 
 	return (
 		<div>
 			{notifications.map((notification) => {
-				return <div key={notification.id} className="flex justify-between gap-2 items-center">
+				return <form key={notification.id} className="flex justify-between gap-2 items-center">
 					<div className="flex gap-2 items-center">
 						<div className='flex items-center gap-4'>
 							<Avatar>
@@ -36,11 +44,10 @@ export default function Messages({ notifications, onClick }: Props) {
 							</span>
 						</div>
 					</div>
-					<Button size={"icon"} variant={"ghost"} className="w-8 h-8" onClick={async () => {
-						onClick(notification.id);
-						await markNoticiationAsRead(notification.id);
+					<Button size={"icon"} variant={"ghost"} className="w-8 h-8" formAction={() => {
+						onSubmit(notification.id)
 					}}><MailOpen className="stroke-gray-600" /></Button>
-				</div>
+				</form>
 			})}
 		</div>
 	)

@@ -70,13 +70,17 @@ export interface friendRequest {
 }
 
 export async function acceptFriendRequest(id: string) {
+	await new Promise((res) => setTimeout(res, 1000));
 	await db.update(friendships)
 		.set({ status: "accepted" })
 		.where(eq(friendships.id, id));
+	revalidatePath("/");
 }
 
 export async function removeFriend(id: string) {
+	await new Promise((res) => setTimeout(res, 1000));
 	await db.delete(friendships).where(eq(friendships.id, id))
+	revalidatePath("/");
 }
 
 export async function getFriends() {
