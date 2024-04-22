@@ -1,30 +1,38 @@
-import { NearestMinutes, addMinutes, differenceInHours, differenceInMinutes, format, roundToNearestHours, roundToNearestMinutes } from "date-fns";
+import { NearestMinutes, addHours, addMinutes, differenceInHours, differenceInMinutes, eachHourOfInterval, format, isEqual, roundToNearestHours, roundToNearestMinutes, subHours, subMinutes } from "date-fns";
 
 export default class Timeline {
 	private static widthInPixels: number;
 	private static durationInMinutes: number;
 	private static startDateTime: Date;
 	private static snapToNearestMinutes: NearestMinutes;
-	public static cellWidth = 100;
+	public static cellWidth = 200;
 	public static bounds = { min: 0, max: 0 };
 	public static padding = { left: 0, right: 0 };
+	public static headingNumbers: Array<Date>;
+	public static instance: Timeline;
 
 	constructor(startDate: Date, endDate: Date, snapToNearestMinutes: NearestMinutes) {
-		const roundedStartTime = roundToNearestHours(startDate, { roundingMethod: "floor" });
-		const roundedEndTime = roundToNearestHours(endDate, { roundingMethod: "ceil" });
+		let roundedStartTime = roundToNearestHours(startDate, { roundingMethod: "floor" });
+		let roundedEndTime = roundToNearestHours(endDate, { roundingMethod: "ceil" });
+
+		if (differenceInHours(roundedEndTime, roundedStartTime) <= 4) {
+			roundedEndTime = addHours(roundedEndTime, 2);
+			Timeline.cellWidth = 300;
+		}
 		Timeline.startDateTime = roundedStartTime
 		const durationInHours = differenceInHours(roundedEndTime, roundedStartTime);
 		Timeline.durationInMinutes = differenceInMinutes(roundedEndTime, roundedStartTime);
 		Timeline.widthInPixels = durationInHours * Timeline.cellWidth;
 		Timeline.snapToNearestMinutes = snapToNearestMinutes;
 		Timeline.bounds = { min: Timeline.dateToXPosition(startDate), max: Timeline.dateToXPosition(endDate) }
-		const padLeft = startDate === roundedStartTime ? 0 : Timeline.bounds.min
-		const padRight = endDate === roundedEndTime ? 0 : Timeline.dateToXPosition(roundedEndTime) - Timeline.bounds.max;
+		const padLeft = isEqual(startDate, roundedStartTime) ? 0 : Timeline.bounds.min
+		Timeline.headingNumbers = eachHourOfInterval({ start: roundedStartTime, end: roundedEndTime });
+		const padRight = isEqual(endDate, roundedEndTime) ? 0 : Timeline.dateToXPosition(roundedEndTime) - Timeline.bounds.max;
 		Timeline.padding = { left: padLeft, right: padRight };
 	}
 
-	static setWidth(width: number) {
-		this.widthInPixels = width;
+	static getNumbers() {
+		return this.headingNumbers
 	}
 
 	static getSnapToNearestMinutes(): NearestMinutes {
@@ -62,5 +70,9 @@ export default class Timeline {
 
 	static getPadding() {
 		return this.padding;
+	}
+
+	static destroy() {
+		this.destroy();
 	}
 }

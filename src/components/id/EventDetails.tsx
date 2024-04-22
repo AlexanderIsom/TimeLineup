@@ -93,7 +93,7 @@ export default function EventDetails({ event, localUser }: Props) {
 							<UpdateEventDialog event={event} />
 							:
 							<div className="flex justify-between items-center w-full">
-								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "attending" && "bg-blue-200"}`}
+								<Button size="lg" variant={"ghost"} className={`flex w-1/3 h-auto ${localRsvp!.status === "attending" && "bg-blue-200"}`}
 									onClick={() => {
 										updateStatus("attending");
 									}}>
@@ -103,7 +103,7 @@ export default function EventDetails({ event, localUser }: Props) {
 									</div>
 								</Button>
 
-								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}
+								<Button size="lg" variant={"ghost"} className={`flex w-1/3 h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}
 									onClick={() => {
 										updateStatus("pending");
 									}}>
@@ -113,7 +113,7 @@ export default function EventDetails({ event, localUser }: Props) {
 									</div>
 								</Button>
 
-								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}
+								<Button size="lg" variant={"ghost"} className={`flex w-1/3 h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}
 									onClick={() => {
 										updateStatus("declined");
 									}}>

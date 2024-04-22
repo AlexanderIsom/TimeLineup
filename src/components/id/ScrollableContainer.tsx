@@ -14,7 +14,6 @@ import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
-import { Separator } from "../ui/separator";
 import StaticTimeCard from "./StaticTimeCard";
 
 interface Props {
@@ -37,7 +36,6 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 	const userDiv = useRef<HTMLDivElement>(null);
 	const contentDiv = useRef<HTMLDivElement>(null);
 	const timeDiv = useRef<HTMLDivElement>(null);
-	console.log(eventData.end < new Date());
 
 	useEffect(() => {
 		const handleScroll = () => {
