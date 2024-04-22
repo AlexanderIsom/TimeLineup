@@ -15,6 +15,7 @@ import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
 import { Separator } from "../ui/separator";
+import StaticTimeCard from "./StaticTimeCard";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -36,6 +37,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 	const userDiv = useRef<HTMLDivElement>(null);
 	const contentDiv = useRef<HTMLDivElement>(null);
 	const timeDiv = useRef<HTMLDivElement>(null);
+	console.log(eventData.end < new Date());
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -66,12 +68,12 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 	return (
 		<div className={styles.wrapper}>
 			<div className={`${styles.tools} `}>
-				<div className={styles.magnify}>
+
+				{eventData.end > new Date() &&
 					<Button onClick={() => {
 						saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
 						router.refresh();
-					}}>Save</Button>
-				</div>
+					}}>Save</Button>}
 			</div>
 
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} />
@@ -105,7 +107,14 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
-					{!isHost && < ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />}
+					{!isHost && (eventData.end > new Date() ?
+						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} /> :
+						<div className={styles.staticRow}>{
+							scheduleState.map((schedule) => {
+								return <StaticTimeCard key={schedule.id} schedule={schedule} />
+							})
+						}</div>
+					)}
 					{children}
 				</div>
 			</div>

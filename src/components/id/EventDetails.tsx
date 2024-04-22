@@ -87,40 +87,44 @@ export default function EventDetails({ event, localUser }: Props) {
 				</div>
 			</CardContent>
 			<CardContent className="flex items-center justify-between pl-6 pr-6">
-				{isHost ?
-					<UpdateEventDialog event={event} />
-					:
-					<div className="flex justify-between items-center w-full">
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "attending" && "bg-blue-200"}`}
-							onClick={() => {
-								updateStatus("attending");
-							}}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<Check className="h-full" />
-								<div className="min-w-max h-full">Going</div>
-							</div>
-						</Button>
+				{event.end > new Date() &&
+					<>
+						{isHost ?
+							<UpdateEventDialog event={event} />
+							:
+							<div className="flex justify-between items-center w-full">
+								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "attending" && "bg-blue-200"}`}
+									onClick={() => {
+										updateStatus("attending");
+									}}>
+									<div className="flex flex-col w-full items-center m-2 gap-1">
+										<Check className="h-full" />
+										<div className="min-w-max h-full">Going</div>
+									</div>
+								</Button>
 
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}
-							onClick={() => {
-								updateStatus("pending");
-							}}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<CircleHelp className="h-full" />
-								<div className="min-w-max h-full">Maybe</div>
-							</div>
-						</Button>
+								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "pending" && "bg-blue-200"}`}
+									onClick={() => {
+										updateStatus("pending");
+									}}>
+									<div className="flex flex-col w-full items-center m-2 gap-1">
+										<CircleHelp className="h-full" />
+										<div className="min-w-max h-full">Maybe</div>
+									</div>
+								</Button>
 
-						<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}
-							onClick={() => {
-								updateStatus("declined");
-							}}>
-							<div className="flex flex-col w-full items-center m-2 gap-1">
-								<X className="h-full" />
-								<div className="min-w-max h-full">Can&apos;t go</div>
-							</div>
-						</Button>
-					</div>}
+								<Button size="lg" variant={"ghost"} className={`flex w-full h-auto ${localRsvp!.status === "declined" && "bg-blue-200"}`}
+									onClick={() => {
+										updateStatus("declined");
+									}}>
+									<div className="flex flex-col w-full items-center m-2 gap-1">
+										<X className="h-full" />
+										<div className="min-w-max h-full">Can&apos;t go</div>
+									</div>
+								</Button>
+							</div>}
+					</>
+				}
 
 			</CardContent>
 			<CardContent className="flex flex-col gap-4 p-6">

@@ -22,7 +22,6 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	const localRsvp: EventRsvp = eventData.rsvps.find(r => r.userId === localUser.id) ?? {} as EventRsvp;
 	const otherRsvps: Array<EventRsvp> = eventData.rsvps.filter(r => r.userId !== localUser.id)
 	const isHost = eventData.userId === localUser.id;
-	console.log(isHost)
 
 	otherRsvps.sort((a, b) => {
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
@@ -32,15 +31,17 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 
 	return (
 		<div className={styles.wrapper}>
+
 			<ScrollableContainer isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps}>
 				{otherRsvps.map((value, index: number) => {
 					return <div key={index} className={styles.staticRow}>{
 						value.schedules.map((schedule) => {
-							return <StaticTimeCard key={schedule.id} schedule={schedule} user={value.user} />
+							return <StaticTimeCard key={schedule.id} schedule={schedule} />
 						})
 					}</div>
 				})}
 			</ScrollableContainer>
+
 
 			<EventDetails event={eventData} localUser={localUser} />
 		</div>

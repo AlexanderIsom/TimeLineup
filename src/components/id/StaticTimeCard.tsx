@@ -1,14 +1,12 @@
 import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
 import { Schedule } from "../events/ClientCardContainer";
-import { Profile } from "@/db/schema";
 
 interface Props {
 	schedule: Schedule;
-	user: Profile;
 }
 
-export default function StaticTimeCard({ schedule, user }: Props) {
+export default function StaticTimeCard({ schedule }: Props) {
 	return (
 		<div
 			style={{ width: `${Timeline.minutesToXPosition(schedule.duration)}px`, translate: `${Timeline.minutesToXPosition(schedule.start)}px` }}
