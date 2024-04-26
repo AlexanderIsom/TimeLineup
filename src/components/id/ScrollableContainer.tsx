@@ -4,8 +4,8 @@
 import styles from "./ScrollableContainer.module.scss";
 import { Button } from "../ui/button";
 import TimelineNumbers from "../id/TimelineNumber";
-import ClientCardContainer, { Schedule } from "../events/ClientCardContainer";
-import { Event } from "@/db/schema";
+import ClientCardContainer, { TimeSegment } from "../events/ClientCardContainer";
+import { Event, Schedule } from "@/db/schema";
 import React, { useEffect, useRef, useState } from "react";
 import { saveRsvp } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
+import { addMinutes, differenceInMinutes } from "date-fns";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -24,11 +25,19 @@ interface Props {
 }
 
 export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, isHost, children }: Props) {
-	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])// convert from time to minutes here
+	const [scheduleState, setScheduleState] = useState<TimeSegment[]>(() => {
+		if (isHost) return [];
+		const newSchedule: Array<TimeSegment> = [];
+		localRSVP.schedules.forEach((schedule) => {
+			const start = differenceInMinutes(schedule.start, eventData.start)
+			newSchedule.push({ id: schedule.id, start: start, duration: schedule.duration })
+		})
+		return newSchedule
+	})
 
 	const router = useRouter();
 
-	const updateScheduleState = (newSchedule: Schedule[]) => {
+	const updateScheduleState = (newSchedule: TimeSegment[]) => {
 		setScheduleState(newSchedule);
 	}
 
@@ -37,25 +46,26 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 	const timeDiv = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
+		const div = contentDiv.current;
 		const handleScroll = () => {
-			if (contentDiv.current) {
+			if (div) {
 
 				if (userDiv.current) {
-					userDiv.current.scrollTop = contentDiv.current.scrollTop
+					userDiv.current.scrollTop = div.scrollTop
 				}
 				if (timeDiv.current) {
-					timeDiv.current.scrollLeft = contentDiv.current.scrollLeft
+					timeDiv.current.scrollLeft = div.scrollLeft
 				}
 			}
 		}
 
-		if (contentDiv.current) {
-			contentDiv.current.addEventListener('scroll', handleScroll);
+		if (div) {
+			div.addEventListener('scroll', handleScroll);
 		}
 
 		return () => {
-			if (contentDiv.current) {
-				contentDiv.current.removeEventListener('scroll', handleScroll);
+			if (div) {
+				div.removeEventListener('scroll', handleScroll);
 			}
 		};
 	}, [])
@@ -68,8 +78,12 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 
 				{eventData.end > new Date() &&
 					<Button onClick={() => {
-						// convert minutes back to schedule here
-						saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
+						const scheules: Array<Schedule> = [];
+						scheduleState.forEach(segment => {
+							const startTime = addMinutes(eventData.start, segment.start)
+							scheules.push({ id: segment.id, start: startTime, duration: segment.duration })
+						});
+						saveRsvp({ eventId: eventData.id, schedules: scheules, status: "attending", id: localRSVP?.id, userId: "" })
 						router.refresh();
 					}}>Save</Button>}
 			</div>

@@ -6,11 +6,11 @@ import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
 import MathUtils from "@/utils/MathUtils";
 import "@/styles/Components/Resizable.css"
-import { Schedule } from "../events/ClientCardContainer";
+import { TimeSegment } from "../events/ClientCardContainer";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
 
 interface Props {
-	schedule: Schedule;
+	schedule: TimeSegment;
 	handleUpdate: (id: string, startTime: number, duration: number) => void;
 	handleDelete: (id: string) => void;
 }

@@ -363,7 +363,7 @@ export default function UpdateEventDialog({ event }: Props) {
 						<div className="flex justify-end gap-2">
 							<Button type="button" variant={"ghost"} onClick={() => {
 								prev()
-							}}>Back</Button>
+							}} className={`${currentStep === 0 && "hidden"}`}>Back</Button>
 
 							<Button type="button" onClick={() => {
 								next()

@@ -7,31 +7,31 @@ import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
 import styles from "./clientCardContainer.module.scss"
 
-export interface Schedule {
+export interface TimeSegment {
 	id: string
 	start: number
 	duration: number
 }
 
 interface Props {
-	schedules: Array<Schedule>
-	updateState: (newSchedule: Schedule[]) => void;
+	schedules: Array<TimeSegment>
+	updateState: (newSchedule: TimeSegment[]) => void;
 }
 
 export default function ClientCardContainer(props: Props) {
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
-	function handleCreate(start: number, duration: number, table: Schedule[]): Schedule[] {
+	function handleCreate(start: number, duration: number, table: TimeSegment[]): TimeSegment[] {
 		const newSchedule = Array.from(table);
 		newSchedule.push({ start: start, duration: duration, id: nanoid() })
 		return newSchedule;
 	}
 
-	function deleteIdFromTable(idToDelete: string, table: Schedule[]): Schedule[] {
+	function deleteIdFromTable(idToDelete: string, table: TimeSegment[]): TimeSegment[] {
 		return table.filter(r => r.id !== idToDelete);
 	}
 
-	function findOverlappingResponses(table: Array<Schedule>, startTime: number, duration: number): Array<Schedule> {
+	function findOverlappingResponses(table: Array<TimeSegment>, startTime: number, duration: number): Array<TimeSegment> {
 		const overlappingResponses = table.filter(item => {
 			const startIsWithin = MathUtils.isBetween(item.start, startTime, startTime + duration)
 			const endIsWithin = MathUtils.isBetween(item.start + item.duration, startTime, startTime + duration)
@@ -97,7 +97,7 @@ export default function ClientCardContainer(props: Props) {
 
 	return (
 		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
-			{props.schedules.map((schedule: Schedule) => {
+			{props.schedules.map((schedule: TimeSegment) => {
 				return <ResizableTimeCard
 					key={schedule.id}
 					schedule={schedule}

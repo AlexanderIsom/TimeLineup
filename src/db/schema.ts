@@ -1,3 +1,4 @@
+import { WithoutArray } from '@/utils/TypeUtils';
 import { relations } from 'drizzle-orm';
 import {
 	pgTable,
@@ -31,7 +32,7 @@ export const rsvps = pgTable('rsvp', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
 	userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
 	eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: "cascade" }),
-	schedules: json("schedules").$type<{ id: string, start: number, duration: number }[]>().default([]).notNull(),
+	schedules: json("schedules").$type<{ id: string, start: Date, duration: number }[]>().default([]).notNull(),
 	status: rsvpStatus("status").default("pending").notNull(),
 });
 
@@ -108,3 +109,5 @@ export type RsvpStatus = typeof rsvpStatus.enumValues[number];
 
 export type Profile = typeof profiles.$inferSelect;
 export type Friendship = typeof friendships.$inferSelect;
+
+export type Schedule = WithoutArray<Rsvp["schedules"]>

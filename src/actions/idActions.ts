@@ -1,5 +1,5 @@
 'use server'
-import { Schedule } from "@/components/events/ClientCardContainer";
+import { TimeSegment } from "@/components/events/ClientCardContainer";
 import { db } from "@/db";
 import { InsertRsvp, RsvpStatus, rsvpStatus, rsvps } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
