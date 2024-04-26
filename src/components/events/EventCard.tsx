@@ -23,11 +23,11 @@ export default function EventCard({ title, description, events }: Props) {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-1 p-6 overflow-hidden">
 				{events?.map((event, index) => {
-					return <div key={event.id}>
+					return <div key={event.id} className="flex flex-col gap-1">
 						{index > 0 && <Separator />}
 						<button key={event.id} className="group flex hover:bg-gray-100 px-4 py-2 rounded-md" onClick={() => {
 							router.push(`/events/${event.id}`)
-						}}>
+						}} disabled={event.end < new Date()}>
 							<div className="flex gap-2 items-center h-12">
 								<div className="flex items-center gap-2 w-40">
 									<Avatar>
@@ -42,7 +42,7 @@ export default function EventCard({ title, description, events }: Props) {
 									<span className="text-sm">Date: {formatDateRange(event.start, event.end)}</span>
 								</div>
 								<Separator orientation="vertical" className="group-hover:bg-gray-300" />
-								<span>{event.status}</span>
+								<span>{event.end < new Date() ? "Ended" : event.status}</span>
 							</div>
 						</button>
 					</div>

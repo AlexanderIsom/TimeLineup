@@ -14,7 +14,6 @@ import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
-import StaticTimeCard from "./StaticTimeCard";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -25,7 +24,7 @@ interface Props {
 }
 
 export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, isHost, children }: Props) {
-	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])
+	const [scheduleState, setScheduleState] = useState<Schedule[]>(localRSVP?.schedules ?? [])// convert from time to minutes here
 
 	const router = useRouter();
 
@@ -69,6 +68,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 
 				{eventData.end > new Date() &&
 					<Button onClick={() => {
+						// convert minutes back to schedule here
 						saveRsvp({ eventId: eventData.id, schedules: scheduleState, status: "attending", id: localRSVP?.id, userId: "" })
 						router.refresh();
 					}}>Save</Button>}
@@ -105,14 +105,9 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
-					{!isHost && (eventData.end > new Date() ?
-						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} /> :
-						<div className={styles.staticRow}>{
-							scheduleState.map((schedule) => {
-								return <StaticTimeCard key={schedule.id} schedule={schedule} />
-							})
-						}</div>
-					)}
+					{!isHost &&
+						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
+					}
 					{children}
 				</div>
 			</div>
