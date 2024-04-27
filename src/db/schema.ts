@@ -50,7 +50,8 @@ export const rsvpRelations = relations(rsvps, ({ one, many }) => ({
 export const timeSegments = pgTable('time_segment', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
 	userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
-	rsvpId: uuid('rsvp_id').notNull().references(() => events.id, { onDelete: "cascade" }),
+	rsvpId: uuid('rsvp_id').notNull().references(() => rsvps.id, { onDelete: "cascade" }),
+	eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: "cascade" }),
 	start: timestamp('start', { mode: 'date' }).notNull(),
 	end: timestamp('end', { mode: 'date' }).notNull(),
 })

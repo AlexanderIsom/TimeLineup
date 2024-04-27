@@ -35,7 +35,7 @@ export async function saveSegments(rsvpId: string, eventId: string, newSegments:
 		const inserts: Array<InsertSegment> = [];
 
 		newSegments.forEach(async (segment) => {
-			inserts.push({ userId: user.id, start: segment.start, end: segment.end, rsvpId: rsvpId })
+			inserts.push({ userId: user.id, start: segment.start, end: segment.end, rsvpId: rsvpId, eventId: eventId })
 		})
 		await db.insert(timeSegments).values(inserts);
 	}

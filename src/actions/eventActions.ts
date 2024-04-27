@@ -1,9 +1,10 @@
 'use server'
 import { db } from "@/db";
-import { Event, InsertEvent, InsertNotification, InsertRsvp, Profile, events, notifications, rsvps } from "@/db/schema";
-import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
+import { InsertEvent, InsertNotification, InsertRsvp, Profile, events, notifications, rsvps, timeSegments } from "@/db/schema";
+import { NotUndefined } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
-import { and, eq, or } from "drizzle-orm";
+import { isWithinInterval } from "date-fns";
+import { and, eq, inArray, or } from "drizzle-orm";
 
 export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Profile>) {
 	const supabase = createClient()
@@ -68,6 +69,22 @@ export async function UpdateEvent(eventData: NotUndefined<EventDataQuery>, invit
 		await db.delete(rsvps).where(eq(rsvps.id, rsvp.id));
 	})
 
+	const segments = await db.query.timeSegments.findMany({
+		where: eq(timeSegments.eventId, eventData.id)
+	})
+
+	const segmentIdToDelete: Array<string> = [];
+
+	segments.forEach((segment) => {
+		if (!isWithinInterval(segment.start, {
+			start: eventData.start, end: eventData.end
+		}) || !isWithinInterval(segment.end, {
+			start: eventData.start, end: eventData.end
+		})) {
+			segmentIdToDelete.push(segment.id)
+		}
+	})
+
 	newInvitees.forEach(user => {
 		notificationsToCreate.push({
 			type: "event",
@@ -82,6 +99,10 @@ export async function UpdateEvent(eventData: NotUndefined<EventDataQuery>, invit
 			userId: user.id,
 		})
 	});
+
+	if (segmentIdToDelete.length > 0) {
+		await db.delete(timeSegments).where(inArray(timeSegments.id, segmentIdToDelete))
+	}
 
 	if (notificationsToCreate.length > 0) {
 		await db.insert(notifications).values(notificationsToCreate);
