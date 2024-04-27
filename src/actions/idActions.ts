@@ -1,12 +1,12 @@
 'use server'
-import { TimeSegment } from "@/components/events/ClientCardContainer";
 import { db } from "@/db";
-import { InsertRsvp, RsvpStatus, rsvpStatus, rsvps } from "@/db/schema";
+import { InsertSegment, RsvpStatus, rsvps, timeSegments } from "@/db/schema";
+import { TimeSegment } from "@/store/Segments";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function saveRsvp(rsvp: InsertRsvp) {
+export async function saveSegments(rsvpId: string, eventId: string, newSegments: Array<TimeSegment>, deletedSegments: Array<string>, updatedSegments: Array<TimeSegment>) {
 	const supabase = createClient()
 
 	const { data, error } = await supabase.auth.getUser()
@@ -17,9 +17,30 @@ export async function saveRsvp(rsvp: InsertRsvp) {
 
 	if (!user) return;
 
-	rsvp.userId = user.id
+	updateRsvpStatus(eventId, "attending");
 
-	await db.insert(rsvps).values(rsvp).onConflictDoUpdate({ target: rsvps.id, set: { schedules: rsvp.schedules, status: rsvp.status } }).execute();
+	if (updatedSegments.length > 0) {
+		updatedSegments.forEach(async (segment) => {
+			await db.update(timeSegments).set({ start: segment.start, end: segment.end }).where(and(eq(timeSegments.id, segment.id), eq(timeSegments.userId, user.id)))
+		})
+	}
+
+	if (deletedSegments.length > 0) {
+		deletedSegments.forEach(async (id) => {
+			await db.delete(timeSegments).where(and(eq(timeSegments.id, id), eq(timeSegments.userId, user.id)))
+		})
+	}
+
+	if (newSegments.length > 0) {
+		const inserts: Array<InsertSegment> = [];
+
+		newSegments.forEach(async (segment) => {
+			inserts.push({ userId: user.id, start: segment.start, end: segment.end, rsvpId: rsvpId })
+		})
+		await db.insert(timeSegments).values(inserts);
+	}
+
+	revalidatePath('/');
 }
 
 export async function updateRsvpStatus(eventId: string, status: RsvpStatus) {

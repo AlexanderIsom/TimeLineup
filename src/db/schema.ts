@@ -32,11 +32,10 @@ export const rsvps = pgTable('rsvp', {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
 	userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
 	eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: "cascade" }),
-	schedules: json("schedules").$type<{ id: string, start: Date, duration: number }[]>().default([]).notNull(),
 	status: rsvpStatus("status").default("pending").notNull(),
 });
 
-export const rsvpRelations = relations(rsvps, ({ one }) => ({
+export const rsvpRelations = relations(rsvps, ({ one, many }) => ({
 	event: one(events, {
 		fields: [rsvps.eventId],
 		references: [events.id]
@@ -44,6 +43,22 @@ export const rsvpRelations = relations(rsvps, ({ one }) => ({
 	user: one(profiles, {
 		fields: [rsvps.userId],
 		references: [profiles.id]
+	}),
+	segments: many(timeSegments)
+}))
+
+export const timeSegments = pgTable('time_segment', {
+	id: uuid("id").defaultRandom().primaryKey().notNull(),
+	userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+	rsvpId: uuid('rsvp_id').notNull().references(() => events.id, { onDelete: "cascade" }),
+	start: timestamp('start', { mode: 'date' }).notNull(),
+	end: timestamp('end', { mode: 'date' }).notNull(),
+})
+
+export const timeSegmentRelations = relations(timeSegments, ({ one }) => ({
+	rsvp: one(rsvps, {
+		fields: [timeSegments.rsvpId],
+		references: [rsvps.id],
 	})
 }))
 
@@ -110,4 +125,5 @@ export type RsvpStatus = typeof rsvpStatus.enumValues[number];
 export type Profile = typeof profiles.$inferSelect;
 export type Friendship = typeof friendships.$inferSelect;
 
-export type Schedule = WithoutArray<Rsvp["schedules"]>
+export type Segment = typeof timeSegments.$inferSelect;
+export type InsertSegment = typeof timeSegments.$inferInsert;

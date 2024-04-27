@@ -1,93 +1,106 @@
 'use client'
+import "@/styles/Components/Resizable.css"
+
 import React, { SyntheticEvent, useState } from "react";
-import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
+import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
-import MathUtils from "@/utils/MathUtils";
-import "@/styles/Components/Resizable.css"
-import { TimeSegment } from "../events/ClientCardContainer";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
+import { TimeSegment, useSegmentStore } from "@/store/Segments";
+import { differenceInMinutes, format, } from "date-fns";
 
 interface Props {
-	schedule: TimeSegment;
-	handleUpdate: (id: string, startTime: number, duration: number) => void;
-	handleDelete: (id: string) => void;
+	segment: TimeSegment;
+	handleUpdate: (segment: TimeSegment) => void;
 }
 
 export default function ResizableTimeCard(props: Props) {
+	const store = useSegmentStore((state) => state);
+	const nodeRef = React.useRef(null);
 	const [state, setState] = useState({
-		duration: props.schedule.duration,
-		start: props.schedule.start,
-		width: Timeline.minutesToXPosition(props.schedule.duration),
+		x: Timeline.dateToX(props.segment.start),
+		width: Timeline.minutesToX(differenceInMinutes(props.segment.end, props.segment.start)),
 	});
 
-	const minWidth = Timeline.minutesToXPosition(30);
+	const [timeSpan, setTimeSpan] = useState({
+		start: props.segment.start,
+		end: props.segment.end
+	})
+
+	const minWidth = Timeline.minutesToX(30);
 	const bounds = Timeline.getBounds();
 
 	const onResize = (e: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
-		setState((state) => {
-			let newX = state.start;
-			let newWidth = size.width;
-			const deltaWidth = state.width - size.width;
-			if (handle === "w") {
-				newX = state.start + Timeline.xPositionToMinutes(deltaWidth)
-				if (Timeline.minutesToXPosition(newX) < bounds.min) {
-					return state
-				}
+		let newX = state.x;
+		let newWidth = size.width;
+		const deltaWidth = state.width - newWidth;
+
+		if (handle === "w") {
+			newX = state.x + deltaWidth
+		}
+		const startDate = Timeline.XToDate(Timeline.snapXToNearestMinutes(newX))
+		const endDate = Timeline.XToDate(Timeline.snapXToNearestMinutes(newX + newWidth))
+		setTimeSpan({ start: startDate, end: endDate })
+
+		setState((currentState) => {
+			if (Timeline.minutesToX(newX) < bounds.min) {
+				return currentState
 			}
-			if (size.width < minWidth || Timeline.minutesToXPosition(newX) + newWidth > bounds.max) {
-				return state;
+
+			if (size.width < minWidth || newX + newWidth > bounds.max) {
+				return currentState;
 			}
-			return { duration: Timeline.xPositionToMinutes(newWidth), start: newX, width: newWidth };
-		});
+			return { x: newX, width: newWidth };
+		})
 	};
 
-	const moveAndResizeToNearestMinutes = () => {
-		const offsetFromStart = MathUtils.roundToNearest(state.start, Timeline.getSnapToNearestMinutes());
-		const newEnd = MathUtils.roundToNearest(state.start + state.duration, Timeline.getSnapToNearestMinutes());
-		const duration = newEnd - offsetFromStart;
-		const width = Timeline.minutesToXPosition(duration);
-
-		setState(() => {
-			return { start: offsetFromStart, duration: duration, width: width };
-		});
-		props.handleUpdate(props.schedule.id, offsetFromStart, duration);
-	};
-
-	const onResizeStop = (e: SyntheticEvent | MouseEvent) => {
-		moveAndResizeToNearestMinutes();
-	};
-
-	const onDrag = (e: DraggableEvent, ui: DraggableData) => {
-		setState({ start: Timeline.xPositionToMinutes(ui.x), duration: state.duration, width: state.width });
-	};
-
-	const onDragStopped = (e: DraggableEvent, ui: DraggableData) => {
-		moveAndResizeToNearestMinutes();
-	};
+	const handleUpdate = () => {
+		props.handleUpdate({ id: props.segment.id, start: timeSpan.start, end: timeSpan.end })
+	}
 
 	return (
 		<ContextMenu>
 			<Draggable
 				axis="x"
-				position={{ x: Timeline.minutesToXPosition(state.start), y: 0 }}
+				position={{ x: state.x, y: 0 }}
 				handle=".dragHandle"
-				onDrag={onDrag}
-				onStop={onDragStopped}
+				onDrag={(e, data) => {
+					const newX = Timeline.snapXToNearestMinutes(data.x)
+					const startDate = Timeline.XToDate(newX)
+					const endDate = Timeline.XToDate(newX + state.width)
+					setTimeSpan({ start: startDate, end: endDate })
+				}}
+				onStop={(e, data) => {
+					setState({ ...state, x: Timeline.snapXToNearestMinutes(data.x) })
+					handleUpdate();
+				}}
 				bounds={{ left: bounds.min, right: bounds.max - state.width }}
+				nodeRef={nodeRef}
 			>
 				<ContextMenuTrigger asChild>
 					<div
+						ref={nodeRef}
 						className={styles.container}
-						style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}
+						style={{ width: `${state.width}px` }}
 					>
-						<Resizable className={styles.container} width={Timeline.minutesToXPosition(state.duration)} height={0} resizeHandles={["e", "w"]} onResize={onResize} onResizeStop={onResizeStop}>
-							<div style={{ width: `${Timeline.minutesToXPosition(state.duration)}px` }}>
+						<Resizable
+							className={styles.container}
+							width={state.width}
+							height={0}
+							resizeHandles={["e", "w"]}
+							onResize={onResize}
+							onResizeStop={(e, data) => {
+								const newX = Timeline.snapXToNearestMinutes(state.x);
+								const newW = Timeline.snapXToNearestMinutes(state.x + data.size.width) - newX;
+								setState({ ...state, x: newX, width: newW })
+								handleUpdate();
+							}}>
+							<div style={{ width: `${state.width}px` }}>
 								<div className={`dragHandle ${styles.timeContainer} ${"hover:cursor-grab active:cursor-grabbing"}`}>
-									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{Timeline.formatMinutes(state.start)}</span>
+									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{format(timeSpan.start, "HH:mm")}</span>
 									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>
-										{Timeline.formatMinutes(state.start + state.duration)}
+										{format(timeSpan.end, "HH:mm")}
 									</span>
 								</div>
 							</div>
@@ -98,11 +111,11 @@ export default function ResizableTimeCard(props: Props) {
 
 			<ContextMenuContent>
 				<ContextMenuItem onSelect={() => {
-					props.handleDelete(props.schedule.id);
+					store.deleteSegment(props.segment.id)
 				}}>Delete</ContextMenuItem>
 				<ContextMenuItem>Cancel</ContextMenuItem>
 			</ContextMenuContent>
-		</ContextMenu>
+		</ContextMenu >
 
 	);
 }

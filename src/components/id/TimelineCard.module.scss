@@ -11,14 +11,11 @@
 .timeContainer {
 	display: flex;
 	position: absolute;
-	height: auto;
-	top: 0;
-	bottom: 0;
+	height: Variables.$cardHeight;
 
 	background: #e4e4e4;
 	border-radius: 5px;
 	width: 100%;
-	justify-content: center;
 	align-items: center;
 	justify-content: space-between;
 	overflow: hidden;

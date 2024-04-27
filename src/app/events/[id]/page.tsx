@@ -34,14 +34,12 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 			<ScrollableContainer isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps}>
 				{otherRsvps.map((value, index: number) => {
 					return <div key={index} className={styles.staticRow}>{
-						value.schedules.map((schedule) => {
-							return <StaticTimeCard key={schedule.id} schedule={schedule} eventStartDate={eventData.start} />
+						value.segments.map((schedule) => {
+							return <StaticTimeCard key={schedule.id} schedule={schedule} />
 						})
 					}</div>
 				})}
 			</ScrollableContainer>
-
-
 			<EventDetails event={eventData} localUser={localUser} />
 		</div>
 	)

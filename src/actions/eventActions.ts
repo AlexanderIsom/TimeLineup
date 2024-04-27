@@ -142,7 +142,7 @@ export async function GetEventData(eventId: string) {
 			event: {
 				with: {
 					rsvps: {
-						with: { user: true }
+						with: { user: true, segments: true }
 					},
 					host: true,
 				}
@@ -160,7 +160,7 @@ export async function GetEventData(eventId: string) {
 		where: and(eq(events.userId, data.user.id), eq(events.id, eventId)),
 		with: {
 			rsvps: {
-				with: { user: true }
+				with: { user: true, segments: true }
 			},
 			host: true,
 		}

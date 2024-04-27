@@ -1,20 +1,19 @@
-
 "use client"
 
 import styles from "./ScrollableContainer.module.scss";
 import { Button } from "../ui/button";
 import TimelineNumbers from "../id/TimelineNumber";
-import ClientCardContainer, { TimeSegment } from "../events/ClientCardContainer";
-import { Event, Schedule } from "@/db/schema";
-import React, { useEffect, useRef, useState } from "react";
-import { saveRsvp } from "@/actions/idActions"
+import ClientCardContainer from "../events/ClientCardContainer";
+import { Event } from "@/db/schema";
+import React, { useEffect, useMemo, useRef } from "react";
+import { saveSegments } from "@/actions/idActions"
 import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
 import Timeline from "@/utils/Timeline";
 import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
-import { addMinutes, differenceInMinutes } from "date-fns";
+import { useSegmentStore } from "@/store/Segments";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -25,21 +24,13 @@ interface Props {
 }
 
 export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, isHost, children }: Props) {
-	const [scheduleState, setScheduleState] = useState<TimeSegment[]>(() => {
-		if (isHost) return [];
-		const newSchedule: Array<TimeSegment> = [];
-		localRSVP.schedules.forEach((schedule) => {
-			const start = differenceInMinutes(schedule.start, eventData.start)
-			newSchedule.push({ id: schedule.id, start: start, duration: schedule.duration })
-		})
-		return newSchedule
-	})
-
-	const router = useRouter();
-
-	const updateScheduleState = (newSchedule: TimeSegment[]) => {
-		setScheduleState(newSchedule);
-	}
+	const segmentStore = useSegmentStore((state) => state);
+	const setSegmentStore = useSegmentStore((state) => state.setSegments)
+	useMemo(() => {
+		if (!isHost) {
+			setSegmentStore(localRSVP.segments.map(({ id, start, end }) => ({ id, start, end })));
+		}
+	}, [localRSVP, isHost, setSegmentStore])
 
 	const userDiv = useRef<HTMLDivElement>(null);
 	const contentDiv = useRef<HTMLDivElement>(null);
@@ -77,14 +68,8 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 			<div className={`${styles.tools} `}>
 
 				{eventData.end > new Date() &&
-					<Button onClick={() => {
-						const scheules: Array<Schedule> = [];
-						scheduleState.forEach(segment => {
-							const startTime = addMinutes(eventData.start, segment.start)
-							scheules.push({ id: segment.id, start: startTime, duration: segment.duration })
-						});
-						saveRsvp({ eventId: eventData.id, schedules: scheules, status: "attending", id: localRSVP?.id, userId: "" })
-						router.refresh();
+					<Button onClick={async () => {
+						await saveSegments(localRSVP.id, eventData.id, segmentStore.newSegments, segmentStore.deletedSegments, segmentStore.updatedSegments)
 					}}>Save</Button>}
 			</div>
 
@@ -93,7 +78,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 			<div className={`flex flex-col ${styles.users}`} ref={userDiv}>
 				{!isHost && <div className={`${styles.userItem}`}>
 					<Avatar>
-						<AvatarImage src={localRSVP?.user.avatarUrl!} />
+						<AvatarImage src={localRSVP?.user.avatarUrl ?? undefined} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
 					<div className={styles.userName}>{localRSVP?.user.username}</div>
@@ -116,11 +101,11 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				<div style={{
 					width: `${Timeline.getWidth()}px`,
 					backgroundSize: `${Timeline.cellWidth}px`
-				}} className={`${styles.gridBackground} `} >
+				}} className={`${styles.gridBackground}`} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
 					{!isHost &&
-						<ClientCardContainer schedules={scheduleState} updateState={updateScheduleState} />
+						<ClientCardContainer />
 					}
 					{children}
 				</div>

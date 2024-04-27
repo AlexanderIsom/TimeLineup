@@ -1,25 +1,23 @@
 import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
-import { Schedule } from "@/db/schema";
-import { differenceInMinutes } from "date-fns";
+import { Segment } from "@/db/schema";
+import { differenceInMinutes, format } from "date-fns";
 
 interface Props {
-	schedule: Schedule;
-	eventStartDate: Date
+	schedule: Segment;
 }
 
-export default function StaticTimeCard({ schedule, eventStartDate }: Props) {
-	const start = differenceInMinutes(schedule.start, eventStartDate)
-	console.log(start)
+export default function StaticTimeCard({ schedule }: Props) {
+	const duration = differenceInMinutes(schedule.end, schedule.start)
 
 	return (
 		<div
-			style={{ width: `${Timeline.minutesToXPosition(schedule.duration)}px`, translate: `${Timeline.minutesToXPosition(start)}px` }}
+			style={{ width: `${Timeline.minutesToX(duration)}px`, translate: `${Timeline.dateToX(schedule.start)}px` }}
 			className={`${styles.container}`}
 		>
 			<div className={styles.timeContainer}>
-				<span className={styles.timeCue}>{Timeline.formatMinutes(start)}</span>
-				<span className={styles.timeCue}>{Timeline.formatMinutes(start + schedule.duration)}</span>
+				<span className={styles.timeCue}>{format(schedule.start, "HH:mm")}</span>
+				<span className={styles.timeCue}>{format(schedule.end, "HH:mm")}</span>
 			</div>
 		</div>
 	);

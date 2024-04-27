@@ -3,72 +3,43 @@
 import { useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
 import { nanoid } from "nanoid"
-import MathUtils from "@/utils/MathUtils"
 import Timeline from "@/utils/Timeline"
 import styles from "./clientCardContainer.module.scss"
+import { useSegmentStore, TimeSegment } from "@/store/Segments"
+import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes } from "date-fns"
 
-export interface TimeSegment {
-	id: string
-	start: number
-	duration: number
-}
-
-interface Props {
-	schedules: Array<TimeSegment>
-	updateState: (newSchedule: TimeSegment[]) => void;
-}
-
-export default function ClientCardContainer(props: Props) {
+export default function ClientCardContainer() {
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
-	function handleCreate(start: number, duration: number, table: TimeSegment[]): TimeSegment[] {
-		const newSchedule = Array.from(table);
-		newSchedule.push({ start: start, duration: duration, id: nanoid() })
-		return newSchedule;
-	}
+	const segmentStore = useSegmentStore((state) => state)
 
-	function deleteIdFromTable(idToDelete: string, table: TimeSegment[]): TimeSegment[] {
-		return table.filter(r => r.id !== idToDelete);
-	}
-
-	function findOverlappingResponses(table: Array<TimeSegment>, startTime: number, duration: number): Array<TimeSegment> {
-		const overlappingResponses = table.filter(item => {
-			const startIsWithin = MathUtils.isBetween(item.start, startTime, startTime + duration)
-			const endIsWithin = MathUtils.isBetween(item.start + item.duration, startTime, startTime + duration)
-
-			const queryStartIsWithin = MathUtils.isBetween(startTime, item.start, item.start + item.duration)
-			const queryEndIsWithin = MathUtils.isBetween(startTime + duration, item.start, item.start + item.duration)
-
-			if (startIsWithin || endIsWithin || queryStartIsWithin || queryEndIsWithin) {
-				return true;
-			}
+	function removeOverlappingSegments(segment: TimeSegment) {
+		const overlaps = segmentStore.segments.filter(item => {
+			if (item.id === segment.id) return false;
+			return areIntervalsOverlapping({ start: segment.start, end: segment.end }, { start: item.start, end: item.end })
 		});
-		return overlappingResponses;
-	}
-
-	function handleUpdate(id: string, startTime: number, duration: number) {
-		let otherResponses = props.schedules.filter((s) => {
-			return s.id !== id
-		});
-
-		const overlaps = findOverlappingResponses(otherResponses, startTime, duration);
 
 		if (overlaps.length > 0) {
-			const startTimes = overlaps.map(e => e.start)
-			const endTimes = overlaps.map(e => e.start + e.duration)
-			startTimes.push(startTime);
-			endTimes.push(startTime + duration)
-			const start = Math.min(...startTimes)
-			const end = Math.max(...endTimes)
+			const largest = max([...overlaps.map(o => o.end), segment.end])
+			const smallest = min([...overlaps.map(o => o.start), segment.start])
+			const deletes = [...overlaps.map(o => o.id), segment.id]
 
-			overlaps.forEach(event => {
-				otherResponses = deleteIdFromTable(event.id, otherResponses);
+			deletes.forEach((overlapId) => {
+				segmentStore.deleteSegment(overlapId);
 			});
-			otherResponses = handleCreate(start, end - start, otherResponses)
-		} else {
-			otherResponses.push({ id: id, start: startTime, duration: duration })
+			segmentStore.addSegment({ id: nanoid(), start: smallest, end: largest })
+			return true;
 		}
-		props.updateState(otherResponses);
+
+		return false;
+	}
+
+	function handleUpdate(segment: TimeSegment) {
+		const foundOverlaps = removeOverlappingSegments(segment);
+
+		if (!foundOverlaps) {
+			segmentStore.updateSegment(segment)
+		}
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
@@ -76,33 +47,28 @@ export default function ClientCardContainer(props: Props) {
 		var rectBounds = timelineContainerRef.current!.getBoundingClientRect();
 		var timelineBounds = Timeline.getBounds();
 		let start = Math.max(e.clientX - rectBounds.left, timelineBounds.min)
-		const durationInX = Timeline.minutesToXPosition(duration);
+		const durationInX = Timeline.minutesToX(duration);
 		if (start + durationInX > timelineBounds.max) {
 			start = timelineBounds.max - durationInX;
 		}
-		const startMinutes = MathUtils.roundToNearest(Timeline.xPositionToMinutes(start), 5)
 
-		const overlaps = findOverlappingResponses(props.schedules, startMinutes, duration);
+		const startDate = roundToNearestMinutes(Timeline.XToDate(start), { nearestTo: 5 })
+		const endDate = addMinutes(startDate, duration);
 
-		if (overlaps.length === 0) {
-			const newSchedule = handleCreate(startMinutes, duration, props.schedules)
-			props.updateState(newSchedule);
+		const newSegment: TimeSegment = { id: nanoid(), start: startDate, end: endDate };
+		const foundOverlaps = removeOverlappingSegments(newSegment);
+		if (!foundOverlaps) {
+			segmentStore.addSegment(newSegment);
 		}
 	}
 
-	function handleDelete(id: string) {
-		const newSchedule = deleteIdFromTable(id, props.schedules)
-		props.updateState(newSchedule);
-	}
-
 	return (
-		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
-			{props.schedules.map((schedule: TimeSegment) => {
+		<div className={`${styles.container} bounds`} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
-					key={schedule.id}
-					schedule={schedule}
+					key={segment.id}
+					segment={segment}
 					handleUpdate={handleUpdate}
-					handleDelete={handleDelete}
 				/>
 			})}
 		</div>
