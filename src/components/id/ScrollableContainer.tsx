@@ -40,7 +40,6 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 		const div = contentDiv.current;
 		const handleScroll = () => {
 			if (div) {
-
 				if (userDiv.current) {
 					userDiv.current.scrollTop = div.scrollTop
 				}
@@ -51,6 +50,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 		}
 
 		if (div) {
+			Timeline.setMinWidth(div.clientWidth)
 			div.addEventListener('scroll', handleScroll);
 		}
 
@@ -97,11 +97,11 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				})}
 			</div>
 
-			<div className={styles.content} ref={contentDiv}>
+			<div className={`${styles.content}`} ref={contentDiv}>
 				<div style={{
 					width: `${Timeline.getWidth()}px`,
 					backgroundSize: `${Timeline.cellWidth}px`
-				}} className={`${styles.gridBackground}`} >
+				}} className={`${styles.gridBackground} `} >
 					<Blocker side={Side.left} width={Timeline.getPadding().left} />
 					<Blocker side={Side.right} width={Timeline.getPadding().right} />
 					{!isHost &&

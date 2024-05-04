@@ -1,21 +1,15 @@
 "use client"
 import styles from "./EventDetails.module.scss";
 import { formatDateRange } from "@/utils/dateUtils"
-import { AgendaItem, EventData } from "@/lib/types/Events"
 import React, { useMemo, useState } from "react";
-import { addMinutes, format } from "date-fns";
-import Image from "next/image"
-import { Profile, RsvpStatus, rsvpStatus } from "@/db/schema";
-import { Separator } from "../ui/separator";
+import { Profile, RsvpStatus } from "@/db/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { EventWithRsvpAndUser } from "@/db/schemaTypes";
-import { CalendarRange, Check, CircleHelp, Cross, User, X } from "lucide-react";
+import { Check, CircleHelp, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { EventDataQuery } from "@/actions/eventActions";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { Button } from "../ui/button";
-import { createClient } from "@/utils/supabase/client";
 import UpdateEventDialog from "../events/newEventForm/updateEventDialog";
 import { updateRsvpStatus } from "@/actions/idActions";
 
@@ -40,8 +34,11 @@ export default function EventDetails({ event, localUser }: Props) {
 	const isHost = event.userId === localUser.id
 	const [localRsvp, setLocalRsvp] = useState(event.rsvps.find(r => r.userId === localUser.id))
 
-	const updateStatus = async (state: RsvpStatus) => {
-		await updateRsvpStatus(event.id, state);
+	const updateStatus = async (rsvpStatus: RsvpStatus) => {
+		setLocalRsvp((state) => {
+			return { ...state!, status: rsvpStatus }
+		})
+		await updateRsvpStatus(event.id, rsvpStatus);
 	}
 
 	return (
@@ -132,15 +129,12 @@ export default function EventDetails({ event, localUser }: Props) {
 					<TabsList className={"w-full"}>
 						<TabsTrigger className={"w-full"} value="attending">
 							Attending
-							{/* <small className={styles.attendingCount}>{attendingCount}</small> */}
 						</TabsTrigger>
 						<TabsTrigger className={"w-full"} value="invited">
 							Invited
-							{/* <small className={styles.inviteCount}>{invitedCount}</small> */}
 						</TabsTrigger>
 						<TabsTrigger className={"w-full"} value="declined">
 							Declined
-							{/* <small className={styles.declinedCount}>{declinedCount}</small> */}
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="attending">
