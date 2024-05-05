@@ -1,0 +1,166 @@
+// Event page styles
+@use "Variables.scss";
+
+$spacing: 60px;
+$strokeStyle: #DADCE0 1px solid;
+
+.wrapper {
+  display: grid;
+  height: 100%;
+  font-display: swap;
+  font-style: medium;
+  overflow: hidden;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.dateHeader {
+  display: flex;
+
+  .datePadding {
+    width: 66px
+  }
+
+  .dateGrid {
+    width: 100%;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+.weekGrid {
+  grid-row: 2;
+  height: min-content;
+  display: flex;
+
+  .weekContainer {
+    flex-grow: 1;
+    position: relative;
+    // background-color: red;
+
+    .rows {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .horizontalLine {
+        height: $spacing;
+        width: 100%;
+        border-bottom: $strokeStyle;
+      }
+    }
+
+    .columns {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 15px repeat(7, 1fr);
+    }
+  }
+
+  .time {
+    padding-right: 5px;
+    padding-top: 45px;
+    padding-bottom: 60px;
+
+    display: flex;
+    flex-direction: column;
+    gap: $spacing;
+
+    .timeText {
+      height: 0px
+    }
+  }
+}
+
+.scrollContainer {
+  overflow-y: scroll;
+}
+
+.pagenation {
+  display: flex;
+  font-weight: 600;
+  width: auto;
+  min-width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+  border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px;
+
+  &:hover {
+    background-color: darkgray;
+  }
+}
+
+.button {
+  @extend .pagenation;
+  outline: none;
+  border: none;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.weekHeader {
+  grid-row: 1;
+  display: flex;
+  margin: auto;
+}
+
+.dayText {
+  font-size: large;
+  font-weight: 500;
+}
+
+.dayNumber {
+  font-size: x-large;
+  font-weight: 600;
+}
+
+.dateContainer {
+  height: 75px;
+  display: flex;
+  border-bottom: $strokeStyle;
+
+  &.today {
+    background-color: rgba(194, 194, 194, 0.1);
+  }
+}
+
+.halfHeightBorder {
+  height: 50%;
+  border-right: $strokeStyle;
+  align-self: flex-end;
+}
+
+.date {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.next {
+  background-color: blue;
+}
+
+.previous {
+  background-color: red;
+}
+
+.eventCard {
+  grid-column: 2;
+}
+
+.eventList {
+  height: 100%;
+  border-left: #DADCE0 1px solid;
+}
