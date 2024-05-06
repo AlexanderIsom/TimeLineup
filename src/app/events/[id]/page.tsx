@@ -1,14 +1,11 @@
 import styles from "./id.module.scss"
 import React from "react";
-import StaticTimeCard from "@/components/id/StaticTimeCard";
 import assert from "assert";
-import ScrollableContainer from "@/components/id/ScrollableContainer";
 import EventDetails from "@/components/id/EventDetails";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/actions/profileActions";
 import { EventRsvp, GetEventData } from "@/actions/eventActions";
-import Timeline from "@/utils/Timeline";
-
+import Timeline from "@/components/id/Timeline"
 export default async function ViewEvent({ params }: { params: { id: string } }) {
 	const localUser = await getUserProfile()
 
@@ -27,19 +24,9 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "")
 	})
 
-	new Timeline(eventData.start, eventData.end, 5)
-
 	return (
 		<div className={styles.wrapper}>
-			<ScrollableContainer isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps}>
-				{otherRsvps.map((value, index: number) => {
-					return <div key={index} className={styles.staticRow}>{
-						value.segments.map((schedule) => {
-							return <StaticTimeCard key={schedule.id} schedule={schedule} />
-						})
-					}</div>
-				})}
-			</ScrollableContainer>
+			<Timeline isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps} />
 			<EventDetails event={eventData} localUser={localUser} />
 		</div>
 	)

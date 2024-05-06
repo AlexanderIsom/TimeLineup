@@ -4,114 +4,110 @@ import "@/styles/Components/Resizable.css"
 import React, { SyntheticEvent, useState } from "react";
 import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
-import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
 import { TimeSegment, useSegmentStore } from "@/store/Segments";
-import { differenceInMinutes, format, } from "date-fns";
+import { addMinutes, differenceInMinutes, format, roundToNearestMinutes } from "date-fns";
+import MathUtils from "@/utils/MathUtils";
 
 interface Props {
+	minuteWidth: number;
+	eventStartTime: Date;
+	eventEndTime: Date;
 	segment: TimeSegment;
 	handleUpdate: (segment: TimeSegment) => void;
 }
 
-export default function ResizableTimeCard(props: Props) {
+const snapToNearestXMinutes = 5;
+const minWidth = 30;
+
+export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEndTime, segment, handleUpdate }: Props) {
 	const store = useSegmentStore((state) => state);
 	const nodeRef = React.useRef(null);
-	const [state, setState] = useState({
-		x: Timeline.dateToX(props.segment.start),
-		width: Timeline.minutesToX(differenceInMinutes(props.segment.end, props.segment.start)),
-	});
-
-	const [timeSpan, setTimeSpan] = useState({
-		start: props.segment.start,
-		end: props.segment.end
-	})
-
-	const minWidth = Timeline.minutesToX(30);
-	const bounds = Timeline.getBounds();
+	const [times, setTimes] = useState({ start: segment.start, end: segment.end });
+	const [state, setState] = useState({ x: differenceInMinutes(segment.start, eventStartTime), width: differenceInMinutes(segment.end, segment.start) });
+	const maxBounds = differenceInMinutes(eventEndTime, eventStartTime);
 
 	const onResize = (e: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
 		let newX = state.x;
-		let newWidth = size.width;
-		const deltaWidth = state.width - newWidth;
+		let newWidth = size.width / minuteWidth;
+		let deltaWidth = (state.width - newWidth);
 
 		if (handle === "w") {
-			newX = state.x + deltaWidth
+			newX = (state.x + deltaWidth)
 		}
-		const startDate = Timeline.XToDate(Timeline.snapXToNearestMinutes(newX))
-		const endDate = Timeline.XToDate(Timeline.snapXToNearestMinutes(newX + newWidth))
-		setTimeSpan({ start: startDate, end: endDate })
+		if (newX < 0 || newX + newWidth > maxBounds) return
 
-		setState((currentState) => {
-			if (Timeline.minutesToX(newX) < bounds.min) {
-				return currentState
-			}
-
-			if (size.width < minWidth || newX + newWidth > bounds.max) {
-				return currentState;
-			}
-			return { x: newX, width: newWidth };
-		})
+		setState({ x: newX, width: newWidth })
+		updateTimes(newX, newX + newWidth)
 	};
 
-	const handleUpdate = () => {
-		props.handleUpdate({ id: props.segment.id, start: timeSpan.start, end: timeSpan.end })
+	const updateCard = () => {
+		handleUpdate({ id: segment.id, start: times.start, end: times.end })
+	}
+
+	const updateTimes = (x: number, w: number) => {
+		setTimes({ start: roundToNearestMinutes(addMinutes(eventStartTime, x), { nearestTo: 5 }), end: roundToNearestMinutes(addMinutes(eventStartTime, (w)), { nearestTo: 5 }) })
 	}
 
 	return (
 		<ContextMenu>
 			<Draggable
 				axis="x"
-				position={{ x: state.x, y: 0 }}
+				position={{ x: state.x * minuteWidth, y: 0 }}
 				handle=".dragHandle"
 				onDrag={(e, data) => {
-					const newX = Timeline.snapXToNearestMinutes(data.x)
-					const startDate = Timeline.XToDate(newX)
-					const endDate = Timeline.XToDate(newX + state.width)
-					setTimeSpan({ start: startDate, end: endDate })
+					const newX = data.x / minuteWidth
+					setState({ ...state, x: newX })
+					updateTimes(newX, newX + state.width)
 				}}
 				onStop={(e, data) => {
-					setState({ ...state, x: Timeline.snapXToNearestMinutes(data.x) })
-					handleUpdate();
+					const newX = MathUtils.roundToNearest(data.x, minuteWidth * snapToNearestXMinutes)
+					setState({ ...state, x: newX / minuteWidth })
+					updateCard();
 				}}
-				bounds={{ left: bounds.min, right: bounds.max - state.width }}
+				bounds={"parent"}
 				nodeRef={nodeRef}
 			>
 				<ContextMenuTrigger asChild>
 					<div
 						ref={nodeRef}
 						className={styles.container}
-						style={{ width: `${state.width}px` }}
+						style={{ width: state.width * minuteWidth + "px" }}
 					>
 						<Resizable
 							className={styles.container}
-							width={state.width}
+							width={state.width * minuteWidth}
 							height={0}
 							resizeHandles={["e", "w"]}
+							minConstraints={[minWidth * minuteWidth, 0]}
 							onResize={onResize}
-							onResizeStop={(e, data) => {
-								const newX = Timeline.snapXToNearestMinutes(state.x);
-								const newW = Timeline.snapXToNearestMinutes(state.x + data.size.width) - newX;
-								setState({ ...state, x: newX, width: newW })
-								handleUpdate();
-							}}>
-							<div style={{ width: `${state.width}px` }}>
-								<div className={`dragHandle ${styles.timeContainer} ${"hover:cursor-grab active:cursor-grabbing"}`}>
-									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{format(timeSpan.start, "HH:mm")}</span>
+							draggableOpts={{ bounds: "parent" }}
+							onResizeStop={(e, { size, handle }) => {
+								const newX = MathUtils.roundToNearest(state.x * minuteWidth, minuteWidth * snapToNearestXMinutes) / minuteWidth
+								const wDelta = state.x - newX;
+								const newWidth = MathUtils.roundToNearest((state.width + wDelta) * minuteWidth, minuteWidth * snapToNearestXMinutes) / minuteWidth
+								updateTimes(newX, newX + newWidth)
+								setState({ x: newX, width: newWidth })
+								updateCard();
+							}}
+						>
+							<div className={styles.timeContainer} style={{ width: state.width * minuteWidth + "px" }}>
+								<div className={`dragHandle ${"hover:cursor-grab active:cursor-grabbing"} flex justify-between`}>
+									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{format(times.start, "HH:mm")}</span>
 									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>
-										{format(timeSpan.end, "HH:mm")}
+										{format(times.end, "HH:mm")}
 									</span>
 								</div>
 							</div>
-						</Resizable>
-					</div>
+						</Resizable >
+					</div >
 				</ContextMenuTrigger>
-			</Draggable>
+			</Draggable >
 
 			<ContextMenuContent>
 				<ContextMenuItem onSelect={() => {
-					store.deleteSegment(props.segment.id)
+					store.deleteSegment(segment.id)
 				}}>Delete</ContextMenuItem>
 				<ContextMenuItem>Cancel</ContextMenuItem>
 			</ContextMenuContent>

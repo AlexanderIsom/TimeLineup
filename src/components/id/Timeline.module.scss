@@ -64,7 +64,8 @@
 .content {
 	grid-row: 2;
 	grid-column: 2;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: scroll;
 }
 
 .gridBackground {

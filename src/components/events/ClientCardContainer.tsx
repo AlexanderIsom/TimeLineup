@@ -3,12 +3,20 @@
 import { useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
 import { nanoid } from "nanoid"
-import Timeline from "@/utils/Timeline"
 import styles from "./clientCardContainer.module.scss"
 import { useSegmentStore, TimeSegment } from "@/store/Segments"
-import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes } from "date-fns"
+import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns"
 
-export default function ClientCardContainer() {
+
+interface Props {
+	minuteWidth: number
+	eventStartTime: Date
+	eventEndTime: Date
+}
+
+const newDuration = 60;
+
+export default function ClientCardContainer({ minuteWidth, eventStartTime, eventEndTime }: Props) {
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
 	const segmentStore = useSegmentStore((state) => state)
@@ -43,17 +51,9 @@ export default function ClientCardContainer() {
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
-		const duration = 60;
-		var rectBounds = timelineContainerRef.current!.getBoundingClientRect();
-		var timelineBounds = Timeline.getBounds();
-		let start = Math.max(e.clientX - rectBounds.left, timelineBounds.min)
-		const durationInX = Timeline.minutesToX(duration);
-		if (start + durationInX > timelineBounds.max) {
-			start = timelineBounds.max - durationInX;
-		}
-
-		const startDate = roundToNearestMinutes(Timeline.XToDate(start), { nearestTo: 5 })
-		const endDate = addMinutes(startDate, duration);
+		var x = e.clientX - timelineContainerRef.current!.getBoundingClientRect().left;
+		const startDate = min([max([roundToNearestMinutes(addMinutes(eventStartTime, x / minuteWidth), { nearestTo: 5 }), eventStartTime]), subMinutes(eventEndTime, newDuration)])
+		const endDate = addMinutes(startDate, newDuration);
 
 		const newSegment: TimeSegment = { id: nanoid(), start: startDate, end: endDate };
 		const foundOverlaps = removeOverlappingSegments(newSegment);
@@ -63,9 +63,12 @@ export default function ClientCardContainer() {
 	}
 
 	return (
-		<div className={`${styles.container} bounds`} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
+					minuteWidth={minuteWidth}
+					eventEndTime={eventEndTime}
+					eventStartTime={eventStartTime}
 					key={segment.id}
 					segment={segment}
 					handleUpdate={handleUpdate}

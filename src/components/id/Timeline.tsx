@@ -1,19 +1,18 @@
 "use client"
 
-import styles from "./ScrollableContainer.module.scss";
+import styles from "./Timeline.module.scss";
 import { Button } from "../ui/button";
 import TimelineNumbers from "../id/TimelineNumber";
 import ClientCardContainer from "../events/ClientCardContainer";
 import { Event } from "@/db/schema";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { saveSegments } from "@/actions/idActions"
-import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
-import Timeline from "@/utils/Timeline";
-import Blocker, { Side } from "./Blocker/Blocker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
 import { useSegmentStore } from "@/store/Segments";
+import { differenceInMinutes } from "date-fns";
+import StaticTimeCard from "./StaticTimeCard";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -23,9 +22,14 @@ interface Props {
 	children?: React.ReactNode
 }
 
-export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, isHost, children }: Props) {
+const defaultWidth = 2;
+
+export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: Props) {
 	const segmentStore = useSegmentStore((state) => state);
 	const setSegmentStore = useSegmentStore((state) => state.setSegments)
+	const totalMinutes = useMemo(() => differenceInMinutes(eventData.end, eventData.start), [eventData.start, eventData.end]);
+	const [minuteWidth, setMinuteWidth] = useState(defaultWidth);
+
 	useMemo(() => {
 		if (!isHost) {
 			setSegmentStore(localRSVP.segments.map(({ id, start, end }) => ({ id, start, end })));
@@ -49,19 +53,30 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 			}
 		}
 
+		const resizeObserver = new ResizeObserver(entries => {
+			for (let entry of entries) {
+				if (totalMinutes * defaultWidth < entry.contentRect.width) {
+					setMinuteWidth(entry.contentRect.width / totalMinutes);
+				} else {
+					setMinuteWidth(defaultWidth);
+				}
+			}
+		});
+
 		if (div) {
-			Timeline.setMinWidth(div.clientWidth)
 			div.addEventListener('scroll', handleScroll);
+			resizeObserver.observe(div);
 		}
 
 		return () => {
 			if (div) {
 				div.removeEventListener('scroll', handleScroll);
+				resizeObserver.unobserve(div);
 			}
 		};
-	}, [])
+	}, [totalMinutes])
 
-	new Timeline(eventData.start, eventData.end, 5)
+
 
 	return (
 		<div className={styles.wrapper}>
@@ -73,7 +88,7 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 					}}>Save</Button>}
 			</div>
 
-			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} />
+			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} minuteWidth={minuteWidth} />
 
 			<div className={`flex flex-col ${styles.users}`} ref={userDiv}>
 				{!isHost && <div className={`${styles.userItem}`}>
@@ -97,17 +112,20 @@ export default function ScrollableContainer({ localRSVP, eventData, otherRsvps, 
 				})}
 			</div>
 
-			<div className={`${styles.content}`} ref={contentDiv}>
+			<div className={`${styles.content} `} ref={contentDiv}>
 				<div style={{
-					width: `${Timeline.getWidth()}px`,
-					backgroundSize: `${Timeline.cellWidth}px`
-				}} className={`${styles.gridBackground} `} >
-					<Blocker side={Side.left} width={Timeline.getPadding().left} />
-					<Blocker side={Side.right} width={Timeline.getPadding().right} />
+					width: `${totalMinutes * minuteWidth}px`,
+				}} className={`h-full min-w-full ${styles.gridBackground}`} >
 					{!isHost &&
-						<ClientCardContainer />
+						<ClientCardContainer minuteWidth={minuteWidth} eventStartTime={eventData.start} eventEndTime={eventData.end} />
 					}
-					{children}
+					{otherRsvps.map((value, index: number) => {
+						return <div key={index} className={styles.staticRow}>{
+							value.segments.map((schedule) => {
+								return <StaticTimeCard key={schedule.id} schedule={schedule} eventStartTime={eventData.start} minuteWidth={minuteWidth} />
+							})
+						}</div>
+					})}
 				</div>
 			</div>
 		</div >

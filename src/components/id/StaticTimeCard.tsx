@@ -1,18 +1,20 @@
-import Timeline from "@/utils/Timeline";
 import styles from "./TimelineCard.module.scss";
 import { Segment } from "@/db/schema";
 import { differenceInMinutes, format } from "date-fns";
 
 interface Props {
+	eventStartTime: Date;
+	minuteWidth: number;
 	schedule: Segment;
 }
 
-export default function StaticTimeCard({ schedule }: Props) {
+export default function StaticTimeCard({ schedule, eventStartTime, minuteWidth }: Props) {
 	const duration = differenceInMinutes(schedule.end, schedule.start)
+	const offset = differenceInMinutes(schedule.start, eventStartTime)
 
 	return (
 		<div
-			style={{ width: `${Timeline.minutesToX(duration)}px`, translate: `${Timeline.dateToX(schedule.start)}px` }}
+			style={{ width: duration * minuteWidth + "px", translate: offset * minuteWidth + "px" }}
 			className={`${styles.container}`}
 		>
 			<div className={styles.timeContainer}>
