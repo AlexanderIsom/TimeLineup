@@ -24,6 +24,7 @@ import { Event, InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { revalidatePath } from "next/cache";
 
 interface Props {
 	event: NotUndefined<EventDataQuery>
@@ -88,6 +89,14 @@ export default function UpdateEventDialog({ event }: Props) {
 			description: event.description
 		},
 	});
+
+	useEffect(() => {
+		form.reset({
+			title: event.title,
+			startDate: event.start,
+			endDate: event.end,
+		});
+	}, [event, form]);
 
 	function processForm(values: z.infer<ReturnType<typeof formSchema>>) {
 		const data: NotUndefined<EventDataQuery> = { ...event, title: values.title, start: values.startDate, end: values.endDate, description: values.description } as NotUndefined<EventDataQuery>;
