@@ -1,25 +1,40 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
 import { nanoid } from "nanoid"
 import styles from "./clientCardContainer.module.scss"
 import { useSegmentStore, TimeSegment } from "@/store/Segments"
 import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns"
-
+import { useDebouncedCallback } from "use-debounce"
+import { Event } from "@/db/schema";
+import { saveSegments } from "@/actions/idActions"
 
 interface Props {
 	minuteWidth: number
-	eventStartTime: Date
-	eventEndTime: Date
+	eventData: Event
+	localId: string
 }
 
 const newDuration = 60;
 
-export default function ClientCardContainer({ minuteWidth, eventStartTime, eventEndTime }: Props) {
+export default function ClientCardContainer({ minuteWidth, eventData, localId }: Props) {
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 
 	const segmentStore = useSegmentStore((state) => state)
+
+	const debounceUpdate = useDebouncedCallback(async () => {
+		console.log("Saving segments")
+		await saveSegments(localId, eventData.id, segmentStore.newSegments, segmentStore.deletedSegments, segmentStore.updatedSegments)
+	}, 10000)
+
+	useEffect(
+		() => () => {
+			debounceUpdate.flush();
+		},
+		[debounceUpdate]
+	);
+
 
 	function removeOverlappingSegments(segment: TimeSegment) {
 		const overlaps = segmentStore.segments.filter(item => {
@@ -48,11 +63,12 @@ export default function ClientCardContainer({ minuteWidth, eventStartTime, event
 		if (!foundOverlaps) {
 			segmentStore.updateSegment(segment)
 		}
+		debounceUpdate();
 	}
 
 	const handleDoubleClick = (e: React.MouseEvent) => {
 		var x = e.clientX - timelineContainerRef.current!.getBoundingClientRect().left;
-		const startDate = min([max([roundToNearestMinutes(addMinutes(eventStartTime, x / minuteWidth), { nearestTo: 5 }), eventStartTime]), subMinutes(eventEndTime, newDuration)])
+		const startDate = min([max([roundToNearestMinutes(addMinutes(eventData.start, x / minuteWidth), { nearestTo: 5 }), eventData.start]), subMinutes(eventData.end, newDuration)])
 		const endDate = addMinutes(startDate, newDuration);
 
 		const newSegment: TimeSegment = { id: nanoid(), start: startDate, end: endDate };
@@ -67,8 +83,8 @@ export default function ClientCardContainer({ minuteWidth, eventStartTime, event
 			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
 					minuteWidth={minuteWidth}
-					eventEndTime={eventEndTime}
-					eventStartTime={eventStartTime}
+					eventEndTime={eventData.end}
+					eventStartTime={eventData.start}
 					key={segment.id}
 					segment={segment}
 					handleUpdate={handleUpdate}

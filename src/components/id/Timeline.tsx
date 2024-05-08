@@ -13,6 +13,8 @@ import { EventRsvp } from "@/actions/eventActions";
 import { useSegmentStore } from "@/store/Segments";
 import { differenceInMinutes } from "date-fns";
 import StaticTimeCard from "./StaticTimeCard";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface Props {
 	localRSVP: EventRsvp
@@ -25,20 +27,34 @@ interface Props {
 const defaultWidth = 2;
 
 export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: Props) {
-	const segmentStore = useSegmentStore((state) => state);
 	const setSegmentStore = useSegmentStore((state) => state.setSegments)
 	const totalMinutes = useMemo(() => differenceInMinutes(eventData.end, eventData.start), [eventData.start, eventData.end]);
 	const [minuteWidth, setMinuteWidth] = useState(defaultWidth);
-
-	useMemo(() => {
-		if (!isHost) {
-			setSegmentStore(localRSVP.segments.map(({ id, start, end }) => ({ id, start, end })));
-		}
-	}, [localRSVP, isHost, setSegmentStore])
+	const router = useRouter();
+	const supabase = createClient();
 
 	const userDiv = useRef<HTMLDivElement>(null);
 	const contentDiv = useRef<HTMLDivElement>(null);
 	const timeDiv = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const idChannel = supabase.channel(eventData.id).on('postgres_changes', {
+			event: '*',
+			schema: 'public',
+			table: 'time_segment',
+			filter: `event_id=eq.${eventData.id}`
+		}, () => {
+			router.refresh();
+		}).subscribe();
+
+		if (!isHost) {
+			setSegmentStore(localRSVP.segments.map(({ id, start, end }) => ({ id, start, end })));
+		}
+
+		return () => {
+			supabase.removeChannel(idChannel)
+		}
+	}, [supabase, router, eventData.id, localRSVP, isHost, setSegmentStore])
 
 	useEffect(() => {
 		const div = contentDiv.current;
@@ -76,16 +92,11 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 		};
 	}, [totalMinutes])
 
-
-
 	return (
 		<div className={styles.wrapper}>
 			<div className={`${styles.tools} `}>
 
-				{eventData.end > new Date() &&
-					<Button onClick={async () => {
-						await saveSegments(localRSVP.id, eventData.id, segmentStore.newSegments, segmentStore.deletedSegments, segmentStore.updatedSegments)
-					}}>Save</Button>}
+
 			</div>
 
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} minuteWidth={minuteWidth} />
@@ -117,7 +128,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 					width: `${totalMinutes * minuteWidth}px`,
 				}} className={`h-full min-w-full ${styles.gridBackground}`} >
 					{!isHost &&
-						<ClientCardContainer minuteWidth={minuteWidth} eventStartTime={eventData.start} eventEndTime={eventData.end} />
+						<ClientCardContainer minuteWidth={minuteWidth} eventData={eventData} localId={localRSVP.id} />
 					}
 					{otherRsvps.map((value, index: number) => {
 						return <div key={index} className={styles.staticRow}>{
