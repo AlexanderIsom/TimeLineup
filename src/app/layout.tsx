@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/navbar";
+import 'overlayscrollbars/overlayscrollbars.css'
+import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
 
 var cn = require("classnames");
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  display: 'swap',
+  variable: '--font-inter'
 });
 
 export const metadata: Metadata = {
@@ -18,13 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={inter.className}>
-        <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+    <ReactQueryClientProvider>
+      <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
           <Navbar />
-          <div className="pt-24">{children}</div>
+          <div style={{ height: "100%" }} className="pt-24">{children}</div>
+          <Toaster />
         </body>
       </html>
-    </ClerkProvider>
+    </ReactQueryClientProvider>
   );
 }

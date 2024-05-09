@@ -1,14 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-const {fontFamily} = require("tailwindcss/defaultTheme")
+const { fontFamily } = require("tailwindcss/defaultTheme")
 
 module.exports = {
+  mode: 'jit',
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   theme: {
     container: {
       center: true,
@@ -73,7 +74,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-inter)"],
       },
     },
   },

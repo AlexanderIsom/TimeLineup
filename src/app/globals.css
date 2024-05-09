@@ -4,7 +4,6 @@
  
 @layer base {
   :root {
-    --font-sans:Inter;
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -70,3 +69,4 @@
     @apply scroll-m-20 pb-2 text-xl font-normal tracking-tight first:mt-0;
   }
 }
+

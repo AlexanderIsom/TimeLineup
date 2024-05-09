@@ -1,25 +1,19 @@
-export enum ResponseState {
-    attending,
-    pending,
-    declined,
-    hosting
-}
-
 export interface EventData {
-    _id: string,
+    id: string,
     userId: string,
     title: string,
-    startDateTime: Date,
-    duration: number,
-    user: User,
+    start: Date,
+    end: Date,
+    // duration: number,
+    // user: User,
     description: string,
-    agenda: AgendaItem[],
-    eventResponse: EventResponse[],
-    userResponses: EventResponse[],
-    color: string,
-    weekOffset: number,
-    day: number,
-    invites: User[],
+    // agenda: AgendaItem[],
+    // eventResponse: EventResponse[],
+    // userResponses: EventResponse[],
+    // color: string,
+    // weekOffset: number,
+    // day: number,
+    invitedUsers: string[],
 }
 
 export interface AgendaItem {
@@ -48,5 +42,4 @@ export interface EventResponse {
     userId: string,
     user: User,
     schedule: Array<TimeDuration>
-    state: ResponseState
 }

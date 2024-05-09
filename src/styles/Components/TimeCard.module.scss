@@ -22,17 +22,8 @@
 	justify-content: center;
 	align-items: center;
 	justify-content: space-between;
-	overflow: hidden;
 	box-shadow: Variables.$boxShadow ;
 	border: #E1E7EF 1px solid;
-
-	&.grabbable {
-		cursor: grab;
-
-		&:active {
-			cursor: grabbing;
-		}
-	}
 }
 
 .timeCue {
