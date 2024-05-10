@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, BellRing, Brush, CodeXml, DraftingCompass, Earth, MousePointerClick, Puzzle, UserCheck } from "lucide-react"
-// import "./styles.scss"
 
 import BoxItem from "@/components/landingPage/BoxItem";
 import AnimatedNumber from "@/components/AnimatedNumber";

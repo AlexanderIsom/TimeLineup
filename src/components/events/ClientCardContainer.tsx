@@ -2,13 +2,14 @@
 
 import { useEffect, useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
-import { nanoid } from "nanoid"
+
 import styles from "./clientCardContainer.module.scss"
 import { useSegmentStore, TimeSegment } from "@/store/Segments"
 import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns"
 import { useDebouncedCallback } from "use-debounce"
 import { Event } from "@/db/schema";
 import { saveSegments } from "@/actions/idActions"
+import { randomUUID } from "crypto"
 
 interface Props {
 	minuteWidth: number
@@ -24,7 +25,6 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 	const segmentStore = useSegmentStore((state) => state)
 
 	const debounceUpdate = useDebouncedCallback(async () => {
-		console.log("Saving segments")
 		await saveSegments(localId, eventData.id, segmentStore.newSegments, segmentStore.deletedSegments, segmentStore.updatedSegments)
 	}, 10000)
 
@@ -50,7 +50,7 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 			deletes.forEach((overlapId) => {
 				segmentStore.deleteSegment(overlapId);
 			});
-			segmentStore.addSegment({ id: nanoid(), start: smallest, end: largest })
+			segmentStore.addSegment({ id: randomUUID(), start: smallest, end: largest })
 			return true;
 		}
 
@@ -71,7 +71,7 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 		const startDate = min([max([roundToNearestMinutes(addMinutes(eventData.start, x / minuteWidth), { nearestTo: 5 }), eventData.start]), subMinutes(eventData.end, newDuration)])
 		const endDate = addMinutes(startDate, newDuration);
 
-		const newSegment: TimeSegment = { id: nanoid(), start: startDate, end: endDate };
+		const newSegment: TimeSegment = { id: randomUUID(), start: startDate, end: endDate };
 		const foundOverlaps = removeOverlappingSegments(newSegment);
 		if (!foundOverlaps) {
 			segmentStore.addSegment(newSegment);

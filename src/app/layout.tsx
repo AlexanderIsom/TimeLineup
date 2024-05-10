@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
-import 'overlayscrollbars/overlayscrollbars.css'
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
 
