@@ -48,6 +48,7 @@
     "react-hook-form": "^7.51.1",
     "react-resizable": "^3.0.5",
     "sonner": "^1.4.41",
+    "swr": "^2.2.5",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.0",

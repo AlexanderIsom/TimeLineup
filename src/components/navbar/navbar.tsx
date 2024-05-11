@@ -12,6 +12,7 @@ import { getFriends, FriendStatusAndProfile } from "@/actions/friendActions";
 import { NotificationQuery, getNotifications } from "@/actions/notificationAction";
 import { MenuIcon } from "lucide-react";
 import { Separator } from "../ui/separator";
+import ProfileDialog from "./profile/profileDialog";
 
 export default async function Navbar() {
   let profile = await getUserProfile();
@@ -55,7 +56,6 @@ export default async function Navbar() {
         <SheetTrigger asChild>
           <Button className="md:hidden" size="icon" variant="outline">
             <MenuIcon className="h-6 w-6" />
-            <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
         <SheetContent side={"right"} className="flex flex-col justify-between">
