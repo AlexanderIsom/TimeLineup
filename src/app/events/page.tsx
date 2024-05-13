@@ -31,10 +31,10 @@ export default async function Events() {
       <Card className="flex mx-4 mt-2 p-4 items-center align-middle">
         <EventServerDialog />
       </Card>
-      <div className="flex gap-4 p-4 h-[90%]">
-        <EventCard title={"Last 14 days"} description="Past events from the last 2 weeks." events={pastEvents} />
+      <div className="flex flex-col md:flex-row gap-4 p-4 h-[90%]">
         <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
         <EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />
+        <EventCard title={"Last 14 days"} description="Past events from the last 2 weeks." events={pastEvents} />
       </div>
     </div >
   );

@@ -11,18 +11,16 @@ import Messages from "./messages";
 import { useEffect, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { useFriends, useNotifications } from "@/swr/swrFunctions";
 
-interface Props {
-	friends: FriendStatusAndProfile
-	notifications: NotificationQuery
-}
-
-export default function InboxPopover(props: Props) {
-	const notifications = useMemo(() => props.notifications?.filter(n => n.seen === false), [props.notifications])
-	const friendRequests = useMemo(() => props.friends?.filter(f => f.status === "pending" && f.incoming), [props.friends])
+export default function InboxPopover() {
+	const { friends } = useFriends();
+	const { notifications } = useNotifications();
+	const unreadNotifications = useMemo(() => notifications?.filter(n => n.seen === false), [notifications])
+	const friendRequests = useMemo(() => friends?.filter(f => f.status === "pending" && f.incoming), [friends])
 
 	const friendRequestCount = (friendRequests?.length ?? 0);
-	const notificationsCount = (notifications?.length ?? 0);
+	const notificationsCount = (unreadNotifications?.length ?? 0);
 	const messageCount = friendRequestCount + notificationsCount;
 	const messageText = messageCount > 0 ? messageCount < 99 ? messageCount : "99+" : undefined;
 
@@ -78,7 +76,7 @@ export default function InboxPopover(props: Props) {
 				</TabsList>
 
 				<TabsContent value="messages">
-					<Messages notifications={notifications} />
+					<Messages notifications={unreadNotifications} />
 				</TabsContent>
 				<TabsContent value="requests">
 					<FriendRequests requests={friendRequests} />

@@ -107,7 +107,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 						<AvatarImage src={localRSVP?.user.avatarUrl ?? undefined} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
-					<div className={styles.userName}>{localRSVP?.user.username}</div>
+					<div className={`${styles.userName} hidden md:flex`}>{localRSVP?.user.username}</div>
 				</div>}
 
 				{otherRsvps.map((rsvp) => {
@@ -117,7 +117,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
 								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 							</Avatar>
-							<div className={styles.userName}>{rsvp.user.username ?? "user"}</div>
+							<div className={`${styles.userName} hidden md:flex`}>{rsvp.user.username ?? "user"}</div>
 						</div>
 					</div>
 				})}

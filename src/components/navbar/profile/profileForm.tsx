@@ -17,7 +17,11 @@ const formSchema = z.object({
 	avatarUrl: z.string().url({ message: "Invalid Url" }).or(z.literal('')),
 })
 
-export default function ProfileForm() {
+interface Props {
+	onCancel?: () => void;
+}
+
+export default function ProfileForm({ onCancel }: Props) {
 	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -72,11 +76,17 @@ export default function ProfileForm() {
 			/>
 			<div className="flex justify-between">
 				<div className="flex gap-2">
-					<Button type='button' variant="outline">Cancel</Button>
+					<Button type='button' variant="outline" onClick={
+						() => {
+							form.reset();
+							if (onCancel)
+								onCancel();
+						}
+					}>Cancel</Button>
 					<DeleteProfile />
 				</div>
 				<Button type='submit'>Update</Button>
 			</div>
 		</form>
-	</Form>
+	</Form >
 }
