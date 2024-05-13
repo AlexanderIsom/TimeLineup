@@ -100,6 +100,10 @@ export default function Navbar() {
           <SheetContent side={"right"} className="flex flex-col justify-between">
             <div className="grid gap-6 p-6">
               <Link href="/events" className="font-medium hover:underline">
+                Notifications
+              </Link>
+              <Separator />
+              <Link href="/events" className="font-medium hover:underline">
                 Events
               </Link>
               <Separator />

@@ -74,7 +74,7 @@ export default function ProfileForm({ onCancel }: Props) {
 					</FormItem>
 				)}
 			/>
-			<div className="flex justify-between">
+			<div className="flex justify-between mt-3">
 				<div className="flex gap-2">
 					<Button type='button' variant="outline" onClick={
 						() => {
