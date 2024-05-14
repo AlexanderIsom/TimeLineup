@@ -1,20 +1,18 @@
 import React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import ProviderButton from "./providerButton";
 
 interface Props {
-	open: boolean;
-	onClose: () => void;
+	children?: React.ReactNode;
 }
 
-export default function LoginDialog({ open, onClose }: Props) {
+export default function LoginDialog({ children }: Props) {
 
 	return (
-		<Dialog open={open} onOpenChange={(state: boolean) => {
-			if (!state) {
-				onClose();
-			}
-		}}>
+		<Dialog>
+			<DialogTrigger asChild>
+				{children}
+			</DialogTrigger>
 			<DialogContent className="flex flex-col max-w-max">
 				<DialogHeader className="flex">
 					<DialogTitle>Login</DialogTitle>

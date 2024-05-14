@@ -1,32 +1,32 @@
-import { Dialog, DialogDescription, DialogHeader, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileForm from "./profileForm";
 import { useProfile } from "@/swr/swrFunctions";
 import { User } from "lucide-react";
 
 interface Props {
-	open: boolean;
-	onClose: () => void;
+	children?: React.ReactNode;
+	open?: boolean;
+	onClose?: () => void;
 }
 
-export default function ProfileDialog({ open, onClose }: Props) {
+export default function ProfileDialog({ children, open, onClose }: Props) {
 	const { profile, isLoading, isError } = useProfile()
-	if (isLoading || !profile) {
-		return;
-	}
-
 	const avatar = isLoading ?
 		<AvatarFallback><User /></AvatarFallback> :
 		<>
-			<AvatarImage src={profile.avatarUrl ?? undefined} />
+			<AvatarImage src={profile?.avatarUrl ?? undefined} />
 			<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 		</>
 
 	return <Dialog open={open} onOpenChange={(state: boolean) => {
 		if (!state) {
-			onClose()
+			onClose?.();
 		}
-	}}>
+	}} >
+		<DialogTrigger asChild>
+			{children}
+		</DialogTrigger>
 		<DialogContent>
 			<DialogHeader className='flex flex-col items-center space-y-2'>
 				<div className="flex items-center space-x-2">
@@ -34,14 +34,15 @@ export default function ProfileDialog({ open, onClose }: Props) {
 						{avatar}
 					</Avatar>
 					<span>
-						{profile.username!}
+						{profile?.username}
 					</span>
+					hello
 				</div>
 				<DialogDescription>
 					Change your profile picture and username here.
 				</DialogDescription>
 			</DialogHeader>
-			<ProfileForm onCancel={onClose} />
+			<ProfileForm />
 		</DialogContent>
 	</Dialog>
 }
