@@ -2,46 +2,45 @@
 import styles from "./navbar.module.scss";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import InboxPopover from "./inbox/inboxPopover";
 import LoginDialog from "../login/loginDialog";
-import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
-import { Separator } from "../ui/separator";
-import ProfileDialog from "./profile/profileDialog";
-import { use, useEffect, useState } from "react";
-import { useProfile } from "@/swr/swrFunctions";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import FriendsDialog from "./profile/friendsDialog";
+import { useEffect, useMemo, useState } from "react";
+import { useFriends, useNotifications, useProfile } from "@/swr/swrFunctions";
 import { cx } from "class-variance-authority";
 import ProfileDropdown from "./profile/profileDropdown";
 import MobileNavbar from "./mobileNavbar";
+import { useNotificationStore } from "@/store/Notifications";
 
 export default function Navbar() {
-  const { profile, isLoading: profileLoading, isError } = useProfile()
+  const { profile, isLoading: profileLoading } = useProfile()
+
   const [isMobile, setIsMobile] = useState(false);
+  const { friends } = useFriends();
+  const { notifications } = useNotifications();
+
+  const setInitialState = useNotificationStore((state) => state.setInitialState);
 
   const signedIn = profile !== undefined;
   useEffect(() => {
+    setInitialState(notifications?.filter(n => n.seen === false), friends?.filter(f => f.status === "pending" && f.incoming))
+
     const mediaQuery = window.matchMedia('(max-width: 768px)');
-    function handleChange(e: MediaQueryListEvent) {
+    function handleChange(e: MediaQueryListEvent | MediaQueryList) {
       setIsMobile(e.matches);
     }
     mediaQuery.addEventListener('change', handleChange);
-    setIsMobile(mediaQuery.matches);
+    handleChange(mediaQuery);
 
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
+  }, [friends, notifications, setInitialState]);
 
   return (
     <header className={`${styles.wrapper} px-8 absolute z-50 h-24 w-full justify-between flex items-center`}>
       <div className="flex gap-12 w-full items-center justify-between">
-        <div className="text-2xl font-bold h-fit">
+        <Link className="text-2xl font-bold h-fit" href={"/"}>
           <span className="no-underline">Time</span>
           <span className="underline">Lineup.</span>
-        </div>
+        </Link>
 
         {!isMobile &&
           <nav className={cx('w-full flex', signedIn ? "justify-between" : "justify-end")}>
@@ -63,7 +62,7 @@ export default function Navbar() {
           </nav>
         }
 
-        {isMobile && <MobileNavbar signedIn profileLoading />}
+        {isMobile && <MobileNavbar signedIn={signedIn} profileLoading={profileLoading} />}
       </div>
     </header >
 
