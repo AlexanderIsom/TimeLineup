@@ -97,7 +97,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} minuteWidth={minuteWidth} />
 
 			<div className={`flex flex-col overflow-hidden border-t border-gray-300 items-center row-start-2 row-end-3 col-start-1 col-end-2`} ref={userDiv}>
-				{!isHost && <div className="flex flex-row gap-2 items-center w-full h-16 border-b border-gray-300">
+				{!isHost && <div className="flex flex-row gap-2 items-center justify-center w-full h-16 border-b border-gray-300">
 					<Avatar>
 						<AvatarImage src={localRSVP?.user.avatarUrl ?? undefined} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
