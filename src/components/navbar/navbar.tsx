@@ -10,11 +10,12 @@ import { cx } from "class-variance-authority";
 import ProfileDropdown from "./profile/profileDropdown";
 import MobileNavbar from "./mobileNavbar";
 import { useNotificationStore } from "@/store/Notifications";
+import { useIsMobile } from "@/utils/useIsMobile";
 
 export default function Navbar() {
   const { profile, isLoading: profileLoading } = useProfile()
 
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
   const { friends } = useFriends();
   const { notifications } = useNotifications();
 
@@ -23,15 +24,6 @@ export default function Navbar() {
   const signedIn = profile !== undefined;
   useEffect(() => {
     setInitialState(notifications?.filter(n => n.seen === false), friends?.filter(f => f.status === "pending" && f.incoming))
-
-    const mediaQuery = window.matchMedia('(max-width: 768px)');
-    function handleChange(e: MediaQueryListEvent | MediaQueryList) {
-      setIsMobile(e.matches);
-    }
-    mediaQuery.addEventListener('change', handleChange);
-    handleChange(mediaQuery);
-
-    return () => mediaQuery.removeEventListener('change', handleChange);
   }, [friends, notifications, setInitialState]);
 
   return (

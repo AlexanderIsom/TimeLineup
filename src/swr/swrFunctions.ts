@@ -1,5 +1,6 @@
 "use client"
 
+import { GetEventData } from "@/actions/eventActions";
 import { getFriends } from "@/actions/friendActions";
 import { getNotifications } from "@/actions/notificationAction";
 import { getUserProfile } from "@/actions/profileActions";
@@ -18,5 +19,11 @@ export function useFriends() {
 export function useNotifications() {
 	const { data, isLoading, error } = useSwr("/api/notifications/", getNotifications)
 	return { notifications: data, isLoading, isError: error }
+}
+
+export function useEventData(id: string) {
+	console.log("useEventData", id)
+	const { data, isLoading, error } = useSwr(id, GetEventData)
+	return { eventData: data, isLoading, isError: error }
 }
 
