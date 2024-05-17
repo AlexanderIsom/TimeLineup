@@ -11,10 +11,12 @@ export default function InboxDialog({ children }: Props) {
 		<DialogTrigger asChild>
 			{children}
 		</DialogTrigger>
-		<DialogContent>
+		<DialogContent className="w-11/12 sm:max-w-md">
 			<DialogHeader >
-				<DialogTitle className="flex gap-2 items-center"><InboxIcon className="h-4 w-4" />
-					Inbox</DialogTitle>
+				<DialogTitle className="flex gap-2 items-center">
+					<InboxIcon className="h-4 w-4" />
+					Inbox
+				</DialogTitle>
 			</DialogHeader>
 			<Inbox />
 		</DialogContent>

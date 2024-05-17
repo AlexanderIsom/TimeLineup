@@ -47,7 +47,7 @@ export default function ProfileForm({ onCancel }: Props) {
 	}
 
 	return <Form {...form} >
-		<form onSubmit={form.handleSubmit(processForm)} className="flex flex-col gap-2">
+		<form onSubmit={form.handleSubmit(processForm)} className="flex flex-col gap-2 ">
 			<FormField
 				control={form.control}
 				name="username"
@@ -74,7 +74,7 @@ export default function ProfileForm({ onCancel }: Props) {
 					</FormItem>
 				)}
 			/>
-			<div className="flex justify-between mt-3">
+			<div className="flex justify-between">
 				<div className="flex gap-2">
 					<Button type='button' variant="outline" onClick={
 						() => {
@@ -82,7 +82,7 @@ export default function ProfileForm({ onCancel }: Props) {
 							if (onCancel)
 								onCancel();
 						}
-					}>Cancel</Button>
+					} className="hidden md:flex">Cancel</Button>
 					<DeleteProfile />
 				</div>
 				<Button type='submit'>Update</Button>

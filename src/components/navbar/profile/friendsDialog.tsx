@@ -16,9 +16,9 @@ export default function FriendsDialog({ open, onClose, children }: Props) {
 		<DialogTrigger asChild>
 			{children}
 		</DialogTrigger>
-		<DialogContent>
+		<DialogContent className="w-11/12 sm:max-w-md">
 			<DialogHeader >
-				<DialogTitle>Manage friends</DialogTitle>
+				<DialogTitle className="flex gap-2 items-center">Manage friends</DialogTitle>
 			</DialogHeader>
 			<ManageFriends />
 		</DialogContent>

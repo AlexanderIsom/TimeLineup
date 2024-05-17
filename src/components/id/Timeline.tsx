@@ -93,45 +93,37 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [totalMinutes])
 
 	return (
-		<div className={styles.wrapper}>
-			<div className={`${styles.tools} `}>
-
-
-			</div>
-
+		<div className="grid col-start-1 col-end-2 grid-cols-[1fr_3fr] grid-rows-[75px_minmax(0,1fr)] h-full overflow-hidden">
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} minuteWidth={minuteWidth} />
 
-			<div className={`flex flex-col ${styles.users}`} ref={userDiv}>
-				{!isHost && <div className={`${styles.userItem}`}>
+			<div className={`flex flex-col overflow-hidden border-t border-gray-300 items-center row-start-2 row-end-3 col-start-1 col-end-2`} ref={userDiv}>
+				{!isHost && <div className="flex flex-row gap-2 items-center w-full h-16 border-b border-gray-300">
 					<Avatar>
 						<AvatarImage src={localRSVP?.user.avatarUrl ?? undefined} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
-					<div className={`${styles.userName} hidden md:flex`}>{localRSVP?.user.username}</div>
+					<div className="font-medium hidden md:flex">{localRSVP?.user.username}</div>
 				</div>}
 
 				{otherRsvps.map((rsvp) => {
-					return <div key={rsvp.id}>
-						<div className={styles.userItem}>
-							<Avatar>
-								<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
-								<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
-							</Avatar>
-							<div className={`${styles.userName} hidden md:flex`}>{rsvp.user.username ?? "user"}</div>
-						</div>
+					return <div key={rsvp.id} className="flex flex-row gap-2 items-center justify-center w-full h-16 border-b border-gray-300 ">
+						<Avatar>
+							<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
+							<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
+						</Avatar>
+						<div className="font-medium hidden md:flex">{rsvp.user.username ?? "user"}</div>
 					</div>
+
 				})}
 			</div>
 
-			<div className={`${styles.content} `} ref={contentDiv}>
-				<div style={{
-					width: `${totalMinutes * minuteWidth}px`,
-				}} className={`h-full min-w-full ${styles.gridBackground}`} >
+			<div className="row-start-2 row-end-3 col-start-2 col-end-2 overflow-y-auto overflow-x-scroll border-l border-gray-300" ref={contentDiv}>
+				<div className="w-full h-full relative" >
 					{!isHost &&
 						<ClientCardContainer minuteWidth={minuteWidth} eventData={eventData} localId={localRSVP.id} />
 					}
 					{otherRsvps.map((value, index: number) => {
-						return <div key={index} className={styles.staticRow}>{
+						return <div key={index} className="flex h-16 items-center">{
 							value.segments.map((schedule) => {
 								return <StaticTimeCard key={schedule.id} schedule={schedule} eventStartTime={eventData.start} minuteWidth={minuteWidth} />
 							})

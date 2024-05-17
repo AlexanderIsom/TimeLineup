@@ -1,5 +1,4 @@
 import { differenceInMinutes, eachDayOfInterval, eachHourOfInterval, format, formatDate, roundToNearestHours } from "date-fns";
-import styles from "./TimelineNumbers.module.scss"
 import { ForwardedRef } from "react";
 
 interface Props {
@@ -15,7 +14,7 @@ export default function TimelineNumbers({ start, end, forwardedRef, minuteWidth 
   const offset = differenceInMinutes(ceilStart, start)
 
   return (
-    <div className={`${styles.wrapper}`} ref={forwardedRef}>
+    <div className="row-start-1 row-end-2 col-start-2 col-end-3 flex items-end overflow-hidden border-l border-gray-300" ref={forwardedRef}>
       {daysInRange.map((date, index) => {
         return <DayHeaderAndHours key={formatDate(date, "yy-mm-dd")} date={date} start={ceilStart} end={end} minuteWidth={minuteWidth} dayIndex={index} offset={offset} />
       })}
@@ -43,15 +42,15 @@ function DayHeaderAndHours({ date, start, end, minuteWidth, offset, dayIndex }: 
   }
   const numberList = eachHourOfInterval({ start: startTime, end: endTime })
   return (
-    <div className="h-full border-gray-200 min-w-max">
+    <div className="h-full border-gray-300 min-w-max">
       <div className="h-1/2 flex items-end">
         <span className="sticky left-0 right-0 px-8">{format(date, "LLL do")}</span>
       </div>
 
-      <div className={"h-1/2 w-full self-end border-t border-gray-200"}>
+      <div className={"h-1/2 w-full self-end border-t border-gray-300"}>
         {numberList.map((hour: Date, index: number) => {
           return (
-            <div className={`flex-1 h-full -translate-x-1/2 justify-center items-center inline-flex border-gray-200 `} style={{ width: `${minuteWidth * 60}px`, marginLeft: `${dayIndex === 0 && index === 0 ? offset * minuteWidth + "px" : "0"}` }} key={index}>
+            <div className={`flex-1 h-full -translate-x-1/2 justify-center items-center inline-flex border-gray-300 `} style={{ width: `${minuteWidth * 60}px`, marginLeft: `${dayIndex === 0 && index === 0 ? offset * minuteWidth + "px" : "0"}` }} key={index}>
               <div className={"justify-center text-center font-normal text-base"}>{`${hour.getHours()}:00`}</div>
             </div>
           );

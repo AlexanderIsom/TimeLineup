@@ -27,7 +27,7 @@ export default function ProfileDialog({ children, open, onClose }: Props) {
 		<DialogTrigger asChild>
 			{children}
 		</DialogTrigger>
-		<DialogContent>
+		<DialogContent className="w-11/12 sm:max-w-md px-4 md:px-6">
 			<DialogHeader className='flex flex-col items-center space-y-2'>
 				<div className="flex items-center space-x-2">
 					<Avatar>

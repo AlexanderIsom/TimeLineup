@@ -76,6 +76,10 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-inter)"],
       },
+      backgroundImage: theme => ({
+        'gradient-right': 'linear-gradient(to right, var(--grid-color) 1px, transparent 1px)',
+        'gradient-bottom': 'linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px)',
+      })
     },
   },
   plugins: [require("tailwindcss-animate")],
