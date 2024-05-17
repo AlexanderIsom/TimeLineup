@@ -7,6 +7,8 @@ interface NotificationsState {
 	notifications: NotificationQuery;
 	friendRequests: FriendStatusAndProfile;
 	setInitialState: (notifications: NotificationQuery, friendRequests: FriendStatusAndProfile) => void;
+	removeNotification: (id: string) => void;
+	removeFriendRequest: (id: string) => void;
 }
 
 export const useNotificationStore = create<NotificationsState>()((set, get) => ({
@@ -23,4 +25,28 @@ export const useNotificationStore = create<NotificationsState>()((set, get) => (
 			}
 		})
 	},
+	removeNotification: (id: string) => {
+		set((state) => {
+			if (state.notifications === undefined) return state;
+			const notifications = state.notifications.filter(({ id: notificationId }) => notificationId !== id);
+			const totalCount = (state.friendRequests?.length ?? 0) + (notifications?.length ?? 0);
+			return {
+				...state,
+				notifications: notifications,
+				totalNotificaionCount: totalCount,
+			}
+		})
+	},
+	removeFriendRequest: (id: string) => {
+		set((state) => {
+			if (state.friendRequests === undefined) return state;
+			const friendRequests = state.friendRequests.filter(({ id: requestId }) => requestId !== id);
+			const totalCount = (friendRequests?.length ?? 0) + (state.notifications?.length ?? 0);
+			return {
+				...state,
+				friendRequests: friendRequests,
+				totalNotificaionCount: totalCount,
+			}
+		})
+	}
 }));
