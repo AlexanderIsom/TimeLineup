@@ -94,9 +94,7 @@ export default function Home() {
             <h4>Plan and create events fast</h4>
             <p className="subText pb-4">
               Events are easy to create, intuitive and simple
-              <br />
               with real time notifications so you dont miss a thing
-              <br />
               in any timezone
             </p>
             <div className="flex bg-gray-100 h-32 md:h-64 rounded-lg overflow-hidden justify-center items-center relative">
