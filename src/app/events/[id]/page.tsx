@@ -30,7 +30,7 @@ export default function ViewEvent({ params }: { params: { id: string } }) {
 	})
 
 	return (
-		<div className="grid h-full md:grid-cols-[minmax(0,_4fr)_minmax(0,_1fr)]">
+		<div className="grid h-full md:grid-cols-[minmax(0,_4fr)_minmax(300px,_1fr)]">
 			{eventData && <>
 				<Timeline isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps} />
 				{!isMobile && <EventDetails event={eventData} localUser={profile} />}

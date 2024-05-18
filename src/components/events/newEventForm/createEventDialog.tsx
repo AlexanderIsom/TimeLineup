@@ -309,19 +309,21 @@ export default function CreateEventDialog() {
             </div>
           </Form>
         </div>
-        <DialogFooter className="sm:justify-between">
-          <Button type="reset" variant={"ghost"} onClick={() => {
-            form.reset();
-            setCurrentStep(0);
-          }} className="hover:bg-red-500 hover:text-white">Reset</Button>
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant={"ghost"} onClick={() => {
-              prev()
-            }}>Back</Button>
+        <DialogFooter >
+          <div className="flex w-full justify-between">
+            <Button type="reset" variant={"ghost"} onClick={() => {
+              form.reset();
+              setCurrentStep(0);
+            }} className="hover:bg-red-500 hover:text-white">Reset</Button>
+            <div className="flex justify-end gap-2 ">
+              <Button type="button" variant={"ghost"} className={`${currentStep === 0 && "hidden"}`} onClick={() => {
+                prev()
+              }}>Back</Button>
 
-            <Button type="button" onClick={() => {
-              next()
-            }}>Next</Button>
+              <Button type="button" onClick={() => {
+                next()
+              }}>Next</Button>
+            </div>
           </div>
         </DialogFooter>
       </DialogContent>

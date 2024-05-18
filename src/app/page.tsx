@@ -18,7 +18,7 @@ export default function Home() {
       <div className="h-auto w-full relative block bg-gradient-to-b from-white/0 to-gray-50">
         <div className="md:pt-16 block m-auto overflow-hidden ">
           <div className="flex ">
-            <div className="grow-0 z-20 mx-0 py-8 md:py-16 px-4 md:px-16 ">
+            <div className="mx-auto grow-0 z-20 py-8 md:py-16 px-4 md:px-16 ">
               <div>
                 <span className="font-bold text-5xl md:text-8xl">
                   Make your events
