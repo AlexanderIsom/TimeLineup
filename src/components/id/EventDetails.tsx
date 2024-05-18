@@ -1,5 +1,4 @@
 "use client"
-import styles from "./EventDetails.module.scss";
 import { formatDateRange } from "@/utils/dateUtils"
 import React, { useMemo, useState } from "react";
 import { Profile, RsvpStatus } from "@/db/schema";
@@ -42,7 +41,7 @@ export default function EventDetails({ event, localUser }: Props) {
 	}
 
 	return (
-		<Card className={`flex flex-col w-full mx-auto shadow-lg ${styles.wrapper}`}>
+		<Card className={`flex flex-col w-full mx-auto shadow-lg col-start-2 col-end-3`}>
 			<CardHeader className="rounded-t-lg">
 				<CardTitle>Event Details</CardTitle>
 				<CardDescription>The details of the event including the name, date, and location.</CardDescription>
@@ -168,7 +167,7 @@ function AttendeeCard({ user }: AttendeeCardProps) {
 			<AvatarImage src={user.avatarUrl ?? undefined} />
 			<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 		</Avatar>
-		<div className={styles.userName}>{user.username ?? "user"}</div>
+		<div>{user.username ?? "user"}</div>
 	</div>
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
 
-import styles from "./clientCardContainer.module.scss"
+
 import { useSegmentStore, TimeSegment } from "@/store/Segments"
 import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns"
 import { useDebouncedCallback } from "use-debounce"
@@ -79,7 +79,7 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 	}
 
 	return (
-		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+		<div className="flex items-center h-16 relative" onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
 			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
 					minuteWidth={minuteWidth}

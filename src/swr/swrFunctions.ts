@@ -22,7 +22,6 @@ export function useNotifications() {
 }
 
 export function useEventData(id: string) {
-	console.log("useEventData", id)
 	const { data, isLoading, error } = useSwr(id, GetEventData)
 	return { eventData: data, isLoading, isError: error }
 }

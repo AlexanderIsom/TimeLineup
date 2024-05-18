@@ -1,10 +1,9 @@
 'use client'
-import "@/styles/Components/Resizable.css"
+import "@/styles/Resizable.css"
 
 import React, { SyntheticEvent, useState } from "react";
 import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
-import styles from "./TimelineCard.module.scss";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
 import { TimeSegment, useSegmentStore } from "@/store/Segments";
 import { addMinutes, differenceInMinutes, format, roundToNearestMinutes } from "date-fns";
@@ -72,11 +71,11 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 				<ContextMenuTrigger asChild>
 					<div
 						ref={nodeRef}
-						className={styles.container}
+						className="absolute flex justify-center items-center h-14"
 						style={{ width: state.width * minuteWidth + "px" }}
 					>
 						<Resizable
-							className={styles.container}
+							className="absolute flex justify-center items-center h-14"
 							width={state.width * minuteWidth}
 							height={0}
 							resizeHandles={["e", "w"]}
@@ -92,8 +91,8 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 								updateCard();
 							}}
 						>
-							<div className={styles.timeContainer} style={{ width: state.width * minuteWidth + "px" }}>
-								<div className={`dragHandle ${"hover:cursor-grab active:cursor-grabbing"} flex justify-between`}>
+							<div className="flex absolute h-14 bg-gray-100 rounded-md w-full items-center justify-between overflow-hidden shadow-md shadow-gray-200" style={{ width: state.width * minuteWidth + "px" }}>
+								<div className="dragHandle hover:cursor-grab active:cursor-grabbing flex justify-between items-center">
 									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{format(times.start, "HH:mm")}</span>
 									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>
 										{format(times.end, "HH:mm")}

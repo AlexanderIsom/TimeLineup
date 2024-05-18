@@ -1,8 +1,6 @@
 import { ReactNode } from "react";
 import { motion, Variants } from "framer-motion";
 
-import styles from "./boxItem.module.scss"
-
 interface Props {
   index: number;
   children?: ReactNode;
@@ -26,7 +24,7 @@ export default function BoxItem(props: Props) {
   };
 
   return (
-    <motion.div className={styles.wrapper} initial="offscreen" whileInView="onscreen" viewport={{ once: true, amount: 0.8 }} variants={cardVariants}>
+    <motion.div className="grow-0 md:basis-3/12 md:max-w-3/12" initial="offscreen" whileInView="onscreen" viewport={{ once: true, amount: 0.8 }} variants={cardVariants}>
       {props.children}
     </motion.div>
   );

@@ -1,4 +1,3 @@
-import styles from "./TimelineCard.module.scss";
 import { Segment } from "@/db/schema";
 import { differenceInMinutes, format } from "date-fns";
 
@@ -15,11 +14,11 @@ export default function StaticTimeCard({ schedule, eventStartTime, minuteWidth }
 	return (
 		<div
 			style={{ width: duration * minuteWidth + "px", translate: offset * minuteWidth + "px" }}
-			className={`${styles.container}`}
+			className="absolute flex justify-center items-center h-14"
 		>
-			<div className={styles.timeContainer}>
-				<span className={styles.timeCue}>{format(schedule.start, "HH:mm")}</span>
-				<span className={styles.timeCue}>{format(schedule.end, "HH:mm")}</span>
+			<div className="flex absolute h-14 bg-gray-100 rounded-md w-full items-center justify-between overflow-hidden shadow-md shadow-gray-200">
+				<span className="p-2 items-center text-ellipsis overflow-hidden font-semibold">{format(schedule.start, "HH:mm")}</span>
+				<span className="p-2 items-center text-ellipsis overflow-hidden font-semibold">{format(schedule.end, "HH:mm")}</span>
 			</div>
 		</div>
 	);
