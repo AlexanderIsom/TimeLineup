@@ -11,7 +11,7 @@ import { createEvent } from "@/actions/eventActions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
-import { CalendarIcon, Clock, LoaderCircle, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Clock, LoaderCircle, Minus, Plus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,7 +23,7 @@ import { useGetFriends } from "@/actions/hooks";
 import { InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 const formSchema = z.object({
   title: z.string().min(4, {
@@ -119,6 +119,14 @@ export default function CreateEventDialog() {
     }
   }
 
+  const resetForm = () => {
+    form.reset();
+    setCurrentStep(0);
+    setInvitedUsers([]);
+    form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
+    form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
+  }
+
   const addSelectedUser = (profile: Profile) => {
     setInvitedUsers(prevItems => [...prevItems, profile])
   }
@@ -127,17 +135,165 @@ export default function CreateEventDialog() {
     setInvitedUsers(prevItems => prevItems.filter(item => item.id !== profile.id));
   }
 
-  if (isDesktop) {
+  const formContent = <Form {...form}>
+    <div className="space-y-8 flex flex-col h-full">
+      {currentStep === 0 && <>
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input type="text" placeholder="New event" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
+        <FormField
+          control={form.control}
+          name="startDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Start</FormLabel>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+                  </PopoverContent>
+                </Popover>
+                <Popover modal={true}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
+                        <Clock className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start" >
+                    <TimeSelector value={field.value} onSelected={(hours, minutes) => {
+                      const newDate = new Date(
+                        field.value.getFullYear(),
+                        field.value.getMonth(),
+                        field.value.getDate(),
+                        hours,
+                        minutes
+                      );
+                      form.setValue("startDate", newDate)
+                    }} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="endDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>End</FormLabel>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+                  </PopoverContent>
+                </Popover>
+                <Popover modal={true}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                        {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
+                        <Clock className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start" >
+                    <TimeSelector value={field.value} onSelected={(hours, minutes) => {
+                      const newDate = new Date(
+                        field.value.getFullYear(),
+                        field.value.getMonth(),
+                        field.value.getDate(),
+                        hours,
+                        minutes
+                      );
+                      form.setValue("endDate", newDate)
+                    }} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem className="pb-4">
+              <FormLabel>Description</FormLabel>
+              <FormControl >
+                <Textarea placeholder="Description" className="resize-none" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </>}
+      {currentStep === 1 && <div className="flex flex-col justify-start h-full gap-2">
+        <Tabs defaultValue="friends" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="friends">Friends</TabsTrigger>
+            <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
+          </TabsList>
+          <TabsContent value="friends">
+            {isLoading ? <div>Loading...</div> :
+              <div>
+                <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
+              </div>
+            }
+          </TabsContent>
+          <TabsContent value="invited">
+            <FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />
+          </TabsContent>
+        </Tabs>
+      </div>}
+      {currentStep === 2 &&
+        <div className="flex w-full justify-center gap-2 m-auto items-center">
+          <LoaderCircle className="animate-spin" />
+          Complete!
+        </div>
+      }
+    </div>
+  </Form>
+
+  if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={(value) => {
         setOpen(value);
         if (value) {
-          form.reset();
-          setCurrentStep(0);
-          setInvitedUsers([]);
-          form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
-          form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
+          resetForm();
         }
       }}>
         <DialogTrigger asChild>
@@ -160,159 +316,8 @@ export default function CreateEventDialog() {
               </div>
               <DialogDescription>{steps[currentStep].name}</DialogDescription>
             </DialogHeader>
+            {formContent}
 
-            <Form {...form}>
-              <div className="space-y-8 flex flex-col h-full">
-                {currentStep === 0 && <>
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="New event" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start</FormLabel>
-                        <div className="flex gap-2">
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                            </PopoverContent>
-                          </Popover>
-                          <Popover modal={true}>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                  {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                                  <Clock className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start" >
-                              <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                                const newDate = new Date(
-                                  field.value.getFullYear(),
-                                  field.value.getMonth(),
-                                  field.value.getDate(),
-                                  hours,
-                                  minutes
-                                );
-                                form.setValue("startDate", newDate)
-                              }} />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>End</FormLabel>
-                        <div className="flex gap-2">
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                            </PopoverContent>
-                          </Popover>
-                          <Popover modal={true}>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                  {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                                  <Clock className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start" >
-                              <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                                const newDate = new Date(
-                                  field.value.getFullYear(),
-                                  field.value.getMonth(),
-                                  field.value.getDate(),
-                                  hours,
-                                  minutes
-                                );
-                                form.setValue("endDate", newDate)
-                              }} />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl >
-                          <Textarea placeholder="Description" className="resize-none" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>}
-                {currentStep === 1 && <div className="flex flex-col justify-start h-full gap-2">
-                  <Tabs defaultValue="friends" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="friends">Friends</TabsTrigger>
-                      <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="friends">
-                      {isLoading ? <div>Loading...</div> :
-                        <div>
-                          <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
-                        </div>
-                      }
-                    </TabsContent>
-                    <TabsContent value="invited">
-                      <FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />
-                    </TabsContent>
-                  </Tabs>
-                </div>}
-                {currentStep === 2 &&
-                  <div className="flex w-full justify-center gap-2 m-auto items-center">
-                    <LoaderCircle className="animate-spin" />
-                    Complete!
-                  </div>
-                }
-              </div>
-            </Form>
           </div>
           <DialogFooter >
             <div className="flex w-full justify-between">
@@ -339,179 +344,36 @@ export default function CreateEventDialog() {
 
   return (
     <Drawer open={open} onOpenChange={(value: boolean) => {
+      setOpen(value);
       if (value) {
-        setOpen(value);
-        form.reset();
-        setCurrentStep(0);
-        setInvitedUsers([]);
-        form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
-        form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
+        resetForm();
       }
-    }}>
+    }} >
       <DrawerTrigger asChild>
         <Button size={"lg"}>New event</Button>
-
       </DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className="text-left">
+        <DrawerHeader>
           <DrawerTitle>Create new event</DrawerTitle>
-        </DrawerHeader>
-        <Form {...form}>
-          <div className="space-y-8 flex flex-col h-full">
-            {currentStep === 0 && <>
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="New event" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Start</FormLabel>
-                    <div className="flex gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                        </PopoverContent>
-                      </Popover>
-                      <Popover modal={true}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                              <Clock className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" >
-                          <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                            const newDate = new Date(
-                              field.value.getFullYear(),
-                              field.value.getMonth(),
-                              field.value.getDate(),
-                              hours,
-                              minutes
-                            );
-                            form.setValue("startDate", newDate)
-                          }} />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>End</FormLabel>
-                    <div className="flex gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                        </PopoverContent>
-                      </Popover>
-                      <Popover modal={true}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                              <Clock className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" >
-                          <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                            const newDate = new Date(
-                              field.value.getFullYear(),
-                              field.value.getMonth(),
-                              field.value.getDate(),
-                              hours,
-                              minutes
-                            );
-                            form.setValue("endDate", newDate)
-                          }} />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl >
-                      <Textarea placeholder="Description" className="resize-none" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>}
-            {currentStep === 1 && <div className="flex flex-col justify-start h-full gap-2">
-              <Tabs defaultValue="friends" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="friends">Friends</TabsTrigger>
-                  <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
-                </TabsList>
-                <TabsContent value="friends">
-                  {isLoading ? <div>Loading...</div> :
-                    <div>
-                      <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
-                    </div>
-                  }
-                </TabsContent>
-                <TabsContent value="invited">
-                  <FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />
-                </TabsContent>
-              </Tabs>
-            </div>}
-            {currentStep === 2 &&
-              <div className="flex w-full justify-center gap-2 m-auto items-center">
-                <LoaderCircle className="animate-spin" />
-                Complete!
-              </div>
-            }
+          <div className="flex gap-2">
+            <div className={`h-1 bg-blue-500 w-full rounded-sm`} />
+            <div className={`h-1 ${currentStep >= 1 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />
+            <div className={`h-1 ${currentStep >= 2 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />
           </div>
-        </Form>
-        <DrawerFooter className="pt-2">
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
+        </DrawerHeader>
+        <div className="px-4">
+          {formContent}
+        </div>
+        <DrawerFooter>
+          <div className="w-full flex">
+            <Button type="button" variant={"ghost"} className={`${currentStep === 0 && "hidden"} w-full`} onClick={() => {
+              prev()
+            }}>Back</Button>
+
+            <Button type="button" className="w-full" onClick={() => {
+              next()
+            }}>Next</Button>
+          </div>
         </DrawerFooter>
       </DrawerContent>
     </Drawer >

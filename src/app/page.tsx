@@ -9,13 +9,13 @@ import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import LoginDialog from "@/components/login/loginDialog";
 import Image from "next/image";
 
-import { useIsMobile } from "@/utils/useIsMobile";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function Home() {
-  const isMobile = useIsMobile();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
   return (
     <div>
-      <div className="h-auto w-full relative block bg-gradient-to-b from-white/0 to-gray-50">
+      <div className="h-auto w-full relative block bg-gradient-to-b from-white/0 to-blue-50">
         <div className="md:pt-16 block m-auto overflow-hidden ">
           <div className="flex ">
             <div className="mx-auto grow-0 z-20 py-8 md:py-16 px-4 md:px-16 ">
@@ -23,21 +23,21 @@ export default function Home() {
                 <span className="font-bold text-5xl md:text-8xl">
                   Make your events
                   <br />
-                  actually <span className="text-blue-500 bg-gradient-to-b from-transparent from-85% via-orange-300 via-85% to-orange-300">happen.</span>
+                  actually <span className="text-blue-500 bg-gradient-to-b from-transparent from-[82%] via-orange-300 via-[82%] to-orange-300">happen.</span>
                 </span>
-                <p className="py-8 font-normal leading-6 text-xl md:text-2xl w-full md:w-1/2">Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
+                <p className="py-8 font-normal leading-6 text-xl md:text-2xl w-full">Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
                 <div className="flex w-full gap-4 flex-col md:flex-row">
                   <LoginDialog><Button size={"lg"}>Get started</Button></LoginDialog>
                 </div>
               </div>
             </div>
-            {!isMobile && (
+            {isDesktop && (
               <div className="w-1/4 h-auto z-10 rotate-[-15deg] -translate-x-56 ">
                 <div className="flexm flex-col w-[1000px] h-full bg-[linear-gradient(to_right,#c6c6c6_1px,transparent_1px),linear-gradient(to_bottom,#c6c6c6_1px,transparent_1px)] bg-[size:60px_100px]">
                   <AnimatedTimeCard initialX={20} animateX={[20, 200]} width={300} duration={1} repeatDelay={2} />
-                  <AnimatedTimeCard classNames="translate-y-[100px]" initialX={100} animateX={[200, 500, 280, 160, -50]} animateWidth={[380, 220, 220, 360, 360]} width={400} delay={1.5} duration={4} repeatDelay={2} />
-                  <AnimatedTimeCard classNames="translate-y-[200px]" initialX={50} animateX={[100, 100, 30, -50, 180, 120]} width={300} duration={3} repeatDelay={2} />
-                  <AnimatedTimeCard classNames="translate-y-[300px]" initialX={400} animateX={[400, 200, 400, 100, 100, 100]} animateWidth={[100, 100, 150, 100]} width={100} duration={5} repeatDelay={1} />
+                  <AnimatedTimeCard initialX={100} animateX={[200, 500, 280, 160, -50]} animateWidth={[380, 220, 220, 360, 360]} width={400} delay={1.5} duration={4} repeatDelay={2} />
+                  <AnimatedTimeCard initialX={50} animateX={[100, 100, 30, -50, 180, 120]} width={300} duration={3} repeatDelay={2} />
+                  <AnimatedTimeCard initialX={400} animateX={[400, 200, 400, 100, 100, 100]} animateWidth={[100, 100, 150, 100]} width={100} duration={5} repeatDelay={1} />
                 </div>
               </div>
             )}

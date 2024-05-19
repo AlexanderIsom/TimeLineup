@@ -10,7 +10,6 @@ interface Props {
   duration: number;
   delay?: number;
   repeatDelay: number;
-  classNames?: string;
 }
 
 const minutesIncrements = 20;
@@ -51,7 +50,7 @@ export default function AnimatedTimeCard(props: Props) {
       }}
     >
       <div className="flex justify-center items-center h-[100px] w-full">
-        <div className="flex absolute h-20 my-0 bg-gray-100 rounded-md w-full justify-between items-center shadow-md shadow-gray-200">
+        <div className="border flex absolute h-20 my-0 bg-gray-100 rounded-md w-full justify-between items-center shadow-md shadow-gray-200">
           <span className="p-2 text-ellipsis overflow-hidden font-semibold">
             {format(
               roundToNearestMinutes(addMinutes(startTime, currentX * 5), {
