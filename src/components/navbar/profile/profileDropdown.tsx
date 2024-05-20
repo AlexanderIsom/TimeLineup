@@ -1,5 +1,4 @@
 'use client'
-import { Profile } from "@/db/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { HeartHandshake, LogOut, User } from "lucide-react";
@@ -9,14 +8,14 @@ import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } f
 import ProfileForm from "./profileForm";
 import { useState } from "react";
 import ManageFriends from "./manageFriends";
-import { FriendStatusAndProfile } from "@/actions/friendActions";
+import { useFriends, useProfile } from "@/swr/swrFunctions";
+import ProfileDialog from "./profileDialog";
+import FriendsDialog from "./friendsDialog";
 
-interface Props {
-	profile: Profile;
-	friends: FriendStatusAndProfile
-}
 
-export default function ProfileDropdown({ profile, friends }: Props) {
+export default function ProfileDropdown() {
+	const { profile } = useProfile();
+	const { friends } = useFriends();
 	const supabase = createClient();
 	const router = useRouter();
 	const [dialogOption, setDialogOption] = useState<string>();
@@ -31,7 +30,7 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger asChild >
 					<Avatar>
-						<AvatarImage src={profile.avatarUrl ?? undefined} />
+						<AvatarImage src={profile?.avatarUrl ?? undefined} />
 						<AvatarFallback className="bg-gray-200"><User /></AvatarFallback>
 					</Avatar>
 				</DropdownMenuTrigger >
@@ -60,42 +59,13 @@ export default function ProfileDropdown({ profile, friends }: Props) {
 				</DropdownMenuContent >
 			</DropdownMenu>
 
-			<Dialog open={dialogOption === "profile"} onOpenChange={(state) => {
-				if (!state) {
-					setDialogOption(undefined);
-				}
-			}}>
-				<DialogContent>
-					<DialogHeader className='flex flex-col items-center space-y-2'>
-						<div className="flex items-center space-x-2">
-							<Avatar >
-								<AvatarImage src={profile!.avatarUrl ?? undefined} />
-								<AvatarFallback>{profile!.username!.substring(0, 2)}</AvatarFallback>
-							</Avatar>
-							<span>
-								{profile!.username!}
-							</span>
-						</div>
-						<DialogDescription>
-							Change your profile picture and username here.
-						</DialogDescription>
-					</DialogHeader>
-					<ProfileForm />
-				</DialogContent>
-			</Dialog>
+			<ProfileDialog open={dialogOption === "profile"} onClose={() => {
+				setDialogOption(undefined);
+			}} />
 
-			<Dialog open={dialogOption === "friends"} onOpenChange={(state) => {
-				if (!state) {
-					setDialogOption(undefined);
-				}
-			}}>
-				<DialogContent>
-					<DialogHeader >
-						<DialogTitle>Manage friends</DialogTitle>
-					</DialogHeader>
-					<ManageFriends friends={friends} />
-				</DialogContent>
-			</Dialog>
+			<FriendsDialog open={dialogOption === "friends"} onClose={() => {
+				setDialogOption(undefined);
+			}} />
 		</>
 	)
 }

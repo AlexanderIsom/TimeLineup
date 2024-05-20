@@ -1,4 +1,3 @@
-import { array } from "zod";
 import { create } from "zustand";
 
 export interface TimeSegment {

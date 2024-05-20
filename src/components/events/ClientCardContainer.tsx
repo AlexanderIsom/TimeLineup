@@ -3,13 +3,13 @@
 import { useEffect, useRef } from "react"
 import ResizableTimeCard from "../id/ResizableTimeCard"
 
-import styles from "./clientCardContainer.module.scss"
+
 import { useSegmentStore, TimeSegment } from "@/store/Segments"
 import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns"
 import { useDebouncedCallback } from "use-debounce"
 import { Event } from "@/db/schema";
 import { saveSegments } from "@/actions/idActions"
-import { randomUUID } from "crypto"
+import { nanoid } from "nanoid"
 
 interface Props {
 	minuteWidth: number
@@ -50,7 +50,7 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 			deletes.forEach((overlapId) => {
 				segmentStore.deleteSegment(overlapId);
 			});
-			segmentStore.addSegment({ id: randomUUID(), start: smallest, end: largest })
+			segmentStore.addSegment({ id: nanoid(), start: smallest, end: largest })
 			return true;
 		}
 
@@ -71,7 +71,7 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 		const startDate = min([max([roundToNearestMinutes(addMinutes(eventData.start, x / minuteWidth), { nearestTo: 5 }), eventData.start]), subMinutes(eventData.end, newDuration)])
 		const endDate = addMinutes(startDate, newDuration);
 
-		const newSegment: TimeSegment = { id: randomUUID(), start: startDate, end: endDate };
+		const newSegment: TimeSegment = { id: nanoid(), start: startDate, end: endDate };
 		const foundOverlaps = removeOverlappingSegments(newSegment);
 		if (!foundOverlaps) {
 			segmentStore.addSegment(newSegment);
@@ -79,7 +79,9 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 	}
 
 	return (
-		<div className={styles.container} onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+		<div className="flex items-center h-16 relative hover:cursor-pointer" onDoubleClick={handleDoubleClick} ref={timelineContainerRef} onClick={() => {
+			console.log("clicked");
+		}}>
 			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
 					minuteWidth={minuteWidth}

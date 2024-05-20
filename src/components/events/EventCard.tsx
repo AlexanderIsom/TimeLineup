@@ -15,7 +15,7 @@ interface Props {
 
 export default function EventCard({ title, description, events }: Props) {
 	const router = useRouter();
-	return <Card className="flex flex-1 flex-col w-full max-w-[33%] mx-auto shadow-lg justify-between">
+	return <Card className="flex flex-1 flex-col w-full md:max-w-[33%] mx-auto shadow-lg justify-between">
 		<div>
 			<CardHeader className="rounded-t-lg">
 				<CardTitle>{title}</CardTitle>

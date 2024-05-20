@@ -1,11 +1,9 @@
-
 import React from "react";
-import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import ProviderButton from "./providerButton";
 
 interface Props {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 }
 
 export default function LoginDialog({ children }: Props) {
@@ -15,7 +13,6 @@ export default function LoginDialog({ children }: Props) {
 			<DialogTrigger asChild>
 				{children}
 			</DialogTrigger>
-
 			<DialogContent className="flex flex-col max-w-max">
 				<DialogHeader className="flex">
 					<DialogTitle>Login</DialogTitle>

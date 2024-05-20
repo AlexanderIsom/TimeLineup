@@ -4,27 +4,27 @@ import { FriendStatusAndProfile, acceptFriendRequest, removeFriend } from '@/act
 import { Check, User, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useOptimistic } from 'react'
+import { useNotificationStore } from '@/store/Notifications'
 
 interface Props {
 	requests: FriendStatusAndProfile
 }
 
-export default function FriendRequests(props: Props) {
-	const [requests, removeRequest] = useOptimistic(props.requests, (state, requestIdToRemove) => {
-		return state?.filter(({ id }) => id !== requestIdToRemove)
-	});
+export default function FriendRequests({ requests }: Props) {
+	const store = useNotificationStore((state) => state);
+
 
 	if (requests === undefined || requests.length <= 0) {
 		return <h2 className="text-sm font-semibold">no pending friend requests</h2>
 	}
 
 	async function rejectRequest(id: string) {
-		removeRequest(id);
+		store.removeFriendRequest(id);
 		await removeFriend(id);
 	}
 
 	async function acceptRequest(id: string) {
-		removeRequest(id);
+		store.removeFriendRequest(id);
 		await acceptFriendRequest(id);
 	}
 

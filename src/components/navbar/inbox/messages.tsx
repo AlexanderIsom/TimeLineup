@@ -2,24 +2,22 @@
 import { NotificationQuery, markNoticiationAsRead } from "@/actions/notificationAction";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useNotificationStore } from "@/store/Notifications";
 import { MailOpen, User } from "lucide-react";
-import { useOptimistic } from "react";
 
 interface Props {
 	notifications: NotificationQuery
 
 }
 
-export default function Messages(props: Props) {
-	const [notifications, removeRequest] = useOptimistic(props.notifications, (state, messageIdToRemove) => {
-		return state?.filter(({ id }) => id !== messageIdToRemove)
-	});
+export default function Messages({ notifications }: Props) {
+	const store = useNotificationStore((state) => state);
 
 	if (notifications === undefined || notifications.length <= 0) {
 		return <h2 className="text-sm font-semibold">no messages</h2>
 	}
 	async function onSubmit(id: string) {
-		removeRequest(id);
+		store.removeNotification(id);
 		await markNoticiationAsRead(id);
 	}
 

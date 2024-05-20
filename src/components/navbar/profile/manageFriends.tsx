@@ -15,17 +15,15 @@ import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
-interface Props {
-	friends: FriendStatusAndProfile
-}
+import { useFriends } from "@/swr/swrFunctions";
 
 const formSchema = z.object({
 	username: z.string(),
 })
 
 
-export default function ManageFriends(props: Props) {
+export default function ManageFriends() {
+	const { friends } = useFriends();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -37,7 +35,7 @@ export default function ManageFriends(props: Props) {
 	const supabase = createClient();
 
 	const [currentFriends, setCurrentFriends] = useState<FriendStatusAndProfile>();
-	useMemo(() => setCurrentFriends(props.friends), [props.friends])
+	useMemo(() => setCurrentFriends(friends), [friends])
 
 	useEffect(() => {
 		const friendChannel = supabase.channel('realtime-friendship').on('postgres_changes', {
