@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createEvent } from "@/actions/eventActions"
+import { EventDataQuery, UpdateEvent, createEvent } from "@/actions/eventActions"
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
@@ -23,7 +23,9 @@ import { useGetFriends } from "@/actions/hooks";
 import { InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { NotUndefined } from "@/utils/TypeUtils";
 
 const formSchema = z.object({
   title: z.string().min(4, {
@@ -61,10 +63,25 @@ const steps = [
   }
 ]
 
-export default function CreateEventDialog() {
+interface Props {
+  event?: EventDataQuery
+  isEditing: boolean
+}
+
+export default function CreateEventDialog({ event, isEditing }: Props) {
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [hasBeenWarned, setHasBeenWarned] = useState(false);
+  const [startClockOpen, setStartClockOpen] = useState(false);
+  const [endClockOpen, setEndClockOpen] = useState(false);
+  const [invitedUsers, setInvitedUsers] = useState<Array<Profile>>(() => {
+    if (event) {
+      return event.rsvps.map((rsvp) => rsvp.user);
+    }
+    return [];
+  });
+
   const { data: friendships, isError, isLoading, error } = useGetFriends();
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -74,27 +91,41 @@ export default function CreateEventDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      startDate: addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 60),
-      endDate: addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 95),
+      title: event !== undefined ? event.title : "",
+      startDate: event !== undefined ? event.start : addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 60),
+      endDate: event !== undefined ? event.end : addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 95),
+      description: event !== undefined ? event.description : "",
     },
   });
 
   function processForm(values: z.infer<typeof formSchema>) {
-    const data: InsertEvent = { title: values.title, start: values.startDate, end: values.endDate, description: values.description } as InsertEvent;
-    createEvent(data, invitedUsers).then((newEventId) => {
-      setOpen(false);
-      toast.message("Event has been created", {
-        description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
-        action: {
-          label: "Goto",
-          onClick: () => {
-            router.push(`/events/${newEventId}`)
+    if (isEditing) {
+      const data: NotUndefined<EventDataQuery> = { ...event, title: values.title, start: values.startDate, end: values.endDate, description: values.description } as NotUndefined<EventDataQuery>;
+      UpdateEvent(data, invitedUsers).then(() => {
+        setOpen(false);
+        toast.message("Event has been updated", {
+          description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
+        })
+        router.refresh();
+      });
+      return;
+    } else {
+
+      const data: InsertEvent = { title: values.title, start: values.startDate, end: values.endDate, description: values.description } as InsertEvent;
+      createEvent(data, invitedUsers).then((newEventId) => {
+        setOpen(false);
+        toast.message("Event has been created", {
+          description: format(data.start, "iiii, MMMM dd, yyyy 'at' h:mm aa"),
+          action: {
+            label: "Goto",
+            onClick: () => {
+              router.push(`/events/${newEventId}`)
+            },
           },
-        },
-      })
-      router.refresh();
-    });
+        })
+        router.refresh();
+      });
+    }
   }
 
   type FieldName = keyof z.infer<typeof formSchema>;
@@ -122,9 +153,14 @@ export default function CreateEventDialog() {
   const resetForm = () => {
     form.reset();
     setCurrentStep(0);
-    setInvitedUsers([]);
-    form.setValue("startDate", roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }))
-    form.setValue("endDate", addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 30))
+    setInvitedUsers(() => {
+      if (event) {
+        return event.rsvps.map((rsvp) => rsvp.user);
+      }
+      return [];
+    });
+    form.setValue("startDate", event !== undefined ? event.start : addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 60))
+    form.setValue("endDate", event !== undefined ? event.end : addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: 'ceil', nearestTo: 5 }), 95))
   }
 
   const addSelectedUser = (profile: Profile) => {
@@ -135,158 +171,202 @@ export default function CreateEventDialog() {
     setInvitedUsers(prevItems => prevItems.filter(item => item.id !== profile.id));
   }
 
-  const formContent = <Form {...form}>
-    <div className="space-y-8 flex flex-col h-full">
-      {currentStep === 0 && <>
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="New event" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+  const formContent = <>
+    <AlertDialog open={alertOpen} onOpenChange={(value) => {
+      setAlertOpen(value);
+    }}>
+      <AlertDialogContent>
+        <AlertDialogTitle>
+          Warning!
+        </AlertDialogTitle>
+        <AlertDialogDescription>
+          Changing the event date may invalidate users schedules
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => {
+            setAlertOpen(false);
+          }}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => {
+            setAlertOpen(false);
+            setHasBeenWarned(true);
+          }}>Continue</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
 
-        <FormField
-          control={form.control}
-          name="startDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Start</FormLabel>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                  </PopoverContent>
-                </Popover>
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                        <Clock className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start" >
-                    <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                      const newDate = new Date(
-                        field.value.getFullYear(),
-                        field.value.getMonth(),
-                        field.value.getDate(),
-                        hours,
-                        minutes
-                      );
-                      form.setValue("startDate", newDate)
-                    }} />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="endDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>End</FormLabel>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
-                  </PopoverContent>
-                </Popover>
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                        {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
-                        <Clock className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start" >
-                    <TimeSelector value={field.value} onSelected={(hours, minutes) => {
-                      const newDate = new Date(
-                        field.value.getFullYear(),
-                        field.value.getMonth(),
-                        field.value.getDate(),
-                        hours,
-                        minutes
-                      );
-                      form.setValue("endDate", newDate)
-                    }} />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Form {...form}>
+      <div className="space-y-8 flex flex-col h-full">
+        {currentStep === 0 && <>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="New event" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="pb-4">
-              <FormLabel>Description</FormLabel>
-              <FormControl >
-                <Textarea placeholder="Description" className="resize-none" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </>}
-      {currentStep === 1 && <div className="flex flex-col justify-start h-full gap-2">
-        <Tabs defaultValue="friends" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="friends">Friends</TabsTrigger>
-            <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
-          </TabsList>
-          <TabsContent value="friends">
-            {isLoading ? <div>Loading...</div> :
-              <div>
-                <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
-              </div>
-            }
-          </TabsContent>
-          <TabsContent value="invited">
-            <FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />
-          </TabsContent>
-        </Tabs>
-      </div>}
-      {currentStep === 2 &&
-        <div className="flex w-full justify-center gap-2 m-auto items-center">
-          <LoaderCircle className="animate-spin" />
-          Complete!
-        </div>
-      }
-    </div>
-  </Form>
+          <FormField
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Start</FormLabel>
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")} onClick={() => {
+                          if (!hasBeenWarned && isEditing) {
+                            setAlertOpen(true);
+                          }
+                        }}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+                    </PopoverContent>
+                  </Popover>
+                  <Popover open={startClockOpen} modal={true} onOpenChange={(value) => {
+                    if (!hasBeenWarned && isEditing) {
+                      setAlertOpen(true);
+                    } else {
+                      setStartClockOpen(value)
+                    }
+                  }}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                          {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
+                          <Clock className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start" >
+                      <TimeSelector value={field.value} onSelected={(hours, minutes) => {
+                        const newDate = new Date(
+                          field.value.getFullYear(),
+                          field.value.getMonth(),
+                          field.value.getDate(),
+                          hours,
+                          minutes
+                        );
+                        form.setValue("startDate", newDate)
+                      }} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>End</FormLabel>
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")} onClick={() => {
+                          if (!hasBeenWarned && isEditing) {
+                            setAlertOpen(true);
+                          }
+                        }}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date: Date) => date < new Date()} />
+                    </PopoverContent>
+                  </Popover>
+                  <Popover open={endClockOpen} modal={true} onOpenChange={(value) => {
+                    if (!hasBeenWarned && isEditing) {
+                      setAlertOpen(true);
+                    } else {
+                      setEndClockOpen(value)
+                    }
+                  }}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-[100px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                          {field.value ? format(field.value, "HH:mm") : <span>Pick a date</span>}
+                          <Clock className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start" >
+                      <TimeSelector value={field.value} onSelected={(hours, minutes) => {
+                        const newDate = new Date(
+                          field.value.getFullYear(),
+                          field.value.getMonth(),
+                          field.value.getDate(),
+                          hours,
+                          minutes
+                        );
+                        form.setValue("endDate", newDate)
+                      }} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="pb-4">
+                <FormLabel>Description</FormLabel>
+                <FormControl >
+                  <Textarea placeholder="Description" className="resize-none" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>}
+        {currentStep === 1 && <div className="flex flex-col justify-start h-full gap-2">
+          <Tabs defaultValue="friends" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="friends">Friends</TabsTrigger>
+              <TabsTrigger value="invited" className="gap-2">Invited <Badge className="px-1 bg-gray-300 ">{invitedUsers.length}</Badge></TabsTrigger>
+            </TabsList>
+            <TabsContent value="friends">
+              {isLoading ? <div>Loading...</div> :
+                <div>
+                  <FriendSelector list={friends!.filter(u => !invitedUsers.includes(u))} icon={<Plus />} onClick={addSelectedUser} />
+                </div>
+              }
+            </TabsContent>
+            <TabsContent value="invited">
+              <FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />
+            </TabsContent>
+          </Tabs>
+        </div>}
+        {currentStep === 2 &&
+          <div className="flex w-full justify-center gap-2 m-auto items-center">
+            <LoaderCircle className="animate-spin" />
+            Complete!
+          </div>
+        }
+      </div>
+    </Form>
+  </>
 
   if (isDesktop) {
     return (
@@ -297,7 +377,7 @@ export default function CreateEventDialog() {
         }
       }}>
         <DialogTrigger asChild>
-          <Button size={"lg"}>New event</Button>
+          <Button size={"lg"}>{isEditing ? "Edit" : "New event"}</Button>
         </DialogTrigger>
 
         <DialogContent
@@ -308,7 +388,7 @@ export default function CreateEventDialog() {
         >
           <div className="flex flex-col gap-2">
             <DialogHeader className="max-h-max">
-              <DialogTitle>Create new event</DialogTitle>
+              <DialogTitle>{isEditing ? "Edit event" : "Create new event"}</DialogTitle>
               <div className="flex gap-2">
                 <div className={`h-1 bg-blue-500 w-full rounded-sm`} />
                 <div className={`h-1 ${currentStep >= 1 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />
@@ -350,11 +430,11 @@ export default function CreateEventDialog() {
       }
     }} >
       <DrawerTrigger asChild>
-        <Button size={"lg"}>New event</Button>
+        <Button size={"lg"}>{isEditing ? "Edit" : "New event"}</Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Create new event</DrawerTitle>
+          <DrawerTitle>{isEditing ? "Edit event" : "Create new event"}</DrawerTitle>
           <div className="flex gap-2">
             <div className={`h-1 bg-blue-500 w-full rounded-sm`} />
             <div className={`h-1 ${currentStep >= 1 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />

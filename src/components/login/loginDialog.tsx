@@ -13,7 +13,7 @@ export default function LoginDialog({ children }: Props) {
 			<DialogTrigger asChild>
 				{children}
 			</DialogTrigger>
-			<DialogContent className="flex flex-col max-w-max">
+			<DialogContent className="flex flex-col max-w-max rounded-lg">
 				<DialogHeader className="flex">
 					<DialogTitle>Login</DialogTitle>
 					<DialogDescription>hello there</DialogDescription>
