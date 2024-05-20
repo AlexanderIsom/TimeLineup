@@ -79,7 +79,9 @@ export default function ClientCardContainer({ minuteWidth, eventData, localId }:
 	}
 
 	return (
-		<div className="flex items-center h-16 relative hover:cursor-pointer" onDoubleClick={handleDoubleClick} ref={timelineContainerRef}>
+		<div className="flex items-center h-16 relative hover:cursor-pointer" onDoubleClick={handleDoubleClick} ref={timelineContainerRef} onClick={() => {
+			console.log("clicked");
+		}}>
 			{segmentStore.segments.map((segment: TimeSegment, index) => {
 				return <ResizableTimeCard
 					minuteWidth={minuteWidth}

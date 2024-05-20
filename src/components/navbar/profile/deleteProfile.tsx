@@ -11,7 +11,7 @@ export default function DeleteProfile() {
 		<AlertDialogTrigger asChild>
 			<Button type="button" variant={"destructive"} >Delete account</Button>
 		</AlertDialogTrigger>
-		<AlertDialogContent>
+		<AlertDialogContent className="w-11/12 rounded-lg">
 			<AlertDialogHeader>
 				<AlertDialogTitle>Delete account ?</AlertDialogTitle>
 				<AlertDialogDescription>

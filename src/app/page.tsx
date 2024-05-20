@@ -39,7 +39,7 @@ export default function Home() {
             </div>
           )}
         </div>
-        <svg className={`relative w-full overflow-hidden z-20`} preserveAspectRatio="none" x="0px" y="0px" viewBox="0 0 1920 100.1">
+        <svg className={`relative w-full overflow-hidden z-20 translate-y-1`} preserveAspectRatio="none" x="0px" y="0px" viewBox="0 0 1920 100.1">
           <path fill="#ffffff" d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
         </svg>
       </div>

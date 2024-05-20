@@ -1,25 +1,24 @@
 import { InboxIcon } from "lucide-react";
 import Inbox from "./inbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 interface Props {
 	children?: React.ReactNode;
 }
 
 export default function InboxDialog({ children }: Props) {
-	return <Dialog>
-		<DialogTrigger asChild>
+	return <Drawer>
+		<DrawerTrigger asChild>
 			{children}
-		</DialogTrigger>
-		<DialogContent className="w-11/12 sm:max-w-md">
-			<DialogHeader >
-				<DialogTitle className="flex gap-2 items-center">
-					<InboxIcon className="h-4 w-4" />
+		</DrawerTrigger>
+		<DrawerContent className="px-4 h-1/2">
+			<DrawerHeader >
+				<DrawerTitle >
 					Inbox
-				</DialogTitle>
-			</DialogHeader>
+				</DrawerTitle>
+			</DrawerHeader>
 			<Inbox />
-		</DialogContent>
-	</Dialog >
+		</DrawerContent>
+	</Drawer >
 
 }
