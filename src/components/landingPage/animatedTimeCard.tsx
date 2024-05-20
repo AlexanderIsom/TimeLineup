@@ -50,8 +50,8 @@ export default function AnimatedTimeCard(props: Props) {
       }}
     >
       <div className="flex justify-center items-center h-[100px] w-full">
-        <div className="border flex absolute h-20 my-0 bg-gray-100 rounded-md w-full justify-between items-center shadow-md shadow-gray-200">
-          <span className="p-2 text-ellipsis overflow-hidden font-semibold">
+        <div className=" flex absolute h-20 my-0 bg-blue-400 rounded-xl w-full justify-between items-center shadow-md shadow-gray-200">
+          <span className="p-2 text-ellipsis overflow-hidden font-semibold text-white">
             {format(
               roundToNearestMinutes(addMinutes(startTime, currentX * 5), {
                 nearestTo: 5,
@@ -59,7 +59,7 @@ export default function AnimatedTimeCard(props: Props) {
               "HH:mm"
             )}
           </span>
-          <span className="p-2 text-ellipsis overflow-hidden font-semibold">{format(roundToNearestMinutes(addMinutes(startTime, (currentX + currentWidth) * 5), { nearestTo: 5 }), "HH:mm")}</span>
+          <span className="p-2 text-ellipsis overflow-hidden font-semibold text-white">{format(roundToNearestMinutes(addMinutes(startTime, (currentX + currentWidth) * 5), { nearestTo: 5 }), "HH:mm")}</span>
         </div>
       </div>
     </motion.div>
