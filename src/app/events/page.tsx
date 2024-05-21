@@ -5,7 +5,6 @@ import EventServerDialog from "@/components/events/newEventForm/eventServerDialo
 import { GetLocalUserEvents } from "@/actions/eventActions";
 import EventCard from "@/components/events/EventCard";
 import { Card } from "@/components/ui/card";
-import DrawerTextArea from "@/components/events/newEventForm/drawerTextArea";
 
 export default async function Events() {
   const supabase = createClient()
@@ -31,7 +30,6 @@ export default async function Events() {
     <div className="h-full">
       <Card className="flex mx-4 mt-2 p-4 items-center align-middle">
         <EventServerDialog />
-        <DrawerTextArea />
       </Card>
       <div className="flex flex-col md:flex-row gap-4 p-4 h-[90%]">
         <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
