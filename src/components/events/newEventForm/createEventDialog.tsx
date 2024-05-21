@@ -65,10 +65,10 @@ const steps = [
 
 interface Props {
   event?: EventDataQuery
-  isEditing: boolean
+  isEditing?: boolean
 }
 
-export default function CreateEventDialog({ event, isEditing }: Props) {
+export default function CreateEventDialog({ event, isEditing = false }: Props) {
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [alertOpen, setAlertOpen] = useState(false);
