@@ -428,11 +428,11 @@ export default function CreateEventDialog({ event, isEditing = false }: Props) {
       if (value) {
         resetForm();
       }
-    }} >
+    }} modal={true}>
       <DrawerTrigger asChild>
         <Button size={"lg"}>{isEditing ? "Edit" : "New event"}</Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className="overflow-clip max-h-[96%]">
         <DrawerHeader>
           <DrawerTitle>{isEditing ? "Edit event" : "Create new event"}</DrawerTitle>
           <div className="flex gap-2">
@@ -441,7 +441,7 @@ export default function CreateEventDialog({ event, isEditing = false }: Props) {
             <div className={`h-1 ${currentStep >= 2 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />
           </div>
         </DrawerHeader>
-        <div className="px-4 overflow-scroll">
+        <div className="px-4 overflow-y-auto">
           {formContent}
         </div>
         <DrawerFooter>
