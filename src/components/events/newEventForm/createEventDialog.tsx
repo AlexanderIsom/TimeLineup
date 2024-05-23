@@ -441,7 +441,7 @@ export default function CreateEventDialog({ event, isEditing = false }: Props) {
             <div className={`h-1 ${currentStep >= 2 ? "bg-blue-500" : "bg-gray-200"} w-full rounded-sm`} />
           </div>
         </DrawerHeader>
-        <div className="px-4">
+        <div className="px-4 overflow-scroll">
           {formContent}
         </div>
         <DrawerFooter>
