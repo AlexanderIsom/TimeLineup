@@ -116,10 +116,6 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 				})}
 			</div>}
 
-			{isMobile && <div >
-				{/* TODO: implement event details dialog / drawer */}
-			</div>}
-
 			<div className="row-start-2 row-end-3 col-start-2 col-end-2 overflow-y-auto overflow-x-scroll border-l border-gray-300" ref={contentDiv}>
 				<div style={{
 					width: `${totalMinutes * minuteWidth}px`,
