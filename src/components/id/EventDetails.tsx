@@ -46,7 +46,7 @@ export default function EventDetails({ event, localUser }: Props) {
 				<Info className="w-12 h-12 p-2" />
 			</Button>
 		</SheetTrigger>
-		<SheetContent className="px-4 md:px-8 flex flex-col gap-4">
+		<SheetContent className="px-4 md:px-8 flex flex-col gap-4 w-11/12 md:w-auto">
 			<SheetHeader className="rounded-t-lg">
 				<SheetTitle>Event Details</SheetTitle>
 			</SheetHeader>
