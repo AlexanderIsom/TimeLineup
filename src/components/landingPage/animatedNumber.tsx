@@ -1,3 +1,4 @@
+"use client"
 import { animate, useInView } from "framer-motion";
 import { ReactNode, useEffect, useRef, useState } from "react";
 

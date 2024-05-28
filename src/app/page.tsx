@@ -1,18 +1,13 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, BellRing, Brush, CodeXml, DraftingCompass, Earth, MousePointerClick, Puzzle, UserCheck } from "lucide-react"
 
 import BoxItem from "@/components/landingPage/BoxItem";
-import AnimatedNumber from "@/components/AnimatedNumber";
+import AnimatedNumber from "@/components/landingPage/animatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import LoginDialog from "@/components/login/loginDialog";
 import Image from "next/image";
 
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-
 export default function Home() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
   return (
     <div className="md:pt-16">
       <div className="bg-gradient-to-b from-white/0 to-blue-50">
@@ -25,19 +20,19 @@ export default function Home() {
             </span>
             <p className="py-8 font-normal leading-6 text-xl md:text-2xl w-full">Timelineup allows you to plan out events for anyone anywhere in any timezone.</p>
             <div className="flex w-full gap-4 flex-col md:flex-row">
-              <LoginDialog><Button size={"lg"}>Get started</Button></LoginDialog>
+              <LoginDialog>
+                <Button size={"lg"}>Get started</Button>
+              </LoginDialog>
             </div>
           </div>
-          {isDesktop && (
-            <div className="w-1/4 h-auto z-10 rotate-[-15deg] -translate-x-56 ">
-              <div className="flexm flex-col w-[500px] h-full bg-[linear-gradient(to_right,#c6c6c6_1px,transparent_1px),linear-gradient(to_bottom,#c6c6c6_1px,transparent_1px)] bg-[size:60px_100px]">
-                <AnimatedTimeCard initialX={20} animateX={[20, 200]} width={300} duration={1} repeatDelay={2} />
-                <AnimatedTimeCard initialX={100} animateX={[200, 500, 280, 160, -50]} animateWidth={[380, 220, 220, 360, 360]} width={400} delay={1.5} duration={4} repeatDelay={2} />
-                <AnimatedTimeCard initialX={50} animateX={[100, 100, 30, -50, 180, 120]} width={300} duration={3} repeatDelay={2} />
-                <AnimatedTimeCard initialX={400} animateX={[400, 200, 400, 100, 100, 100]} animateWidth={[100, 100, 150, 100]} width={100} duration={5} repeatDelay={1} />
-              </div>
+          <div className="hidden md:block w-1/4 h-auto z-10 rotate-[-15deg] -translate-x-56 ">
+            <div className="flexm flex-col w-[500px] h-full bg-[linear-gradient(to_right,#c6c6c6_1px,transparent_1px),linear-gradient(to_bottom,#c6c6c6_1px,transparent_1px)] bg-[size:60px_100px]">
+              <AnimatedTimeCard initialX={20} animateX={[20, 200]} width={300} duration={1} repeatDelay={2} />
+              <AnimatedTimeCard initialX={100} animateX={[200, 500, 280, 160, -50]} animateWidth={[380, 220, 220, 360, 360]} width={400} delay={1.5} duration={4} repeatDelay={2} />
+              <AnimatedTimeCard initialX={50} animateX={[100, 100, 30, -50, 180, 120]} width={300} duration={3} repeatDelay={2} />
+              <AnimatedTimeCard initialX={400} animateX={[400, 200, 400, 100, 100, 100]} animateWidth={[100, 100, 150, 100]} width={100} duration={5} repeatDelay={1} />
             </div>
-          )}
+          </div>
         </div>
         <svg className={`relative w-full overflow-hidden z-20 translate-y-1`} preserveAspectRatio="none" x="0px" y="0px" viewBox="0 0 1920 100.1">
           <path fill="#ffffff" d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
@@ -193,7 +188,9 @@ export default function Home() {
           <h4>Get started with TimeLineup today</h4>
           <p className={`font-medium text-xl text-gray-500 mb-8`}>Build simple, easy, flexible and fully customizable events.</p>
           <div className="flex w-full gap-4 justify-center">
-            <LoginDialog><Button size={"lg"} className="w-full md:w-auto">Get started</Button></LoginDialog>
+            <LoginDialog>
+              <Button size={"lg"} className="w-full md:w-auto">Get started</Button>
+            </LoginDialog>
           </div>
         </div>
       </div>

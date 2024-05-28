@@ -42,7 +42,6 @@ export default function ProfileDialog({ children, open, onClose }: Props) {
 						<span>
 							{profile?.username}
 						</span>
-						hello
 					</div>
 					<DialogDescription>
 						Change your profile picture and username here.

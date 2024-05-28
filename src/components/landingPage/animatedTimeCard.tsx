@@ -1,3 +1,4 @@
+"use client"
 import { motion, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { addMinutes, format, roundToNearestMinutes } from "date-fns";
