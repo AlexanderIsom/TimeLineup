@@ -29,9 +29,8 @@ export default function Navbar() {
     <header className="backdrop-blur-md border-b border-gray-200 bg-white/90 shadow-md shadow-gray-100 px-8 fixed z-50 h-24 w-full justify-between flex items-center">
       <div className="flex gap-12 w-full items-center justify-between">
         <Link className="text-2xl font-bold h-fit" href={"/"}>
-          <span>some website</span>
-          {/* <span className="no-underline">Time</span>
-          <span className="underline">Lineup.</span> */}
+          <span className="no-underline">Time</span>
+          <span className="underline">Lineup.</span>
         </Link>
 
         {!isMobile &&
