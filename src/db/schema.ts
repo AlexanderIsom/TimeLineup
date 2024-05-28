@@ -65,7 +65,7 @@ export const timeSegmentRelations = relations(timeSegments, ({ one }) => ({
 
 export const profiles = pgTable("profile", {
 	id: uuid("id").primaryKey().notNull(),
-	username: text("username"),
+	username: text("username").notNull(),
 	avatarUrl: text("avatar_url"),
 })
 

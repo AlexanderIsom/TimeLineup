@@ -92,7 +92,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [totalMinutes])
 
 	return (
-		<div className="grid col-start-1 col-end-2 md:grid-cols-[1fr_4fr] grid-rows-[75px_minmax(0,1fr)] h-full overflow-hidden">
+		<div className="grid md:grid-cols-[1fr_4fr] grid-rows-[75px_minmax(0,1fr)] h-full overflow-hidden">
 			<TimelineNumbers start={eventData.start} end={eventData.end} forwardedRef={timeDiv} minuteWidth={minuteWidth} />
 
 			{!isMobile && <div className={`flex flex-col min-w-fitoverflow-hidden border-t border-gray-300 items-center row-start-2 row-end-3 col-start-1 col-end-2`} ref={userDiv}>
@@ -114,10 +114,6 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 					</div>
 
 				})}
-			</div>}
-
-			{isMobile && <div >
-				{/* TODO: implement event details dialog / drawer */}
 			</div>}
 
 			<div className="row-start-2 row-end-3 col-start-2 col-end-2 overflow-y-auto overflow-x-scroll border-l border-gray-300" ref={contentDiv}>

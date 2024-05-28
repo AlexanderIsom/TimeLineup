@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 var cn = require("classnames");
 
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
         <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
           <Navbar />
-          <div style={{ height: "100%" }} className="pt-24">{children}</div>
+          <div style={{ height: "100%" }} className="pt-24">{children}
+            <SpeedInsights />
+          </div>
           <Toaster />
         </body>
       </html>
