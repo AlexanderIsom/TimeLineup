@@ -1,14 +1,10 @@
 /** @type {import('tailwindcss').Config} */
-const { fontFamily } = require("tailwindcss/defaultTheme")
 
 module.exports = {
-  mode: 'jit',
+
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     container: {
@@ -76,10 +72,6 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-inter)"],
       },
-      backgroundImage: theme => ({
-        'gradient-right': 'linear-gradient(to right, var(--grid-color) 1px, transparent 1px)',
-        'gradient-bottom': 'linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px)',
-      })
     },
   },
   plugins: [require("tailwindcss-animate")],

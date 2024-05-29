@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { HeartHandshake, LogOut, User } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ProfileForm from "./profileForm";
 import { useState } from "react";
@@ -11,19 +11,14 @@ import ManageFriends from "./manageFriends";
 import { useFriends, useProfile } from "@/swr/swrFunctions";
 import ProfileDialog from "./profileDialog";
 import FriendsDialog from "./friendsDialog";
+import Link from "next/link";
+import { revalidatePath } from "next/cache";
+import { signOut } from "@/actions/auth";
 
 
 export default function ProfileDropdown() {
 	const { profile } = useProfile();
-	const { friends } = useFriends();
-	const supabase = createClient();
-	const router = useRouter();
 	const [dialogOption, setDialogOption] = useState<string>();
-
-	const handleLogout = async () => {
-		await supabase.auth.signOut();
-		router.refresh();
-	};
 
 	return (
 		<>
@@ -37,13 +32,13 @@ export default function ProfileDropdown() {
 				<DropdownMenuContent className="w-80">
 					<DropdownMenuLabel>My Account</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem onClick={() => {
+					<DropdownMenuItem className="hover:cursor-pointer" onClick={() => {
 						setDialogOption("profile")
 					}}>
 						<User className="mr-2 h-4 w-4" />
 						<span>Profile</span>
 					</DropdownMenuItem>
-					<DropdownMenuItem onClick={() => {
+					<DropdownMenuItem className="hover:cursor-pointer" onClick={() => {
 						setDialogOption("friends")
 					}}>
 						<HeartHandshake className="mr-2 h-4 w-4" />
@@ -51,11 +46,15 @@ export default function ProfileDropdown() {
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
-					<DropdownMenuItem onClick={handleLogout}>
-						<LogOut className="mr-2 h-4 w-4" />
-						<span>Log out</span>
-					</DropdownMenuItem>
 
+					<DropdownMenuItem className="hover:cursor-pointer" >
+						<form>
+							<button formAction={signOut} className="flex items-center">
+								<LogOut className="mr-2 h-4 w-4" />
+								<span>Sign out</span>
+							</button>
+						</form>
+					</DropdownMenuItem>
 				</DropdownMenuContent >
 			</DropdownMenu>
 

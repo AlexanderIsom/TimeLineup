@@ -15,11 +15,11 @@ export default function LoginDialog({ children }: Props) {
 			</DialogTrigger>
 			<DialogContent className="flex flex-col max-w-max rounded-lg">
 				<DialogHeader className="flex">
-					<DialogTitle>Login</DialogTitle>
+					<DialogTitle>Sign In</DialogTitle>
 					<DialogDescription>hello there</DialogDescription>
 				</DialogHeader>
-				<ProviderButton provider="google" >Login with Google</ProviderButton>
-				<ProviderButton provider="discord" >Login with Discord</ProviderButton>
+				<ProviderButton provider="google" >Sign in with Google</ProviderButton>
+				<ProviderButton provider="discord" >Sign in with Discord</ProviderButton>
 			</DialogContent>
 		</Dialog>
 	)

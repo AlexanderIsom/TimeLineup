@@ -44,7 +44,7 @@ export default function ProviderButton({ provider, children }: Props) {
 		await supabase.auth.signInWithOAuth({
 			provider: provider,
 			options: {
-				redirectTo: `${location.origin}/auth/callback?next=/events`,
+				redirectTo: `${location.origin}/auth/callback?next=/`,
 			},
 		})
 	}

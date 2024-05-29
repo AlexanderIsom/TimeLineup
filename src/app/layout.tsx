@@ -3,10 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-
-var cn = require("classnames");
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,16 +18,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ReactQueryClientProvider>
-      <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
-        <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
-          <Navbar />
-          <div style={{ height: "100%" }} className="pt-24">{children}
-            <SpeedInsights />
-          </div>
-          <Toaster />
-        </body>
-      </html>
-    </ReactQueryClientProvider>
+    <html lang="en" className={`${inter.variable}`}>
+      <body>
+
+        <Navbar />
+        {children}
+        <SpeedInsights />
+        <Toaster />
+      </body>
+    </html>
   );
 }

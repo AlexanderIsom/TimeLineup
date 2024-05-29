@@ -9,8 +9,8 @@ import { Card } from "@/components/ui/card";
 export default async function Events() {
   const supabase = createClient()
 
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data?.user) {
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) {
     redirect('/')
   }
 
@@ -29,7 +29,7 @@ export default async function Events() {
   return (
     <div className="h-full">
       <Card className="flex mx-4 mt-2 p-4 items-center align-middle">
-        <EventServerDialog />
+        {/* <EventServerDialog /> */}
       </Card>
       <div className="flex flex-col md:flex-row gap-4 p-4 h-[90%]">
         <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
