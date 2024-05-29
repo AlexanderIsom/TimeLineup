@@ -14,17 +14,17 @@ export default async function Events() {
     redirect('/')
   }
 
-  const userEvents = await GetLocalUserEvents();
+  // const userEvents = await GetLocalUserEvents();
 
-  const today = new Date();
-  const sevenDaysTime = addDays(today, 7);
+  // const today = new Date();
+  // const sevenDaysTime = addDays(today, 7);
 
-  const pastEvents = userEvents?.filter(event => event.end < today)
-  const currentEvents = userEvents?.filter(event => {
-    return areIntervalsOverlapping({ start: today, end: sevenDaysTime }, { start: event.start, end: event.end })
-  });
+  // const pastEvents = userEvents?.filter(event => event.end < today)
+  // const currentEvents = userEvents?.filter(event => {
+  //   return areIntervalsOverlapping({ start: today, end: sevenDaysTime }, { start: event.start, end: event.end })
+  // });
 
-  const upcomingEvents = userEvents?.filter(event => event.start > sevenDaysTime);
+  // const upcomingEvents = userEvents?.filter(event => event.start > sevenDaysTime);
 
   return (
     <div className="h-full">
@@ -32,9 +32,9 @@ export default async function Events() {
         {/* <EventServerDialog /> */}
       </Card>
       <div className="flex flex-col md:flex-row gap-4 p-4 h-[90%]">
-        <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
+        {/* <EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
         <EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />
-        <EventCard title={"Last 14 days"} description="Past events from the last 2 weeks." events={pastEvents} />
+        <EventCard title={"Last 14 days"} description="Past events from the last 2 weeks." events={pastEvents} /> */}
       </div>
     </div >
   );

@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { redirect, useRouter } from "next/navigation";
 import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ProfileForm from "./profileForm";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import ManageFriends from "./manageFriends";
 import { useFriends, useProfile } from "@/swr/swrFunctions";
 import ProfileDialog from "./profileDialog";
@@ -47,13 +47,11 @@ export default function ProfileDropdown() {
 
 					<DropdownMenuSeparator />
 
-					<DropdownMenuItem className="hover:cursor-pointer" >
-						<form>
-							<button formAction={signOut} className="flex items-center">
-								<LogOut className="mr-2 h-4 w-4" />
-								<span>Sign out</span>
-							</button>
-						</form>
+					<DropdownMenuItem className="hover:cursor-pointer" onSelect={() => {
+						signOut();
+					}}>
+						<LogOut className="mr-2 h-4 w-4" />
+						<span>Sign out</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent >
 			</DropdownMenu>
