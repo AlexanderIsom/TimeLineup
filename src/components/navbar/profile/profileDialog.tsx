@@ -13,6 +13,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
+import { ProfileAvatar } from "./profileAvatar";
 
 interface Props {
 	children?: React.ReactNode;
@@ -21,21 +22,7 @@ interface Props {
 }
 
 export default function ProfileDialog({ children, open, onClose }: Props) {
-	const { profile, isLoading, isError } = useProfile();
 	const isDesktop = useMediaQuery("(min-width: 768px)");
-
-	const avatar = isLoading ? (
-		<AvatarFallback>
-			<User />
-		</AvatarFallback>
-	) : (
-		<>
-			<AvatarImage src={profile?.avatarUrl ?? undefined} />
-			<AvatarFallback className="bg-gray-200">
-				<User />
-			</AvatarFallback>
-		</>
-	);
 
 	if (isDesktop) {
 		return (
@@ -50,10 +37,7 @@ export default function ProfileDialog({ children, open, onClose }: Props) {
 				<DialogTrigger asChild>{children}</DialogTrigger>
 				<DialogContent className="w-11/12 px-4 sm:max-w-md md:px-6">
 					<DialogHeader className="flex flex-col items-center space-y-2">
-						<div className="flex items-center space-x-2">
-							<Avatar>{avatar}</Avatar>
-							<span>{profile?.username}</span>
-						</div>
+						{/* <ProfileAvatar /> */}
 						<DialogDescription>Change your profile picture and username here.</DialogDescription>
 					</DialogHeader>
 					<ProfileForm />
@@ -74,11 +58,7 @@ export default function ProfileDialog({ children, open, onClose }: Props) {
 			<DrawerTrigger asChild>{children}</DrawerTrigger>
 			<DrawerContent className="p-4">
 				<DrawerHeader>
-					<div className="flex items-center justify-center space-x-2">
-						<Avatar>{avatar}</Avatar>
-						<span>{profile?.username}</span>
-						hello
-					</div>
+					{/* <ProfileAvatar /> */}
 					<DrawerDescription>Change your profile picture and username here.</DrawerDescription>
 				</DrawerHeader>
 				<ProfileForm />

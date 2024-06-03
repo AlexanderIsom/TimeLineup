@@ -11,6 +11,8 @@ import { Separator } from "../ui/separator";
 import InboxPopover from "./inbox/inboxPopover";
 import ProfileDropdown from "./profile/profileDropdown";
 import { signOut } from "@/actions/auth";
+import { Suspense } from "react";
+import { ProfileAvatarFallback } from "./profile/profileAvatar";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -38,7 +40,9 @@ export default async function Navbar() {
 
 							<div className="flex items-center gap-8">
 								<InboxPopover />
-								<ProfileDropdown />
+								<Suspense fallback={<ProfileAvatarFallback />}>
+									<ProfileDropdown />
+								</Suspense>
 							</div>
 						</>
 					) : (
