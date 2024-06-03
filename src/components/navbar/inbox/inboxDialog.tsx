@@ -7,18 +7,15 @@ interface Props {
 }
 
 export default function InboxDialog({ children }: Props) {
-	return <Drawer>
-		<DrawerTrigger asChild>
-			{children}
-		</DrawerTrigger>
-		<DrawerContent className="px-4 h-1/2">
-			<DrawerHeader >
-				<DrawerTitle >
-					Inbox
-				</DrawerTitle>
-			</DrawerHeader>
-			<Inbox />
-		</DrawerContent>
-	</Drawer >
-
+	return (
+		<Drawer>
+			<DrawerTrigger asChild>{children}</DrawerTrigger>
+			<DrawerContent className="h-1/2 px-4">
+				<DrawerHeader>
+					<DrawerTitle>Inbox</DrawerTitle>
+				</DrawerHeader>
+				<Inbox />
+			</DrawerContent>
+		</Drawer>
+	);
 }

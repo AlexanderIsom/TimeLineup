@@ -4,6 +4,6 @@ import { getFriends } from "./friendActions";
 export function useGetFriends() {
 	return useQuery({
 		queryFn: async () => getFriends(),
-		queryKey: ["friends"]
-	})
+		queryKey: ["friends"],
+	});
 }

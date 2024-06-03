@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
@@ -7,9 +7,9 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getNotifications() {
-	const supabase = createClient()
+	const supabase = createClient();
 
-	const { data, error } = await supabase.auth.getUser()
+	const { data, error } = await supabase.auth.getUser();
 	if (error || !data?.user) {
 		return;
 	}
@@ -18,18 +18,16 @@ export async function getNotifications() {
 
 	const queryNotifications = await db.query.notifications.findMany({
 		where: eq(notifications.target, user.id),
-		with: { event: true, sender: true }
-	})
+		with: { event: true, sender: true },
+	});
 
-	return queryNotifications
+	return queryNotifications;
 }
 
 export async function markNoticiationAsRead(id: string) {
-	await db.update(notifications)
-		.set({ seen: true })
-		.where(eq(notifications.id, id));
+	await db.update(notifications).set({ seen: true }).where(eq(notifications.id, id));
 
-	revalidatePath("/")
+	revalidatePath("/");
 }
 
-export type NotificationQuery = Awaited<ReturnType<typeof getNotifications>> | undefined
+export type NotificationQuery = Awaited<ReturnType<typeof getNotifications>> | undefined;

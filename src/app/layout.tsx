@@ -3,29 +3,28 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
-  subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter'
+	subsets: ["latin"],
+	display: "swap",
+	variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Timelineup",
-  description: "",
+	title: "Timelineup",
+	description: "",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" className={`${inter.variable}`}>
-      <body>
-
-        <Navbar />
-        {children}
-        <SpeedInsights />
-        <Toaster />
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" className={`${inter.variable}`}>
+			<body>
+				<Navbar />
+				{children}
+				<SpeedInsights />
+				<Toaster />
+			</body>
+		</html>
+	);
 }

@@ -1,5 +1,5 @@
-'use client'
-import "@/styles/Resizable.css"
+"use client";
+import "@/styles/Resizable.css";
 
 import React, { SyntheticEvent, useState } from "react";
 import Draggable from "react-draggable";
@@ -24,30 +24,36 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 	const store = useSegmentStore((state) => state);
 	const nodeRef = React.useRef(null);
 	const [times, setTimes] = useState({ start: segment.start, end: segment.end });
-	const [state, setState] = useState({ x: differenceInMinutes(segment.start, eventStartTime), width: differenceInMinutes(segment.end, segment.start) });
+	const [state, setState] = useState({
+		x: differenceInMinutes(segment.start, eventStartTime),
+		width: differenceInMinutes(segment.end, segment.start),
+	});
 	const maxBounds = differenceInMinutes(eventEndTime, eventStartTime);
 
 	const onResize = (e: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
 		let newX = state.x;
 		let newWidth = size.width / minuteWidth;
-		let deltaWidth = (state.width - newWidth);
+		let deltaWidth = state.width - newWidth;
 
 		if (handle === "w") {
-			newX = (state.x + deltaWidth)
+			newX = state.x + deltaWidth;
 		}
-		if (newX < 0 || newX + newWidth > maxBounds) return
+		if (newX < 0 || newX + newWidth > maxBounds) return;
 
-		setState({ x: newX, width: newWidth })
-		updateTimes(newX, newX + newWidth)
+		setState({ x: newX, width: newWidth });
+		updateTimes(newX, newX + newWidth);
 	};
 
 	const updateCard = () => {
-		handleUpdate({ id: segment.id, start: times.start, end: times.end })
-	}
+		handleUpdate({ id: segment.id, start: times.start, end: times.end });
+	};
 
 	const updateTimes = (x: number, w: number) => {
-		setTimes({ start: roundToNearestMinutes(addMinutes(eventStartTime, x), { nearestTo: 5 }), end: roundToNearestMinutes(addMinutes(eventStartTime, (w)), { nearestTo: 5 }) })
-	}
+		setTimes({
+			start: roundToNearestMinutes(addMinutes(eventStartTime, x), { nearestTo: 5 }),
+			end: roundToNearestMinutes(addMinutes(eventStartTime, w), { nearestTo: 5 }),
+		});
+	};
 
 	return (
 		<ContextMenu>
@@ -56,13 +62,13 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 				position={{ x: state.x * minuteWidth, y: 0 }}
 				handle=".dragHandle"
 				onDrag={(e, data) => {
-					const newX = data.x / minuteWidth
-					setState({ ...state, x: newX })
-					updateTimes(newX, newX + state.width)
+					const newX = data.x / minuteWidth;
+					setState({ ...state, x: newX });
+					updateTimes(newX, newX + state.width);
 				}}
 				onStop={(e, data) => {
-					const newX = MathUtils.roundToNearest(data.x, minuteWidth * snapToNearestXMinutes)
-					setState({ ...state, x: newX / minuteWidth })
+					const newX = MathUtils.roundToNearest(data.x, minuteWidth * snapToNearestXMinutes);
+					setState({ ...state, x: newX / minuteWidth });
 					updateCard();
 				}}
 				bounds={"parent"}
@@ -71,11 +77,11 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 				<ContextMenuTrigger asChild>
 					<div
 						ref={nodeRef}
-						className="absolute flex justify-center items-center h-14"
+						className="absolute flex h-14 items-center justify-center"
 						style={{ width: state.width * minuteWidth + "px" }}
 					>
 						<Resizable
-							className="absolute flex justify-center items-center h-14"
+							className="absolute flex h-14 items-center justify-center"
 							width={state.width * minuteWidth}
 							height={0}
 							resizeHandles={["e", "w"]}
@@ -83,34 +89,50 @@ export default function ResizableTimeCard({ minuteWidth, eventStartTime, eventEn
 							onResize={onResize}
 							draggableOpts={{ bounds: "parent" }}
 							onResizeStop={(e, { size, handle }) => {
-								const newX = MathUtils.roundToNearest(state.x * minuteWidth, minuteWidth * snapToNearestXMinutes) / minuteWidth
+								const newX =
+									MathUtils.roundToNearest(
+										state.x * minuteWidth,
+										minuteWidth * snapToNearestXMinutes,
+									) / minuteWidth;
 								const wDelta = state.x - newX;
-								const newWidth = MathUtils.roundToNearest((state.width + wDelta) * minuteWidth, minuteWidth * snapToNearestXMinutes) / minuteWidth
-								updateTimes(newX, newX + newWidth)
-								setState({ x: newX, width: newWidth })
+								const newWidth =
+									MathUtils.roundToNearest(
+										(state.width + wDelta) * minuteWidth,
+										minuteWidth * snapToNearestXMinutes,
+									) / minuteWidth;
+								updateTimes(newX, newX + newWidth);
+								setState({ x: newX, width: newWidth });
 								updateCard();
 							}}
 						>
-							<div className="flex absolute h-14 bg-gray-100 rounded-md w-full items-center justify-between overflow-hidden shadow-md shadow-gray-200" style={{ width: state.width * minuteWidth + "px" }}>
-								<div className="dragHandle hover:cursor-grab active:cursor-grabbing flex justify-between items-center">
-									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>{format(times.start, "HH:mm")}</span>
-									<span className={"p-3 align-center text-ellipsis overflow-hidden font-semibold"}>
+							<div
+								className="absolute flex h-14 w-full items-center justify-between overflow-hidden rounded-md bg-gray-100 shadow-md shadow-gray-200"
+								style={{ width: state.width * minuteWidth + "px" }}
+							>
+								<div className="dragHandle flex items-center justify-between hover:cursor-grab active:cursor-grabbing">
+									<span className={"align-center overflow-hidden text-ellipsis p-3 font-semibold"}>
+										{format(times.start, "HH:mm")}
+									</span>
+									<span className={"align-center overflow-hidden text-ellipsis p-3 font-semibold"}>
 										{format(times.end, "HH:mm")}
 									</span>
 								</div>
 							</div>
-						</Resizable >
-					</div >
+						</Resizable>
+					</div>
 				</ContextMenuTrigger>
-			</Draggable >
+			</Draggable>
 
 			<ContextMenuContent>
-				<ContextMenuItem onSelect={() => {
-					store.deleteSegment(segment.id)
-				}}>Delete</ContextMenuItem>
+				<ContextMenuItem
+					onSelect={() => {
+						store.deleteSegment(segment.id);
+					}}
+				>
+					Delete
+				</ContextMenuItem>
 				<ContextMenuItem>Cancel</ContextMenuItem>
 			</ContextMenuContent>
-		</ContextMenu >
-
+		</ContextMenu>
 	);
 }
