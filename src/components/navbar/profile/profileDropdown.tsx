@@ -1,5 +1,4 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -9,26 +8,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HeartHandshake, LogOut, User } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { redirect, useRouter } from "next/navigation";
-import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import ProfileForm from "./profileForm";
-import { Suspense, useCallback, useState } from "react";
-import ManageFriends from "./manageFriends";
-import { useFriends, useProfile } from "@/swr/swrFunctions";
-import ProfileDialog from "./profileDialog";
-import FriendsDialog from "./friendsDialog";
-import Link from "next/link";
-import { revalidatePath } from "next/cache";
-import { signOut } from "@/actions/auth";
+import {ProfileDialog} from "./profileDialog";
+import ManageFriendsDialog from "./manageFriendsDialog";
 import { ProfileAvatar, ProfileAvatarFallback } from "./profileAvatar";
 import { useDialog } from "@/components/hooks/useDialog";
-import { Button } from "@/components/ui/button";
 
 export default function ProfileDropdown() {
-	// const { profile } = useProfile();
-	// const [dialogOption, setDialogOption] = useState<string>();
-
 	const profileDialog = useDialog();
 	const friendsDialog = useDialog();
 
@@ -64,13 +49,7 @@ export default function ProfileDropdown() {
 			</DropdownMenu>
 
 			<ProfileDialog dialogProps={profileDialog.dialogProps} />
-
-			{/* <FriendsDialog
-				open={dialogOption === "friends"}
-				onClose={() => {
-					setDialogOption(undefined);
-				}}
-			/> */}
+			<ManageFriendsDialog dialogProps={friendsDialog.dialogProps} />
 		</>
 	);
 }

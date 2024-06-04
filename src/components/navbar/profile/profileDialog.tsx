@@ -1,19 +1,33 @@
 "use client";
 import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ProfileForm from "./profileForm";
-import { useProfile } from "@/swr/swrFunctions";
-import { User } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerDescription,
 	DrawerHeader,
-	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ProfileAvatar } from "./profileAvatar";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { isUsernameAvaliable, updateUserProfile } from "@/actions/profileActions";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Props {
 	children?: React.ReactNode;
@@ -23,7 +37,21 @@ interface Props {
 	};
 }
 
-export default function ProfileDialog({ children, dialogProps }: Props) {
+const formSchema = z.object({
+	username: z
+		.string()
+		.min(6, {
+			message: "Username must be at least 8 characters",
+		})
+		.or(z.literal("")),
+	avatarUrl: z.string().url({ message: "Invalid Url" }).or(z.literal("")),
+});
+
+interface Props {
+	onCancel?: () => void;
+}
+
+export function ProfileDialog({ children, dialogProps }: Props) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	if (isDesktop) {
@@ -53,4 +81,121 @@ export default function ProfileDialog({ children, dialogProps }: Props) {
 			</DrawerContent>
 		</Drawer>
 	);
+}
+
+
+function ProfileForm(){
+	const router = useRouter();
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			username: "",
+			avatarUrl: "",
+		},
+	});
+
+	async function processForm(values: z.infer<typeof formSchema>) {
+		const updatedValues = {
+			username: values.username === "" ? undefined : values.username,
+			avatarUrl: values.avatarUrl === "" ? undefined : values.avatarUrl,
+		};
+		if (updatedValues.username !== undefined) {
+			const usernameAvaliable = await isUsernameAvaliable(updatedValues.username);
+			if (!usernameAvaliable) {
+				form.setError("username", { message: "Username is in use" });
+				return;
+			}
+		}
+		await updateUserProfile(updatedValues).then(() => {
+			form.reset();
+			router.refresh();
+		});
+	}
+
+	return (
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(processForm)} className="flex flex-col gap-2">
+				<FormField
+					control={form.control}
+					name="username"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Username</FormLabel>
+							<FormControl>
+								<Input type="text" placeholder="Username" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="avatarUrl"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Avatar url</FormLabel>
+							<FormControl>
+								<Input type="url" placeholder="Url" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<div className="flex justify-between">
+					<div className="flex gap-2">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => {
+								form.reset();
+							}}
+							className="hidden md:flex"
+						>
+							Cancel
+						</Button>
+						<DeleteProfile />
+					</div>
+					<Button type="submit">Update</Button>
+				</div>
+			</form>
+		</Form>
+	);
+}
+
+export default function DeleteProfile() {
+	async function deleteAccount() {
+		// await deleteProfile();
+	}
+
+	return (
+		<AlertDialog>
+			<AlertDialogTrigger asChild>
+				<Button type="button" variant={"destructive"}>
+					Delete account
+				</Button>
+			</AlertDialogTrigger>
+			<AlertDialogContent className="w-11/12 rounded-lg">
+				<AlertDialogHeader>
+					<AlertDialogTitle>Delete account ?</AlertDialogTitle>
+					<AlertDialogDescription>
+						<div>
+							Are you sure this cannot be undone, this will delete all data associated and related to this
+							account
+						</div>
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction
+						onClick={() => {
+							deleteAccount();
+						}}
+					>
+						Continue
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	);
+	return;
 }

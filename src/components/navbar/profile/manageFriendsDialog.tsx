@@ -1,14 +1,8 @@
 "use client";
 import { z } from "zod";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Check, Cross, Trash, X } from "lucide-react";
+import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
 import {
 	AlertDialog,
@@ -26,13 +20,61 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useFriends } from "@/swr/swrFunctions";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Check, Trash, X } from "lucide-react";
+import useSWR from "swr";
 
 const formSchema = z.object({
 	username: z.string(),
 });
 
-export default function ManageFriends() {
-	const { friends } = useFriends();
+interface Props {
+	children?: React.ReactNode;
+	dialogProps?:{}
+}
+
+export default function ManageFriendsDialog({ children, dialogProps }: Props) {
+	const isDesktop = useMediaQuery("(min-width: 768px)");
+	if (isDesktop) {
+		return (
+			<Dialog
+				{...dialogProps}
+			>
+				<DialogTrigger asChild>{children}</DialogTrigger>
+				<DialogContent className="w-11/12 sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle className="flex items-center gap-2">Manage friends</DialogTitle>
+					</DialogHeader>
+					<FriendsList />
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
+	return (
+		<Drawer>
+			<DrawerTrigger asChild>{children}</DrawerTrigger>
+			<DrawerContent className="h-1/2 px-4">
+				<DrawerHeader>
+					<DrawerTitle>Manage friends</DrawerTitle>
+				</DrawerHeader>
+				<FriendsList />
+			</DrawerContent>
+		</Drawer>
+	);
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+function FriendsList(){
+	const { data: friends } = useSWR("/api/friends", fetcher);
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -118,6 +160,8 @@ export default function ManageFriends() {
 		</div>
 	);
 }
+
+
 
 interface FriendButtonProps {
 	friendship: NotUndefined<WithoutArray<FriendStatusAndProfile>>;

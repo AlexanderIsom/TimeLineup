@@ -5,7 +5,7 @@ import { Calendar, HeartHandshake, InboxIcon, LogIn, LogOut, MenuIcon, User } fr
 import Link from "next/link";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import ProfileDialog from "./profile/profileDialog";
-import FriendsDialog from "./profile/friendsDialog";
+import ManageFriendsDialog from "./profile/manageFriendsDialog";
 import { Separator } from "../ui/separator";
 import ProfileDropdown from "./profile/profileDropdown";
 import { signOut } from "@/actions/auth";
@@ -77,17 +77,17 @@ export default async function Navbar() {
 											<span>Profile</span>
 										</div>
 									</ProfileDialog>
-									<FriendsDialog>
+									<ManageFriendsDialog>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
 										</div>
-									</FriendsDialog>
+									</ManageFriendsDialog>
 								</div>
 								<SheetClose asChild>
-									<form>
+									<form action={"/auth/signout"} method="POST">
 										<button
-											formAction={signOut}
+											type="submit"
 											className="flex items-center px-2 font-medium hover:cursor-pointer hover:underline"
 										>
 											<LogOut className="mr-2 h-4 w-4" />
