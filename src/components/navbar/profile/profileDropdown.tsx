@@ -30,16 +30,13 @@ export default function ProfileDropdown() {
 	// const [dialogOption, setDialogOption] = useState<string>();
 
 	const profileDialog = useDialog();
-	// const friendsFialog = useDialog();
+	const friendsDialog = useDialog();
 
 	return (
 		<>
 			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger>
-					<Suspense fallback={<ProfileAvatarFallback iconOnly={true} />}>
-						{/* trying to load this */}
-						<ProfileAvatar iconOnly={true} />
-					</Suspense>
+					<ProfileAvatar iconOnly={true} />
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-80">
 					<DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -48,7 +45,7 @@ export default function ProfileDropdown() {
 						<User className="mr-2 h-4 w-4" />
 						<span>Profile</span>
 					</DropdownMenuItem>
-					<DropdownMenuItem className="hover:cursor-pointer">
+					<DropdownMenuItem className="hover:cursor-pointer" {...friendsDialog.triggerProps}>
 						<HeartHandshake className="mr-2 h-4 w-4" />
 						<span>Manage friends</span>
 					</DropdownMenuItem>
@@ -66,22 +63,7 @@ export default function ProfileDropdown() {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<Dialog {...profileDialog.dialogProps}>
-				<DialogContent className="w-11/12 px-4 sm:max-w-md md:px-6">
-					<DialogHeader className="flex flex-col items-center space-y-2">
-						{/* <ProfileAvatar /> */}
-						<DialogDescription>Change your profile picture and username here.</DialogDescription>
-					</DialogHeader>
-					{/* <ProfileForm /> */}
-				</DialogContent>
-			</Dialog>
-
-			{/* <ProfileDialog
-				open={dialogOption === "profile"}
-				onClose={() => {
-					setDialogOption(undefined);
-				}}
-			/> */}
+			<ProfileDialog dialogProps={profileDialog.dialogProps} />
 
 			{/* <FriendsDialog
 				open={dialogOption === "friends"}

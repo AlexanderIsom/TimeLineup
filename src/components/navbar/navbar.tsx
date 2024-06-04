@@ -4,15 +4,14 @@ import { createClient } from "@/utils/supabase/server";
 import { Calendar, HeartHandshake, InboxIcon, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Link from "next/link";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
-import InboxDialog from "./inbox/inboxDialog";
 import ProfileDialog from "./profile/profileDialog";
 import FriendsDialog from "./profile/friendsDialog";
 import { Separator } from "../ui/separator";
-import InboxPopover from "./inbox/inboxPopover";
 import ProfileDropdown from "./profile/profileDropdown";
 import { signOut } from "@/actions/auth";
 import { Suspense } from "react";
 import { ProfileAvatarFallback } from "./profile/profileAvatar";
+import Inbox from "./inbox/inbox";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -39,7 +38,7 @@ export default async function Navbar() {
 							</Link>
 
 							<div className="flex items-center gap-8">
-								<InboxPopover />
+								<Inbox />
 								<Suspense fallback={<ProfileAvatarFallback />}>
 									<ProfileDropdown />
 								</Suspense>
@@ -62,13 +61,7 @@ export default async function Navbar() {
 						{signedIn ? (
 							<div className="flex h-full flex-col justify-between">
 								<div className="grid gap-6 px-2 py-6">
-									{/*<InboxDialog>
-                    <div className="font-medium hover:underline hover:cursor-pointer flex items-center">
-                      <InboxIcon className="mr-2 h-4 w-4" />
-                      <span>Inbox</span>
-                      /~ <Badge className="mx-2">3</Badge>   ~/
-                    </div>
-                  </InboxDialog>*/}
+									<Inbox />
 
 									<Link
 										href="/events"

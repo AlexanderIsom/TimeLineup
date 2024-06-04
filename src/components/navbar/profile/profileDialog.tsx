@@ -17,27 +17,22 @@ import { ProfileAvatar } from "./profileAvatar";
 
 interface Props {
 	children?: React.ReactNode;
-	open?: boolean;
-	onClose?: () => void;
+	dialogProps?: {
+		open: boolean;
+		onOpenChange: (open: boolean) => void;
+	};
 }
 
-export default function ProfileDialog({ children, open, onClose }: Props) {
+export default function ProfileDialog({ children, dialogProps }: Props) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	if (isDesktop) {
 		return (
-			<Dialog
-				open={open}
-				onOpenChange={(state: boolean) => {
-					if (!state) {
-						onClose?.();
-					}
-				}}
-			>
+			<Dialog {...dialogProps}>
 				<DialogTrigger asChild>{children}</DialogTrigger>
 				<DialogContent className="w-11/12 px-4 sm:max-w-md md:px-6">
 					<DialogHeader className="flex flex-col items-center space-y-2">
-						{/* <ProfileAvatar /> */}
+						<ProfileAvatar />
 						<DialogDescription>Change your profile picture and username here.</DialogDescription>
 					</DialogHeader>
 					<ProfileForm />
@@ -47,18 +42,11 @@ export default function ProfileDialog({ children, open, onClose }: Props) {
 	}
 
 	return (
-		<Drawer
-			open={open}
-			onOpenChange={(state: boolean) => {
-				if (!state) {
-					onClose?.();
-				}
-			}}
-		>
+		<Drawer>
 			<DrawerTrigger asChild>{children}</DrawerTrigger>
 			<DrawerContent className="p-4">
 				<DrawerHeader>
-					{/* <ProfileAvatar /> */}
+					<ProfileAvatar />
 					<DrawerDescription>Change your profile picture and username here.</DrawerDescription>
 				</DrawerHeader>
 				<ProfileForm />

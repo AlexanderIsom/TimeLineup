@@ -11,7 +11,11 @@ interface Props {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function ProfileAvatar({ iconOnly }: Props = { iconOnly: false }) {
-	const { data: profile } = useSWR("/api/profile", fetcher);
+	const { data: profile, isLoading, error } = useSWR("/api/profile", fetcher);
+
+	if (isLoading || error) {
+		return <ProfileAvatarFallback iconOnly={iconOnly} />;
+	}
 
 	return (
 		<div className="flex items-center space-x-2">
