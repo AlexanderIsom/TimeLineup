@@ -1,21 +1,17 @@
-"use client";
 import React from "react";
 import EventDetails from "@/components/id/EventDetails";
 import { redirect } from "next/navigation";
-import { EventRsvp } from "@/actions/eventActions";
+import { EventRsvp, GetEventData } from "@/actions/eventActions";
 import Timeline from "@/components/id/Timeline";
-import { useEventData, useProfile } from "@/swr/swrFunctions";
+import { getUserProfile } from "@/actions/profileActions";
 
-export default function ViewEvent({ params }: { params: { id: string } }) {
-	const { profile, isLoading: profileLoading } = useProfile();
+export default async function ViewEvent({ params }: { params: { id: string } }) {
+	const profile = await getUserProfile();
+	const eventData = await GetEventData(params.id);
 
-	if (profile === undefined && !profileLoading) {
+	if (!profile) {
 		redirect("/");
 	}
-
-	const { eventData, isLoading: isEventLoading } = useEventData(params.id);
-
-	if (!profile) return <></>;
 
 	const localRsvp: EventRsvp = eventData?.rsvps.find((r) => r.userId === profile.id) ?? ({} as EventRsvp);
 	const otherRsvps: Array<EventRsvp> = eventData?.rsvps.filter((r) => r.userId !== profile.id) ?? [];
@@ -25,14 +21,12 @@ export default function ViewEvent({ params }: { params: { id: string } }) {
 		return (a.user.username ?? "").localeCompare(b.user.username ?? "");
 	});
 
+	if (!eventData) return <div>Loading...</div>;
+
 	return (
 		<div className="h-full">
-			{eventData && (
-				<>
-					<Timeline isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps} />
-					<EventDetails event={eventData} localUser={profile} />
-				</>
-			)}
+			<Timeline isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps} />
+			<EventDetails event={eventData} localUser={profile} />
 		</div>
 	);
 }

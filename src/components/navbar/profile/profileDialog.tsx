@@ -1,18 +1,12 @@
 "use client";
 import { Dialog, DialogDescription, DialogHeader, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerDescription,
-	DrawerHeader,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer";
 import { ProfileAvatar } from "./profileAvatar";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { isUsernameAvaliable, updateUserProfile } from "@/actions/profileActions";
+import { deleteUserProfile, isUsernameAvaliable, updateUserProfile } from "@/actions/profileActions";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -28,6 +22,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import useSWR from "swr";
 
 interface Props {
 	children?: React.ReactNode;
@@ -73,7 +68,7 @@ export function ProfileDialog({ children, dialogProps }: Props) {
 		<Drawer>
 			<DrawerTrigger asChild>{children}</DrawerTrigger>
 			<DrawerContent className="p-4">
-				<DrawerHeader>
+				<DrawerHeader className="flex flex-col items-center space-y-2">
 					<ProfileAvatar />
 					<DrawerDescription>Change your profile picture and username here.</DrawerDescription>
 				</DrawerHeader>
@@ -83,8 +78,7 @@ export function ProfileDialog({ children, dialogProps }: Props) {
 	);
 }
 
-
-function ProfileForm(){
+function ProfileForm() {
 	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -114,7 +108,7 @@ function ProfileForm(){
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(processForm)} className="flex flex-col gap-2">
+			<form className="flex flex-col gap-2">
 				<FormField
 					control={form.control}
 					name="username"
@@ -155,18 +149,14 @@ function ProfileForm(){
 						</Button>
 						<DeleteProfile />
 					</div>
-					<Button type="submit">Update</Button>
+					<Button onClick={form.handleSubmit(processForm)}>Update</Button>
 				</div>
 			</form>
 		</Form>
 	);
 }
 
-export default function DeleteProfile() {
-	async function deleteAccount() {
-		// await deleteProfile();
-	}
-
+function DeleteProfile() {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -178,21 +168,17 @@ export default function DeleteProfile() {
 				<AlertDialogHeader>
 					<AlertDialogTitle>Delete account ?</AlertDialogTitle>
 					<AlertDialogDescription>
-						<div>
-							Are you sure this cannot be undone, this will delete all data associated and related to this
-							account
-						</div>
+						Are you sure this cannot be undone, this will delete all data associated and related to this
+						account
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction
-						onClick={() => {
-							deleteAccount();
-						}}
-					>
-						Continue
-					</AlertDialogAction>
+					<form>
+						<AlertDialogAction formAction={deleteUserProfile} type="submit">
+							Continue
+						</AlertDialogAction>
+					</form>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

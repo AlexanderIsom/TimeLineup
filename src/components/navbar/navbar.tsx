@@ -1,14 +1,12 @@
 import { Button } from "../ui/button";
 import LoginDialog from "../login/loginDialog";
 import { createClient } from "@/utils/supabase/server";
-import { Calendar, HeartHandshake, InboxIcon, LogIn, LogOut, MenuIcon, User } from "lucide-react";
+import { Calendar, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Link from "next/link";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
-import ProfileDialog from "./profile/profileDialog";
-import ManageFriendsDialog from "./profile/manageFriendsDialog";
+import { ProfileDialog } from "./profile/profileDialog";
 import { Separator } from "../ui/separator";
 import ProfileDropdown from "./profile/profileDropdown";
-import { signOut } from "@/actions/auth";
 import { Suspense } from "react";
 import { ProfileAvatarFallback } from "./profile/profileAvatar";
 import Inbox from "./inbox/inbox";
@@ -62,14 +60,15 @@ export default async function Navbar() {
 							<div className="flex h-full flex-col justify-between">
 								<div className="grid gap-6 px-2 py-6">
 									<Inbox />
-
-									<Link
-										href="/events"
-										className="flex items-center font-medium hover:cursor-pointer hover:underline"
-									>
-										<Calendar className="mr-2 h-4 w-4" />
-										<span>Events</span>
-									</Link>
+									<SheetClose asChild>
+										<Link
+											href="/events"
+											className="flex items-center font-medium hover:cursor-pointer hover:underline"
+										>
+											<Calendar className="mr-2 h-4 w-4" />
+											<span>Events</span>
+										</Link>
+									</SheetClose>
 
 									<ProfileDialog>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
@@ -77,12 +76,12 @@ export default async function Navbar() {
 											<span>Profile</span>
 										</div>
 									</ProfileDialog>
-									<ManageFriendsDialog>
+									{/* <ManageFriendsDialog>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
 										</div>
-									</ManageFriendsDialog>
+									</ManageFriendsDialog> */}
 								</div>
 								<SheetClose asChild>
 									<form action={"/auth/signout"} method="POST">

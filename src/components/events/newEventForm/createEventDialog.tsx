@@ -27,7 +27,6 @@ import { toast } from "sonner";
 import TimeSelector from "@/components/timeSelector/timeSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
-import { useGetFriends } from "@/actions/hooks";
 import { InsertEvent, Profile } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -95,11 +94,12 @@ const steps = [
 ];
 
 interface Props {
+	friendsList: Array<Profile>;
 	event?: EventDataQuery;
 	isEditing?: boolean;
 }
 
-export default function CreateEventDialog({ event, isEditing = false }: Props) {
+export default function CreateEventDialog({ friendsList, event, isEditing = false }: Props) {
 	const [open, setOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState(0);
 	const [alertOpen, setAlertOpen] = useState(false);
@@ -113,10 +113,7 @@ export default function CreateEventDialog({ event, isEditing = false }: Props) {
 		return [];
 	});
 
-	const { data: friendships, isError, isLoading, error } = useGetFriends();
 	const isDesktop = useMediaQuery("(min-width: 768px)");
-
-	const friends = friendships?.filter((u) => u.status === "accepted").map((u) => u.profile);
 
 	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -485,17 +482,13 @@ export default function CreateEventDialog({ event, isEditing = false }: Props) {
 									</TabsTrigger>
 								</TabsList>
 								<TabsContent value="friends">
-									{isLoading ? (
-										<div>Loading...</div>
-									) : (
-										<div>
-											<FriendSelector
-												list={friends!.filter((u) => !invitedUsers.includes(u))}
-												icon={<Plus />}
-												onClick={addSelectedUser}
-											/>
-										</div>
-									)}
+									<div>
+										<FriendSelector
+											list={friendsList.filter((u) => !invitedUsers.includes(u))}
+											icon={<Plus />}
+											onClick={addSelectedUser}
+										/>
+									</div>
 								</TabsContent>
 								<TabsContent value="invited">
 									<FriendSelector list={invitedUsers} icon={<Minus />} onClick={removeSelectedUser} />

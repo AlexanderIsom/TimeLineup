@@ -19,7 +19,6 @@ import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { useFriends } from "@/swr/swrFunctions";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -37,16 +36,14 @@ const formSchema = z.object({
 
 interface Props {
 	children?: React.ReactNode;
-	dialogProps?:{}
+	dialogProps?: {};
 }
 
 export default function ManageFriendsDialog({ children, dialogProps }: Props) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 	if (isDesktop) {
 		return (
-			<Dialog
-				{...dialogProps}
-			>
+			<Dialog {...dialogProps}>
 				<DialogTrigger asChild>{children}</DialogTrigger>
 				<DialogContent className="w-11/12 sm:max-w-md">
 					<DialogHeader>
@@ -73,8 +70,9 @@ export default function ManageFriendsDialog({ children, dialogProps }: Props) {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-function FriendsList(){
-	const { data: friends } = useSWR("/api/friends", fetcher);
+function FriendsList() {
+	const { data: friends, isLoading } = useSWR("/api/friends", fetcher);
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -108,6 +106,10 @@ function FriendsList(){
 			supabase.removeChannel(friendChannel);
 		};
 	}, [supabase, router]);
+
+	if (isLoading) {
+		return <div className="flex flex-col gap-4">Loading...</div>;
+	}
 
 	async function processForm(values: z.infer<typeof formSchema>) {
 		const result = await addFriend(values.username);
@@ -161,8 +163,6 @@ function FriendsList(){
 	);
 }
 
-
-
 interface FriendButtonProps {
 	friendship: NotUndefined<WithoutArray<FriendStatusAndProfile>>;
 	onRemoveFriend: (friend: NotUndefined<WithoutArray<FriendStatusAndProfile>>) => void;
@@ -197,7 +197,7 @@ function FriendButton({ friendship, onRemoveFriend }: FriendButtonProps) {
 							)}
 						</Button>
 					</AlertDialogTrigger>
-					<AlertDialogContent>
+					<AlertDialogContent className="w-11/12 rounded-md">
 						<AlertDialogHeader>
 							<AlertDialogTitle>Remove friend ?</AlertDialogTitle>
 							<AlertDialogDescription>

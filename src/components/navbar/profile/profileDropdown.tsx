@@ -8,10 +8,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HeartHandshake, LogOut, User } from "lucide-react";
-import {ProfileDialog} from "./profileDialog";
+import { ProfileDialog } from "./profileDialog";
 import ManageFriendsDialog from "./manageFriendsDialog";
-import { ProfileAvatar, ProfileAvatarFallback } from "./profileAvatar";
+import { ProfileAvatar } from "./profileAvatar";
 import { useDialog } from "@/components/hooks/useDialog";
+import { signOut } from "@/actions/auth";
 
 export default function ProfileDropdown() {
 	const profileDialog = useDialog();
@@ -37,7 +38,7 @@ export default function ProfileDropdown() {
 
 					<DropdownMenuSeparator />
 
-					<form action="/auth/signout" method="POST">
+					<form action={signOut}>
 						<DropdownMenuItem className="w-full hover:cursor-pointer" asChild>
 							<button type="submit">
 								<LogOut className="mr-2 h-4 w-4" />
