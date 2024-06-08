@@ -11,6 +11,8 @@ import { Button } from "../ui/button";
 import { updateRsvpStatus } from "@/actions/idActions";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import CreateEventDialog from "../events/newEventForm/createEventDialog";
+import useSWR from "swr";
+import { getFriends } from "@/actions/friendActions";
 
 interface Props {
 	event: NotUndefined<EventDataQuery>;
@@ -44,6 +46,8 @@ export default function EventDetails({ event, localUser }: Props) {
 
 	const isHost = event.userId === localUser.id;
 	const [localRsvp, setLocalRsvp] = useState(event.rsvps.find((r) => r.userId === localUser.id));
+
+	const { data: friends, isLoading } = useSWR("getFriends", getFriends);
 
 	const updateStatus = async (rsvpStatus: RsvpStatus) => {
 		setLocalRsvp((state) => {
@@ -97,7 +101,9 @@ export default function EventDetails({ event, localUser }: Props) {
 				{event.end > new Date() && (
 					<>
 						{isHost ? (
-							<CreateEventDialog event={event} isEditing={true} />
+							<CreateEventDialog friendsList={friends} event={event} isEditing={true}>
+								<Button disabled={isLoading}>Edit event</Button>
+							</CreateEventDialog>
 						) : (
 							<div className="flex w-full items-center justify-between">
 								<Button

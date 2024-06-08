@@ -1,7 +1,7 @@
 import { Button } from "../ui/button";
 import LoginDialog from "../login/loginDialog";
 import { createClient } from "@/utils/supabase/server";
-import { Calendar, LogIn, LogOut, MenuIcon, User } from "lucide-react";
+import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Link from "next/link";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import { ProfileDialog } from "./profile/profileDialog";
@@ -10,6 +10,8 @@ import ProfileDropdown from "./profile/profileDropdown";
 import { Suspense } from "react";
 import { ProfileAvatarFallback } from "./profile/profileAvatar";
 import Inbox from "./inbox/inbox";
+import Image from "next/image";
+import ManageFriendsDialog from "./profile/manageFriendsDialog";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -19,11 +21,13 @@ export default async function Navbar() {
 	const signedIn = user !== null;
 
 	return (
-		<header className="sticky top-0 z-50 flex h-24 w-full items-center justify-between border-b border-gray-200 bg-white/90 px-8 shadow-md shadow-gray-100 backdrop-blur-md">
+		<nav className="sticky top-0 z-50 flex min-h-24 w-full items-center justify-between bg-white/90 px-8 backdrop-blur-md">
 			<div className="flex w-full items-center justify-between gap-12">
-				<Link className="h-fit text-2xl font-bold" href={"/"}>
-					<span className="no-underline">Time</span>
-					<span className="underline">Lineup.</span>
+				<Link className="flex h-fit items-center gap-1 text-2xl font-bold" href={"/"}>
+					<Image src="/logo.svg" alt="logo" width={30} height={30} />
+					<span className="no-underline">
+						Time<span className="underline">Lineup.</span>
+					</span>
 				</Link>
 
 				<nav className={`w-full ${signedIn ? "justify-between" : "justify-end"} hidden md:flex`}>
@@ -76,12 +80,12 @@ export default async function Navbar() {
 											<span>Profile</span>
 										</div>
 									</ProfileDialog>
-									{/* <ManageFriendsDialog>
+									<ManageFriendsDialog>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
 										</div>
-									</ManageFriendsDialog> */}
+									</ManageFriendsDialog>
 								</div>
 								<SheetClose asChild>
 									<form action={"/auth/signout"} method="POST">
@@ -112,6 +116,6 @@ export default async function Navbar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-		</header>
+		</nav>
 	);
 }

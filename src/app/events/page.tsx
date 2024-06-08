@@ -1,17 +1,16 @@
 import { addDays, areIntervalsOverlapping } from "date-fns";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import { GetLocalUserEvents } from "@/actions/eventActions";
 import EventCard from "@/components/events/EventCard";
 import { Card } from "@/components/ui/card";
+import { getFriends } from "@/actions/friendActions";
 import CreateEventDialog from "@/components/events/newEventForm/createEventDialog";
 import { Profile } from "@/db/schema";
-import { promise } from "zod";
-import { getFriends } from "@/actions/friendActions";
+import EventCardSkeleton from "@/components/events/EventCardSkeleton";
+import { Button } from "@/components/ui/button";
 
 export default async function Events() {
 	const userEvents = await GetLocalUserEvents();
-	const friends = await getFriends();
+	const friends: Array<Profile> | undefined = await getFriends();
 
 	const today = new Date();
 	const sevenDaysTime = addDays(today, 7);
@@ -24,9 +23,13 @@ export default async function Events() {
 	const upcomingEvents = userEvents?.filter((event) => event.start > sevenDaysTime);
 
 	return (
-		<div className="h-full">
-			<Card className="mx-4 mt-2 flex items-center p-4 align-middle">{/* <CreateEventDialog /> */}</Card>
-			<div className="flex h-[90%] flex-col gap-4 p-4 md:flex-row">
+		<div className="flex flex-grow flex-col">
+			<Card className="mx-4 mt-2 flex items-center p-4 align-middle">
+				<CreateEventDialog friendsList={friends}>
+					<Button>Create event</Button>
+				</CreateEventDialog>
+			</Card>
+			<div className="flex flex-grow flex-col gap-4 p-4 md:flex-row">
 				<EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
 				<EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />
 				<EventCard

@@ -3,7 +3,13 @@ import { z } from "zod";
 import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { acceptFriendRequest, addFriend, FriendStatusAndProfile, removeFriend } from "@/actions/friendActions";
+import {
+	acceptFriendRequest,
+	addFriend,
+	FriendStatusAndProfile,
+	getFriendshipsWithStatus,
+	removeFriend,
+} from "@/actions/friendActions";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -68,10 +74,8 @@ export default function ManageFriendsDialog({ children, dialogProps }: Props) {
 	);
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 function FriendsList() {
-	const { data: friends, isLoading } = useSWR("/api/friends", fetcher);
+	const { data: friends, isLoading } = useSWR("getFriends", getFriendshipsWithStatus);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -107,10 +111,6 @@ function FriendsList() {
 		};
 	}, [supabase, router]);
 
-	if (isLoading) {
-		return <div className="flex flex-col gap-4">Loading...</div>;
-	}
-
 	async function processForm(values: z.infer<typeof formSchema>) {
 		const result = await addFriend(values.username);
 		if (result && !result.success) {
@@ -145,20 +145,26 @@ function FriendsList() {
 			<Separator />
 			<Label>Friend list</Label>
 
-			{currentFriends !== undefined &&
-				currentFriends.map((friendship) => {
-					if (friendship === undefined) return;
-					return (
-						<FriendButton
-							key={friendship.id}
-							friendship={friendship}
-							onRemoveFriend={async (friendToRemove) => {
-								setCurrentFriends(currentFriends.filter((f) => f.id !== friendToRemove.id));
-								await removeFriend(friendToRemove.id);
-							}}
-						/>
-					);
-				})}
+			{isLoading ? (
+				<span>Loading...</span>
+			) : (
+				<>
+					{currentFriends !== undefined &&
+						currentFriends.map((friendship) => {
+							if (friendship === undefined) return;
+							return (
+								<FriendButton
+									key={friendship.id}
+									friendship={friendship}
+									onRemoveFriend={async (friendToRemove) => {
+										setCurrentFriends(currentFriends.filter((f) => f.id !== friendToRemove.id));
+										await removeFriend(friendToRemove.id);
+									}}
+								/>
+							);
+						})}
+				</>
+			)}
 		</div>
 	);
 }

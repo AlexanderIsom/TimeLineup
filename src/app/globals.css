@@ -71,5 +71,5 @@
 }
 
 html {
-	scrollbar-gutter: stable;
+	scrollbar-gutter: unset;
 }

@@ -102,7 +102,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [totalMinutes]);
 
 	return (
-		<div className="grid h-full grid-rows-[75px_minmax(0,1fr)] overflow-hidden md:grid-cols-[1fr_4fr]">
+		<div className="grid h-full flex-grow grid-rows-[75px_minmax(0,1fr)] overflow-hidden md:grid-cols-[1fr_4fr]">
 			<TimelineNumbers
 				start={eventData.start}
 				end={eventData.end}

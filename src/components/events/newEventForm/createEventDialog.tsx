@@ -42,40 +42,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { NotUndefined } from "@/utils/TypeUtils";
 
-const formSchema = z
-	.object({
-		title: z.string().min(4, {
-			message: "Title must be at least 4 characters",
-		}),
-		startDate: z
-			.date({
-				required_error: "date is required",
-			})
-			.refine(
-				(value) => {
-					return value >= new Date();
-				},
-				{ message: "Cannot be in the past" },
-			),
-		endDate: z
-			.date({
-				required_error: "date is required",
-			})
-			.refine(
-				(value) => {
-					return value >= new Date();
-				},
-				{ message: "Cannot be in the past" },
-			),
-		description: z.string().optional(),
-	})
-	.refine(
-		(data) => {
-			return data.endDate >= addMinutes(data.startDate, 30);
-		},
-		{ message: "Events must be at least 30 minutes long", path: ["endDate"] },
-	);
-
 const steps = [
 	{
 		id: "Step 1",
@@ -94,12 +60,41 @@ const steps = [
 ];
 
 interface Props {
-	friendsList: Array<Profile>;
+	friendsList?: Array<Profile>;
 	event?: EventDataQuery;
 	isEditing?: boolean;
+	children: React.ReactNode;
 }
 
-export default function CreateEventDialog({ friendsList, event, isEditing = false }: Props) {
+export default function CreateEventDialog({ friendsList, event, isEditing = false, children }: Props) {
+	const formSchema = z
+		.object({
+			title: z.string().min(4, {
+				message: "Title must be at least 4 characters",
+			}),
+			startDate: z
+				.date({
+					required_error: "date is required",
+				})
+				.refine((value) => value.valueOf() === event?.start.valueOf() || value >= new Date(), {
+					message: "Cannot be in the past",
+				}),
+			endDate: z
+				.date({
+					required_error: "date is required",
+				})
+				.refine((value) => value.valueOf() === event?.end.valueOf() || value >= new Date(), {
+					message: "Cannot be in the past",
+				}),
+			description: z.string().optional(),
+		})
+		.refine(
+			(data) => {
+				return data.endDate >= addMinutes(data.startDate, 30);
+			},
+			{ message: "Events must be at least 30 minutes long", path: ["endDate"] },
+		);
+
 	const [open, setOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState(0);
 	const [alertOpen, setAlertOpen] = useState(false);
@@ -483,11 +478,15 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 								</TabsList>
 								<TabsContent value="friends">
 									<div>
-										<FriendSelector
-											list={friendsList.filter((u) => !invitedUsers.includes(u))}
-											icon={<Plus />}
-											onClick={addSelectedUser}
-										/>
+										{friendsList !== undefined && (
+											<FriendSelector
+												list={friendsList.filter(
+													({ id }) => invitedUsers.findIndex((u) => u.id === id) === -1,
+												)}
+												icon={<Plus />}
+												onClick={addSelectedUser}
+											/>
+										)}
 									</div>
 								</TabsContent>
 								<TabsContent value="invited">
@@ -518,9 +517,7 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 					}
 				}}
 			>
-				<DialogTrigger asChild>
-					<Button size={"lg"}>{isEditing ? "Edit" : "New event"}</Button>
-				</DialogTrigger>
+				<DialogTrigger asChild>{children}</DialogTrigger>
 
 				<DialogContent
 					onInteractOutside={(e) => {

@@ -40,6 +40,8 @@ export async function addFriend(usernameQuery: string) {
 		sending_user: user.id,
 		receiving_user: targetFriend.id,
 	});
+
+	revalidatePath("/");
 }
 
 export async function getUser() {
@@ -63,18 +65,16 @@ export interface friendRequest {
 }
 
 export async function acceptFriendRequest(id: string) {
-	await new Promise((res) => setTimeout(res, 1000));
 	await db.update(friendships).set({ status: "accepted" }).where(eq(friendships.id, id));
 	revalidatePath("/");
 }
 
 export async function removeFriend(id: string) {
-	await new Promise((res) => setTimeout(res, 1000));
 	await db.delete(friendships).where(eq(friendships.id, id));
 	revalidatePath("/");
 }
 
-export async function getFriends() {
+export async function getFriendshipsWithStatus() {
 	const supabase = createClient();
 
 	const { data, error } = await supabase.auth.getUser();
@@ -104,4 +104,36 @@ export async function getFriends() {
 	return queryResult;
 }
 
-export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriends>>;
+export async function getFriends() {
+	const supabase = createClient();
+
+	const { data, error } = await supabase.auth.getUser();
+	if (error || !data?.user) {
+		return;
+	}
+
+	const user = data.user;
+
+	const queryResult = await db
+		.select({
+			profile: { ...profiles },
+		})
+		.from(friendships)
+		.innerJoin(
+			profiles,
+			or(
+				and(ne(friendships.sending_user, user.id), eq(friendships.sending_user, profiles.id)),
+				and(ne(friendships.receiving_user, user.id), eq(friendships.receiving_user, profiles.id)),
+			),
+		)
+		.where(
+			and(
+				or(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, user.id)),
+				eq(friendships.status, "accepted"),
+			),
+		);
+
+	return queryResult.map((result) => result.profile);
+}
+
+export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriendshipsWithStatus>>;

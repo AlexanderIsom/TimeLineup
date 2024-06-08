@@ -12,6 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { InboxIcon } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import useSWR from "swr";
+import { getFriendshipsWithStatus } from "@/actions/friendActions";
+import { getNotifications } from "@/actions/notificationAction";
 
 export default function Inbox() {
 	const messageCount = useNotificationStore((state) => state.totalNotificaionCount);
@@ -20,7 +23,18 @@ export default function Inbox() {
 	const router = useRouter();
 	const supabase = createClient();
 
+	const { data: friends, isLoading: friendsLoading } = useSWR("getFreindRequests", getFriendshipsWithStatus);
+	const { data: notifications, isLoading: notificationsLoading } = useSWR("getNotifications", getNotifications);
+
+	const setInitialState = useNotificationStore((state) => state.setInitialState);
+
 	useEffect(() => {
+		if (!notificationsLoading && !friendsLoading) {
+			setInitialState(
+				notifications?.filter((n) => n.seen === false),
+				friends?.filter((f) => f.status === "pending" && f.incoming),
+			);
+		}
 		const notificationChannel = supabase
 			.channel("realtime-notifications")
 			.on(
@@ -55,15 +69,17 @@ export default function Inbox() {
 			supabase.removeChannel(notificationChannel);
 			supabase.removeChannel(friendChannel);
 		};
-	}, [supabase, router]);
+	}, [supabase, router, friends, notifications, friendsLoading, notificationsLoading, setInitialState]);
 
 	return (
 		<>
 			<Popover>
-				<PopoverTrigger asChild className="hidden sm:block">
-					<Button variant="outline" className={`h-10 gap-2 rounded-full pl-4 pr-4`}>
-						<InboxIcon className="h-5 w-6" color="rgb(2,8,23)" />
-						{messageText}
+				<PopoverTrigger asChild className="hidden md:block">
+					<Button variant="outline" className="h-10 gap-2 rounded-full pl-4 pr-4">
+						<div className="flex gap-2">
+							<InboxIcon className="h-5 w-6" color="rgb(2,8,23)" />
+							{messageText}
+						</div>
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className="min-w-[300px]">
@@ -88,7 +104,7 @@ export default function Inbox() {
 					<DrawerHeader>
 						<DrawerTitle>Inbox</DrawerTitle>
 					</DrawerHeader>
-					<Inbox />
+					<InboxTabs />
 				</DrawerContent>
 			</Drawer>
 		</>
@@ -99,6 +115,7 @@ function InboxTabs() {
 	const [notifications, friendRequests] = useNotificationStore(
 		useShallow((state) => [state.notifications, state.friendRequests]),
 	);
+
 	return (
 		<Tabs defaultValue="messages">
 			<TabsList className="flex">
