@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FriendStatusAndProfile, acceptFriendRequest, removeFriend } from "@/actions/friendActions";
 import { Check, User, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useOptimistic } from "react";
-import { useNotificationStore } from "@/store/Notifications";
+import { useNotificationStore } from "@/stores/Notifications";
 
 interface Props {
 	requests: FriendStatusAndProfile;

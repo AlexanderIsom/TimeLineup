@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
-import { useSegmentStore } from "@/store/Segments";
+import { useSegmentStore } from "@/stores/Segments";
 import { differenceInMinutes } from "date-fns";
 import StaticTimeCard from "./StaticTimeCard";
 import { createClient } from "@/utils/supabase/client";

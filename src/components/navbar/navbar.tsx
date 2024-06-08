@@ -1,17 +1,17 @@
-import { Button } from "../ui/button";
-import LoginDialog from "../login/loginDialog";
 import { createClient } from "@/utils/supabase/server";
 import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
-import Link from "next/link";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
-import { ProfileDialog } from "./profile/profileDialog";
-import { Separator } from "../ui/separator";
-import ProfileDropdown from "./profile/profileDropdown";
-import { Suspense } from "react";
-import { ProfileAvatarFallback } from "./profile/profileAvatar";
-import Inbox from "./inbox/inbox";
 import Image from "next/image";
-import ManageFriendsDialog from "./profile/manageFriendsDialog";
+import Link from "next/link";
+import { Suspense } from "react";
+import LoginDialog from "../login/loginDialog";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
+import Inbox from "./inbox/inbox";
+import ManageFriendsDialog from "./profile/manageFriends/manageFriendsDialog";
+import { ProfileAvatarFallback } from "./profile/profileAvatar";
+import { ProfileDialog } from "./profile/profileDialog";
+import ProfileDropdown from "./profile/profileDropdown";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -30,7 +30,7 @@ export default async function Navbar() {
 					</span>
 				</Link>
 
-				<nav className={`w-full ${signedIn ? "justify-between" : "justify-end"} hidden md:flex`}>
+				<nav className={`w-full ${signedIn ? "justify-between" : "justify-end"} hidden pr-4 md:flex`}>
 					{signedIn ? (
 						<>
 							<Link href="/events">

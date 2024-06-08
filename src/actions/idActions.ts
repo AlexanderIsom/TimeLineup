@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/db";
 import { InsertSegment, RsvpStatus, rsvps, timeSegments } from "@/db/schema";
-import { TimeSegment } from "@/store/Segments";
+import { TimeSegment } from "@/stores/Segments";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";

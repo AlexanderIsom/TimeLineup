@@ -2,6 +2,7 @@ import {
 	differenceInMinutes,
 	eachDayOfInterval,
 	eachHourOfInterval,
+	eachMinuteOfInterval,
 	format,
 	formatDate,
 	roundToNearestHours,
@@ -19,7 +20,6 @@ export default function TimelineNumbers({ start, end, forwardedRef, minuteWidth 
 	const daysInRange = eachDayOfInterval({ start: start, end: end });
 	const ceilStart = roundToNearestHours(start, { roundingMethod: "ceil" });
 	const offset = differenceInMinutes(ceilStart, start);
-
 	return (
 		<div
 			className="col-start-2 col-end-3 row-start-1 row-end-2 flex items-end overflow-hidden border-l border-gray-300"
@@ -34,7 +34,7 @@ export default function TimelineNumbers({ start, end, forwardedRef, minuteWidth 
 						end={end}
 						minuteWidth={minuteWidth}
 						dayIndex={index}
-						offset={offset}
+						offset={offset <= 60 ? 0 : offset}
 					/>
 				);
 			})}
@@ -60,7 +60,11 @@ function DayHeaderAndHours({ date, start, end, minuteWidth, offset, dayIndex }: 
 	if (endTime > end) {
 		endTime = end;
 	}
-	const numberList = eachHourOfInterval({ start: startTime, end: endTime });
+	let numberList = eachHourOfInterval({ start: startTime, end: endTime });
+	const useMinutes = differenceInMinutes(endTime, startTime) <= 60;
+	if (useMinutes) {
+		numberList = eachMinuteOfInterval({ start: endTime, end: startTime }, { step: 5 });
+	}
 	return (
 		<div className="h-full min-w-max border-gray-300">
 			<div className="flex h-1/2 items-end">
@@ -68,19 +72,19 @@ function DayHeaderAndHours({ date, start, end, minuteWidth, offset, dayIndex }: 
 			</div>
 
 			<div className={"h-1/2 w-full self-end border-t border-gray-300"}>
-				{numberList.map((hour: Date, index: number) => {
+				{numberList.map((date: Date, index: number) => {
 					return (
 						<div
 							className={`inline-flex h-full flex-1 -translate-x-1/2 items-center justify-center border-gray-300`}
 							style={{
-								width: `${minuteWidth * 60}px`,
+								width: `${minuteWidth * (useMinutes ? 5 : 60)}px`,
 								marginLeft: `${dayIndex === 0 && index === 0 ? offset * minuteWidth + "px" : "0"}`,
 							}}
 							key={index}
 						>
-							<div
-								className={"justify-center text-center text-base font-normal"}
-							>{`${hour.getHours()}:00`}</div>
+							<div className={"justify-center text-center text-base font-normal"}>
+								{useMinutes ? `${date.getHours()}:${date.getMinutes()}` : `${date.getHours()}:00`}
+							</div>
 						</div>
 					);
 				})}

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import ResizableTimeCard from "../id/ResizableTimeCard";
 
-import { useSegmentStore, TimeSegment } from "@/store/Segments";
+import { useSegmentStore, TimeSegment } from "@/stores/Segments";
 import { addMinutes, areIntervalsOverlapping, max, min, roundToNearestMinutes, subMinutes } from "date-fns";
 import { useDebouncedCallback } from "use-debounce";
 import { Event } from "@/db/schema";

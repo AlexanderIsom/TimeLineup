@@ -31,7 +31,7 @@ export function ProfileAvatar({ iconOnly }: Props = { iconOnly: false }) {
 export function ProfileAvatarFallback({ iconOnly }: Props = { iconOnly: false }) {
 	return (
 		<div className="flex items-center space-x-2">
-			<Avatar>
+			<Avatar className="items-center justify-center bg-gray-200">
 				<User />
 			</Avatar>
 			{!iconOnly && <span>Loading...</span>}

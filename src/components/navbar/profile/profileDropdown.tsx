@@ -1,4 +1,6 @@
 "use client";
+import { signOut } from "@/actions/auth";
+import { useDialog } from "@/components/hooks/useDialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,11 +10,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HeartHandshake, LogOut, User } from "lucide-react";
-import { ProfileDialog } from "./profileDialog";
-import ManageFriendsDialog from "./manageFriendsDialog";
+import ManageFriendsDialog from "./manageFriends/manageFriendsDialog";
 import { ProfileAvatar } from "./profileAvatar";
-import { useDialog } from "@/components/hooks/useDialog";
-import { signOut } from "@/actions/auth";
+import { ProfileDialog } from "./profileDialog";
 
 export default function ProfileDropdown() {
 	const profileDialog = useDialog();
