@@ -22,7 +22,6 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import useSWR from "swr";
 
 interface Props {
 	children?: React.ReactNode;
