@@ -5,7 +5,7 @@ import { Profile, RsvpStatus } from "@/db/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Check, CircleHelp, Info, User, X } from "lucide-react";
-import { EventDataQuery } from "@/actions/eventActions";
+import { EventDataQuery, deleteEvent } from "@/actions/eventActions";
 import { NotUndefined } from "@/utils/TypeUtils";
 import { Button } from "../ui/button";
 import { updateRsvpStatus } from "@/actions/idActions";
@@ -13,6 +13,17 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../u
 import CreateEventDialog from "../events/newEventForm/createEventDialog";
 import useSWR from "swr";
 import { getFriends } from "@/actions/friendActions";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 interface Props {
 	event: NotUndefined<EventDataQuery>;
@@ -101,9 +112,41 @@ export default function EventDetails({ event, localUser }: Props) {
 				{event.end > new Date() && (
 					<>
 						{isHost ? (
-							<CreateEventDialog friendsList={friends} event={event} isEditing={true}>
-								<Button disabled={isLoading}>Edit event</Button>
-							</CreateEventDialog>
+							<div className="flex w-full gap-2">
+								<CreateEventDialog friendsList={friends} event={event} isEditing={true}>
+									<Button disabled={isLoading} className="w-1/2">
+										Edit event
+									</Button>
+								</CreateEventDialog>
+								<AlertDialog>
+									<AlertDialogTrigger asChild>
+										<Button variant="destructive" className="w-1/2">
+											Delete event
+										</Button>
+									</AlertDialogTrigger>
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+											<AlertDialogDescription>
+												This action cannot be undone. This will permanently delete this event.
+											</AlertDialogDescription>
+										</AlertDialogHeader>
+										<AlertDialogFooter>
+											<AlertDialogCancel>Cancel</AlertDialogCancel>
+											<form>
+												<AlertDialogAction
+													formAction={() => {
+														deleteEvent(event.id);
+													}}
+													type="submit"
+												>
+													Continue
+												</AlertDialogAction>
+											</form>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
+							</div>
 						) : (
 							<div className="flex w-full items-center justify-between">
 								<Button

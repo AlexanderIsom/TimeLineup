@@ -8,9 +8,9 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import Inbox from "./inbox/inbox";
-import ManageFriendsDialog from "./profile/manageFriends/manageFriendsDialog";
+import ManageFriendsDialog, { ManageFriendsDrawer } from "./profile/manageFriends/manageFriendsDialog";
 import { ProfileAvatarFallback } from "./profile/profileAvatar";
-import { ProfileDialog } from "./profile/profileDialog";
+import { ProfileDialog, ProfileDrawer } from "./profile/profileDialog";
 import ProfileDropdown from "./profile/profileDropdown";
 
 export default async function Navbar() {
@@ -41,9 +41,7 @@ export default async function Navbar() {
 
 							<div className="flex items-center gap-8">
 								<Inbox />
-								<Suspense fallback={<ProfileAvatarFallback />}>
-									<ProfileDropdown />
-								</Suspense>
+								<ProfileDropdown />
 							</div>
 						</>
 					) : (
@@ -74,18 +72,18 @@ export default async function Navbar() {
 										</Link>
 									</SheetClose>
 
-									<ProfileDialog>
+									<ProfileDrawer>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<User className="mr-2 h-4 w-4" />
 											<span>Profile</span>
 										</div>
-									</ProfileDialog>
-									<ManageFriendsDialog>
+									</ProfileDrawer>
+									<ManageFriendsDrawer>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
 										</div>
-									</ManageFriendsDialog>
+									</ManageFriendsDrawer>
 								</div>
 								<SheetClose asChild>
 									<form action={"/auth/signout"} method="POST">

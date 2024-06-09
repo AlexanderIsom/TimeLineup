@@ -1,3 +1,4 @@
+"use client";
 import { isUsernameAvaliable, updateUserProfile } from "@/actions/profileActions";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

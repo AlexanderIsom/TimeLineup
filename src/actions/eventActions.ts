@@ -14,6 +14,7 @@ import { NotUndefined } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
 import { isWithinInterval } from "date-fns";
 import { and, eq, inArray, or } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Profile>) {
 	const supabase = createClient();
@@ -132,6 +133,22 @@ export async function UpdateEvent(eventData: NotUndefined<EventDataQuery>, invit
 		.update(events)
 		.set({ title: eventData.title, start: eventData.start, end: eventData.end, description: eventData.description })
 		.where(eq(events.id, eventData.id));
+}
+
+export async function deleteEvent(eventId: string) {
+	const supabase = createClient();
+
+	const {
+		data: { user },
+		error,
+	} = await supabase.auth.getUser();
+	if (error || !user) {
+		return;
+	}
+
+	await db.delete(events).where(and(eq(events.id, eventId), eq(events.userId, user.id)));
+
+	redirect("/events");
 }
 
 export async function GetLocalUserEvents() {
