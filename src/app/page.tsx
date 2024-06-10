@@ -16,12 +16,11 @@ import AnimatedNumber from "@/components/landingPage/animatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import LoginDialog from "@/components/login/loginDialog";
 import Image from "next/image";
-import ScrollbarWrapper from "@/components/scrollbarWrapper";
 
 export default function Home() {
 	return (
 		<div className="md:pt-16">
-			<div className="bg-gradient-to-b from-white/0 to-blue-50">
+			<div className="overflow-x-clip bg-gradient-to-b from-white/0 to-blue-50">
 				<div className="mx-auto flex max-w-6xl">
 					<div className="z-20 mx-auto grow-0 px-4 py-8 md:px-16 md:py-16">
 						<span className="text-5xl font-bold md:text-7xl">
