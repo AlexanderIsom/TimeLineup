@@ -23,13 +23,13 @@ export default async function Events() {
 	const upcomingEvents = userEvents?.filter((event) => event.start > sevenDaysTime);
 
 	return (
-		<div className="flex flex-grow flex-col">
-			<Card className="mx-4 mt-2 flex items-center p-4 align-middle">
+		<div className="flex grow flex-col gap-4 p-4">
+			<Card className="flex items-center p-4 align-middle">
 				<CreateEventDialog friendsList={friends}>
 					<Button>Create event</Button>
 				</CreateEventDialog>
 			</Card>
-			<div className="flex flex-grow flex-col gap-4 p-4 md:flex-row">
+			<div className="flex grow flex-col gap-4 md:flex-row">
 				<EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
 				<EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />
 				<EventCard

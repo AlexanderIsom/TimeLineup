@@ -2,15 +2,13 @@ import { createClient } from "@/utils/supabase/server";
 import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
 import LoginDialog from "../login/loginDialog";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import Inbox from "./inbox/inbox";
-import ManageFriendsDialog, { ManageFriendsDrawer } from "./profile/manageFriends/manageFriendsDialog";
-import { ProfileAvatarFallback } from "./profile/profileAvatar";
-import { ProfileDialog, ProfileDrawer } from "./profile/profileDialog";
+import { ManageFriendsDrawer } from "./profile/manageFriends/manageFriendsDialog";
+import { ProfileDrawer } from "./profile/profileDialog";
 import ProfileDropdown from "./profile/profileDropdown";
 
 export default async function Navbar() {
@@ -21,7 +19,7 @@ export default async function Navbar() {
 	const signedIn = user !== null;
 
 	return (
-		<nav className="sticky top-0 z-50 flex min-h-24 w-full items-center justify-between bg-white/90 px-8 backdrop-blur-md">
+		<nav className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-white/90 px-8 backdrop-blur-md">
 			<div className="flex w-full items-center justify-between gap-12">
 				<Link className="flex h-fit items-center gap-1 text-2xl font-bold" href={"/"}>
 					<Image src="/logo.svg" alt="logo" width={30} height={30} />

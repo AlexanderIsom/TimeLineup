@@ -24,7 +24,7 @@ export default async function ViewEvent({ params }: { params: { id: string } }) 
 	if (!eventData) return <div>Loading...</div>;
 
 	return (
-		<div className="flex flex-grow flex-col">
+		<div className="flex max-h-full grow flex-col overflow-hidden">
 			<Timeline isHost={isHost} localRSVP={localRsvp} eventData={eventData} otherRsvps={otherRsvps} />
 			<EventDetails event={eventData} localUser={profile} />
 		</div>

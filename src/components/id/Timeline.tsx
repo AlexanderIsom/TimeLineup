@@ -12,6 +12,9 @@ import StaticTimeCard from "./StaticTimeCard";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { useIsMobile } from "@/utils/useIsMobile";
+import ScrollbarWrapper from "../scrollbarWrapper";
+import { OverlayScrollbarsComponentRef } from "overlayscrollbars-react";
+import { array } from "zod";
 
 interface Props {
 	localRSVP: EventRsvp;
@@ -34,7 +37,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	const supabase = createClient();
 
 	const userDiv = useRef<HTMLDivElement>(null);
-	const contentDiv = useRef<HTMLDivElement>(null);
+	const contentDiv = useRef<OverlayScrollbarsComponentRef>(null);
 	const timeDiv = useRef<HTMLDivElement>(null);
 
 	const isMobile = useIsMobile();
@@ -66,17 +69,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [supabase, router, eventData.id, localRSVP, isHost, setSegmentStore]);
 
 	useEffect(() => {
-		const div = contentDiv.current;
-		const handleScroll = () => {
-			if (div) {
-				if (userDiv.current) {
-					userDiv.current.scrollTop = div.scrollTop;
-				}
-				if (timeDiv.current) {
-					timeDiv.current.scrollLeft = div.scrollLeft;
-				}
-			}
-		};
+		const div = contentDiv.current?.getElement();
 
 		const resizeObserver = new ResizeObserver((entries) => {
 			for (let entry of entries) {
@@ -89,20 +82,18 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 		});
 
 		if (div) {
-			div.addEventListener("scroll", handleScroll);
 			resizeObserver.observe(div);
 		}
 
 		return () => {
 			if (div) {
-				div.removeEventListener("scroll", handleScroll);
 				resizeObserver.unobserve(div);
 			}
 		};
 	}, [totalMinutes]);
 
 	return (
-		<div className="grid h-full flex-grow grid-rows-[75px_minmax(0,1fr)] overflow-hidden md:grid-cols-[1fr_4fr]">
+		<div className="grid max-h-full grow grid-rows-[75px_minmax(0,1fr)] overflow-hidden md:grid-cols-[1fr_4fr]">
 			<TimelineNumbers
 				start={eventData.start}
 				end={eventData.end}
@@ -112,7 +103,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 
 			{!isMobile && (
 				<div
-					className={`min-w-fitoverflow-hidden col-start-1 col-end-2 row-start-2 row-end-3 flex flex-col items-center border-t border-gray-300`}
+					className={`col-start-1 col-end-2 row-start-2 row-end-3 flex min-h-full min-w-fit flex-col items-center overflow-hidden border-t border-gray-300`}
 					ref={userDiv}
 				>
 					{!isHost && (
@@ -131,7 +122,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 						return (
 							<div
 								key={rsvp.id}
-								className="mx-2 flex h-16 w-full flex-row items-center justify-center gap-2 border-b border-gray-300"
+								className="flex min-h-16 w-full flex-row items-center justify-center gap-2 border-b border-gray-300 px-2"
 							>
 								<Avatar>
 									<AvatarImage src={rsvp.user.avatarUrl ?? undefined} />
@@ -146,9 +137,20 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 				</div>
 			)}
 
-			<div
-				className="col-start-2 col-end-2 row-start-2 row-end-3 overflow-y-auto overflow-x-scroll border-l border-gray-300"
-				ref={contentDiv}
+			<ScrollbarWrapper
+				defer
+				className="col-start-2 col-end-2 row-start-2 row-end-3 border-l border-gray-300"
+				events={{
+					scroll: (event) => {
+						const { scrollLeft, scrollTop } = event.elements().scrollOffsetElement;
+						if (userDiv.current) {
+							userDiv.current.scrollTop = scrollTop;
+						}
+						if (timeDiv.current) {
+							timeDiv.current.scrollLeft = scrollLeft;
+						}
+					},
+				}}
 			>
 				<div
 					style={{
@@ -177,7 +179,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 						);
 					})}
 				</div>
-			</div>
+			</ScrollbarWrapper>
 		</div>
 	);
 }
