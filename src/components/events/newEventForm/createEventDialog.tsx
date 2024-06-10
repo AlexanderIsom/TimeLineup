@@ -593,9 +593,7 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 			}}
 			modal={true}
 		>
-			<DrawerTrigger asChild>
-				<Button size={"lg"}>{isEditing ? "Edit" : "New event"}</Button>
-			</DrawerTrigger>
+			<DrawerTrigger asChild>{children}</DrawerTrigger>
 			<DrawerContent className="max-h-[96%] overflow-clip">
 				<DrawerHeader>
 					<DrawerTitle>{isEditing ? "Edit event" : "Create new event"}</DrawerTitle>

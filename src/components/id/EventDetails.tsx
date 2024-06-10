@@ -115,13 +115,13 @@ export default function EventDetails({ event, localUser }: Props) {
 							<div className="flex w-full gap-2">
 								<CreateEventDialog friendsList={friends} event={event} isEditing={true}>
 									<Button disabled={isLoading} className="w-1/2">
-										Edit event
+										Edit
 									</Button>
 								</CreateEventDialog>
 								<AlertDialog>
 									<AlertDialogTrigger asChild>
 										<Button variant="destructive" className="w-1/2">
-											Delete event
+											Delete
 										</Button>
 									</AlertDialogTrigger>
 									<AlertDialogContent>

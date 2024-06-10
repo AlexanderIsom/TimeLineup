@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	return (
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
-				<ScrollbarWrapper defer>
+				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
 					<Navbar />
 					<div className="flex h-screen flex-col pt-24">{children}</div>
 				</ScrollbarWrapper>
