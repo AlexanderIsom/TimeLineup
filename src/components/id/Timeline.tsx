@@ -1,20 +1,18 @@
 "use client";
-import TimelineNumbers from "../id/TimelineNumber";
-import ClientCardContainer from "../events/ClientCardContainer";
-import { Event } from "@/db/schema";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { EventRsvp } from "@/actions/eventActions";
+import { Event } from "@/db/schema";
 import { useSegmentStore } from "@/stores/Segments";
-import { differenceInMinutes } from "date-fns";
-import StaticTimeCard from "./StaticTimeCard";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
 import { useIsMobile } from "@/utils/useIsMobile";
+import { differenceInMinutes } from "date-fns";
+import { User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import ClientCardContainer from "../events/ClientCardContainer";
+import TimelineNumbers from "../id/TimelineNumber";
 import ScrollbarWrapper from "../scrollbarWrapper";
-import { OverlayScrollbarsComponentRef } from "overlayscrollbars-react";
-import { array } from "zod";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import StaticTimeCard from "./StaticTimeCard";
 
 interface Props {
 	localRSVP: EventRsvp;
@@ -37,7 +35,6 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	const supabase = createClient();
 
 	const userDiv = useRef<HTMLDivElement>(null);
-	const contentDiv = useRef<OverlayScrollbarsComponentRef>(null);
 	const timeDiv = useRef<HTMLDivElement>(null);
 
 	const isMobile = useIsMobile();
@@ -69,17 +66,20 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [supabase, router, eventData.id, localRSVP, isHost, setSegmentStore]);
 
 	useEffect(() => {
-		const div = contentDiv.current?.getElement();
-
 		const resizeObserver = new ResizeObserver((entries) => {
 			for (let entry of entries) {
 				if (totalMinutes * defaultWidth < entry.contentRect.width) {
-					setMinuteWidth(entry.contentRect.width / totalMinutes);
+					const newWidth = entry.contentRect.width / totalMinutes;
+					console.log("setting minute width: ", newWidth);
+					setMinuteWidth(newWidth);
 				} else {
+					console.log("setting default width: ", defaultWidth);
 					setMinuteWidth(defaultWidth);
 				}
 			}
 		});
+
+		const div = document.getElementById("timeline-content");
 
 		if (div) {
 			resizeObserver.observe(div);
@@ -138,6 +138,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 			)}
 
 			<ScrollbarWrapper
+				id="timeline-content"
 				defer
 				className="col-start-2 col-end-2 row-start-2 row-end-3 border-l border-gray-300"
 				events={{
@@ -156,7 +157,7 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 					style={{
 						width: `${totalMinutes * minuteWidth}px`,
 					}}
-					className="relative h-full w-full"
+					className="relative h-full"
 				>
 					{!isHost && (
 						<ClientCardContainer minuteWidth={minuteWidth} eventData={eventData} localId={localRSVP.id} />

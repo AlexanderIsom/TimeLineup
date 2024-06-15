@@ -3,6 +3,7 @@
 import { Button } from "../ui/button";
 import styles from "./timeSelector.module.scss";
 import { Separator } from "../ui/separator";
+import { useEffect, useRef } from "react";
 
 interface Props {
 	value: Date;
@@ -16,9 +17,18 @@ export default function TimeSelector(props: Props) {
 	const hourElements = [];
 	const minuteElements = [];
 
+	const currentSelectedHour = useRef<HTMLButtonElement | null>(null);
+	const currentSelectedMinute = useRef<HTMLButtonElement | null>(null);
+
+	useEffect(() => {
+		currentSelectedHour.current?.scrollIntoView();
+		currentSelectedMinute.current?.scrollIntoView();
+	});
+
 	for (let i = 0; i < 24; i++) {
 		hourElements.push(
 			<Button
+				ref={hour === i ? currentSelectedHour : null}
 				variant={hour === i ? "default" : "ghost"}
 				key={i}
 				className={`w-4`}
@@ -37,6 +47,7 @@ export default function TimeSelector(props: Props) {
 	for (let i = 0; i < 12; i++) {
 		minuteElements.push(
 			<Button
+				ref={minute === i * 5 ? currentSelectedMinute : null}
 				variant={minute === i * 5 ? "default" : "ghost"}
 				key={i}
 				className="w-4"

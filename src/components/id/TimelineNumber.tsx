@@ -63,7 +63,7 @@ function DayHeaderAndHours({ date, start, end, minuteWidth, offset, dayIndex }: 
 	let numberList = eachHourOfInterval({ start: startTime, end: endTime });
 	const useMinutes = differenceInMinutes(endTime, startTime) <= 60;
 	if (useMinutes) {
-		numberList = eachMinuteOfInterval({ start: endTime, end: startTime }, { step: 5 });
+		numberList = eachMinuteOfInterval({ start: startTime, end: endTime }, { step: 5 });
 	}
 	return (
 		<div className="h-full min-w-max border-gray-300">
