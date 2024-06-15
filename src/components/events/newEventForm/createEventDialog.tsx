@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EventDataQuery, UpdateEvent, createEvent } from "@/actions/eventActions";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { addMinutes, format, roundToNearestMinutes } from "date-fns";
+import { addMinutes, format, roundToNearestMinutes, subMinutes } from "date-fns";
 import { CalendarIcon, Clock, LoaderCircle, Minus, Plus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
@@ -306,7 +306,17 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 													<Calendar
 														mode="single"
 														selected={field.value}
-														onSelect={field.onChange}
+														onSelect={(date) => {
+															if (!date) return;
+
+															const currentTime = form.getValues("startDate");
+															date.setHours(currentTime.getHours());
+															date.setMinutes(currentTime.getMinutes());
+															if (date > form.getValues("endDate")) {
+																form.setValue("endDate", addMinutes(date, 30));
+															}
+															field.onChange(date);
+														}}
 														disabled={(date: Date) => date < new Date()}
 													/>
 												</PopoverContent>
@@ -396,7 +406,17 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 													<Calendar
 														mode="single"
 														selected={field.value}
-														onSelect={field.onChange}
+														onSelect={(date) => {
+															if (!date) return;
+
+															const currentTime = form.getValues("endDate");
+															date.setHours(currentTime.getHours());
+															date.setMinutes(currentTime.getMinutes());
+															if (date < form.getValues("startDate")) {
+																form.setValue("startDate", subMinutes(date, 30));
+															}
+															field.onChange(date);
+														}}
 														disabled={(date: Date) => date < new Date()}
 													/>
 												</PopoverContent>
