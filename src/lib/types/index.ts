@@ -1,1 +1,1 @@
-export type { EventData } from "./Events"
+export type { EventData } from "./Events";

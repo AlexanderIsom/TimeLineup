@@ -22,8 +22,8 @@ export const useNotificationStore = create<NotificationsState>()((set, get) => (
 				notifications: notifications,
 				totalNotificaionCount: totalCount,
 				friendRequests: friendRequests,
-			}
-		})
+			};
+		});
 	},
 	removeNotification: (id: string) => {
 		set((state) => {
@@ -34,8 +34,8 @@ export const useNotificationStore = create<NotificationsState>()((set, get) => (
 				...state,
 				notifications: notifications,
 				totalNotificaionCount: totalCount,
-			}
-		})
+			};
+		});
 	},
 	removeFriendRequest: (id: string) => {
 		set((state) => {
@@ -46,7 +46,7 @@ export const useNotificationStore = create<NotificationsState>()((set, get) => (
 				...state,
 				friendRequests: friendRequests,
 				totalNotificaionCount: totalCount,
-			}
-		})
-	}
+			};
+		});
+	},
 }));

@@ -1,36 +1,34 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Inter } from "next/font/google";
 import Navbar from "@/components/navbar/navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { ReactQueryClientProvider } from "@/utils/ReactQueryClientProvider";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
-var cn = require("classnames");
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "overlayscrollbars/overlayscrollbars.css";
+import "./globals.css";
+import ScrollbarWrapper from "@/components/scrollbarWrapper";
 
 const inter = Inter({
-  subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter'
+	subsets: ["latin"],
+	display: "swap",
+	variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Timelineup",
-  description: "",
+	title: "Timelineup",
+	description: "",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <ReactQueryClientProvider>
-      <html lang="en" className={`${inter.variable}`} style={{ height: "100%" }}>
-        <body className={cn("min-h-screen bg-background font-sans antialiased")} style={{ height: "100%" }}>
-          <Navbar />
-          <div style={{ height: "100%" }} className="pt-24">{children}
-            <SpeedInsights />
-          </div>
-          <Toaster />
-        </body>
-      </html>
-    </ReactQueryClientProvider>
-  );
+	return (
+		<html lang="en" className={`${inter.variable}`}>
+			<body className="overflow-hidden">
+				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
+					<Navbar />
+					<div className="flex h-screen flex-col pt-24">{children}</div>
+				</ScrollbarWrapper>
+				<SpeedInsights />
+				<Toaster />
+			</body>
+		</html>
+	);
 }
