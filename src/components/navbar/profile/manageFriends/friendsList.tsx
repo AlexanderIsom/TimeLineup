@@ -1,5 +1,11 @@
 "use client";
-import { FriendStatusAndProfile, addFriend, getFriendshipsWithStatus, removeFriend } from "@/actions/friendActions";
+import {
+	FriendStatusAndProfile,
+	FriendStatusAndProfiles,
+	addFriend,
+	getFriendshipsWithStatus,
+	removeFriend,
+} from "@/actions/friendActions";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -8,18 +14,27 @@ import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/utils/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useOptimistic } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import { z } from "zod";
 import FriendButton from "./friendButton";
-
 const formSchema = z.object({
 	username: z.string(),
 });
 
+enum OptimisticActionType {
+	add,
+	remove,
+}
+
+interface OptimisticAction {
+	action: OptimisticActionType;
+	friend: NonNullable<FriendStatusAndProfile>;
+}
+
 export default function FriendsList() {
-	const { data: friends, isLoading } = useSWR("getFriends", getFriendshipsWithStatus);
+	const { data: friends, isLoading } = useSWR<FriendStatusAndProfiles>("getFriends", getFriendshipsWithStatus);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -28,11 +43,25 @@ export default function FriendsList() {
 		},
 	});
 
+	const [optimisticFriends, updateOptimisticFriends] = useOptimistic(friends, (state, update: OptimisticAction) => {
+		if (!state) return;
+
+		if (update.action === OptimisticActionType.add && update.friend !== undefined) {
+			const newState = state;
+			newState.push(update.friend);
+			return newState;
+		}
+
+		if (update.action === OptimisticActionType.remove && update.friend !== undefined) {
+			const newState = state.filter((friend) => friend.id !== update.friend.id);
+			return newState;
+		}
+
+		return state;
+	});
+
 	const router = useRouter();
 	const supabase = createClient();
-
-	const [currentFriends, setCurrentFriends] = useState<FriendStatusAndProfile>();
-	useMemo(() => setCurrentFriends(friends), [friends]);
 
 	useEffect(() => {
 		const friendChannel = supabase
@@ -94,15 +123,18 @@ export default function FriendsList() {
 				<span>Loading...</span>
 			) : (
 				<>
-					{currentFriends !== undefined &&
-						currentFriends.map((friendship) => {
+					{optimisticFriends !== undefined &&
+						optimisticFriends.map((friendship) => {
 							if (friendship === undefined) return;
 							return (
 								<FriendButton
 									key={friendship.id}
 									friendship={friendship}
-									onRemoveFriend={async (friendToRemove) => {
-										setCurrentFriends(currentFriends.filter((f) => f.id !== friendToRemove.id));
+									onRemoveFriend={async (friendToRemove: NonNullable<FriendStatusAndProfile>) => {
+										updateOptimisticFriends({
+											action: OptimisticActionType.remove,
+											friend: friendToRemove,
+										});
 										await removeFriend(friendToRemove.id);
 									}}
 								/>

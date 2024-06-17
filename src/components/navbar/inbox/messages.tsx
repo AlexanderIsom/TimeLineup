@@ -2,7 +2,7 @@
 import { NotificationQuery, markNoticiationAsRead } from "@/actions/notificationAction";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useNotificationStore } from "@/stores/Notifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { MailOpen, User } from "lucide-react";
 
 interface Props {

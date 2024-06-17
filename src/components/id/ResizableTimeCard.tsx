@@ -5,7 +5,7 @@ import React, { SyntheticEvent, useState } from "react";
 import Draggable from "react-draggable";
 import { Resizable, ResizeCallbackData } from "react-resizable";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
-import { TimeSegment, useSegmentStore } from "@/stores/Segments";
+import { TimeSegment, useSegmentStore } from "@/stores/segmentStore";
 import { addMinutes, differenceInMinutes, format, roundToNearestMinutes } from "date-fns";
 import MathUtils from "@/utils/MathUtils";
 

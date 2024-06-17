@@ -1,6 +1,6 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNotificationStore } from "@/stores/Notifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@/components/ui/badge";
 import FriendRequests from "./friendRequests";

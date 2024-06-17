@@ -1,7 +1,7 @@
 "use client";
 import { EventRsvp } from "@/actions/eventActions";
 import { Event } from "@/db/schema";
-import { useSegmentStore } from "@/stores/Segments";
+import { useSegmentStore } from "@/stores/segmentStore";
 import { createClient } from "@/utils/supabase/client";
 import { useIsMobile } from "@/utils/useIsMobile";
 import { differenceInMinutes } from "date-fns";
@@ -66,22 +66,25 @@ export default function Timeline({ localRSVP, eventData, otherRsvps, isHost }: P
 	}, [supabase, router, eventData.id, localRSVP, isHost, setSegmentStore]);
 
 	useEffect(() => {
+		const resize = (width: number) => {
+			if (totalMinutes * defaultWidth < width) {
+				const newWidth = width / totalMinutes;
+				setMinuteWidth(newWidth);
+			} else {
+				setMinuteWidth(defaultWidth);
+			}
+		};
+
 		const resizeObserver = new ResizeObserver((entries) => {
 			for (let entry of entries) {
-				if (totalMinutes * defaultWidth < entry.contentRect.width) {
-					const newWidth = entry.contentRect.width / totalMinutes;
-					console.log("setting minute width: ", newWidth);
-					setMinuteWidth(newWidth);
-				} else {
-					console.log("setting default width: ", defaultWidth);
-					setMinuteWidth(defaultWidth);
-				}
+				resize(entry.contentRect.width);
 			}
 		});
 
 		const div = document.getElementById("timeline-content");
 
 		if (div) {
+			resize(div.offsetWidth);
 			resizeObserver.observe(div);
 		}
 

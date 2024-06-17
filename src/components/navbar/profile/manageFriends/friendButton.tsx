@@ -1,4 +1,4 @@
-import { FriendStatusAndProfile, acceptFriendRequest } from "@/actions/friendActions";
+import { FriendStatusAndProfiles, acceptFriendRequest } from "@/actions/friendActions";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -11,22 +11,23 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { NotUndefined, WithoutArray } from "@/utils/TypeUtils";
+import { WithoutArray } from "@/utils/TypeUtils";
 
 import { Button } from "@/components/ui/button";
 import { Check, Trash, X } from "lucide-react";
 
 interface FriendButtonProps {
-	friendship: NotUndefined<WithoutArray<FriendStatusAndProfile>>;
-	onRemoveFriend: (friend: NotUndefined<WithoutArray<FriendStatusAndProfile>>) => void;
+	friendship: NonNullable<WithoutArray<FriendStatusAndProfiles>>;
+	onRemoveFriend: (friend: NonNullable<WithoutArray<FriendStatusAndProfiles>>) => void;
 }
 
 export default function FriendButton({ friendship, onRemoveFriend }: FriendButtonProps) {
+	const avatarString = friendship.profile.avatarUrl ?? "";
 	return (
 		<div className="flex items-center justify-between">
 			<div className="flex items-center gap-2">
 				<Avatar>
-					<AvatarImage src={friendship.profile.avatarUrl ?? undefined} />
+					<AvatarImage src={avatarString} />
 					<AvatarFallback>{friendship.profile.username!.substring(0, 2)}</AvatarFallback>
 				</Avatar>
 				{

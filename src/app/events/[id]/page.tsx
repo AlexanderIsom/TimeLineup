@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { EventRsvp, GetEventData } from "@/actions/eventActions";
 import Timeline from "@/components/id/Timeline";
 import { getUserProfile } from "@/actions/profileActions";
+import Loading from "./loading";
 
 export default async function ViewEvent({ params }: { params: { id: string } }) {
 	const profile = await getUserProfile();

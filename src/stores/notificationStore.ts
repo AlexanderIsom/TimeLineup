@@ -1,12 +1,12 @@
-import { FriendStatusAndProfile } from "@/actions/friendActions";
+import { FriendStatusAndProfiles } from "@/actions/friendActions";
 import { NotificationQuery } from "@/actions/notificationAction";
 import { create } from "zustand";
 
 interface NotificationsState {
 	totalNotificaionCount: number;
 	notifications: NotificationQuery;
-	friendRequests: FriendStatusAndProfile;
-	setInitialState: (notifications: NotificationQuery, friendRequests: FriendStatusAndProfile) => void;
+	friendRequests: FriendStatusAndProfiles;
+	setInitialState: (notifications: NotificationQuery, friendRequests: FriendStatusAndProfiles) => void;
 	removeNotification: (id: string) => void;
 	removeFriendRequest: (id: string) => void;
 }
@@ -15,7 +15,7 @@ export const useNotificationStore = create<NotificationsState>()((set, get) => (
 	totalNotificaionCount: 0,
 	notifications: [],
 	friendRequests: [],
-	setInitialState: (notifications: NotificationQuery, friendRequests: FriendStatusAndProfile) => {
+	setInitialState: (notifications: NotificationQuery, friendRequests: FriendStatusAndProfiles) => {
 		set((state) => {
 			const totalCount = (friendRequests?.length ?? 0) + (notifications?.length ?? 0);
 			return {

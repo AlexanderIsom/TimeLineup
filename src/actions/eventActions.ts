@@ -10,7 +10,6 @@ import {
 	rsvps,
 	timeSegments,
 } from "@/db/schema";
-import { NotUndefined } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
 import { isWithinInterval } from "date-fns";
 import { and, eq, inArray, or } from "drizzle-orm";
@@ -64,7 +63,7 @@ export async function createEvent(eventData: InsertEvent, invitedUsers: Array<Pr
 	return newEvent[0].id;
 }
 
-export async function UpdateEvent(eventData: NotUndefined<EventDataQuery>, invitedUsers: Array<Profile>) {
+export async function UpdateEvent(eventData: NonNullable<EventDataQuery>, invitedUsers: Array<Profile>) {
 	const supabase = createClient();
 
 	const { data, error } = await supabase.auth.getUser();

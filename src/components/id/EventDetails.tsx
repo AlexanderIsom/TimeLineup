@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Check, CircleHelp, Info, User, X } from "lucide-react";
 import { EventDataQuery, deleteEvent } from "@/actions/eventActions";
-import { NotUndefined } from "@/utils/TypeUtils";
 import { Button } from "../ui/button";
 import { updateRsvpStatus } from "@/actions/idActions";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
@@ -26,7 +25,7 @@ import {
 } from "../ui/alert-dialog";
 
 interface Props {
-	event: NotUndefined<EventDataQuery>;
+	event: NonNullable<EventDataQuery>;
 	localUser: Profile;
 }
 

@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { FriendStatusAndProfile, acceptFriendRequest, removeFriend } from "@/actions/friendActions";
+import { FriendStatusAndProfiles, acceptFriendRequest, removeFriend } from "@/actions/friendActions";
 import { Check, User, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNotificationStore } from "@/stores/Notifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 
 interface Props {
-	requests: FriendStatusAndProfile;
+	requests: FriendStatusAndProfiles;
 }
 
 export default function FriendRequests({ requests }: Props) {

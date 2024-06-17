@@ -40,7 +40,6 @@ import {
 	AlertDialogFooter,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { NotUndefined } from "@/utils/TypeUtils";
 
 const steps = [
 	{
@@ -129,13 +128,13 @@ export default function CreateEventDialog({ friendsList, event, isEditing = fals
 
 	function processForm(values: z.infer<typeof formSchema>) {
 		if (isEditing) {
-			const data: NotUndefined<EventDataQuery> = {
+			const data: NonNullable<EventDataQuery> = {
 				...event,
 				title: values.title,
 				start: values.startDate,
 				end: values.endDate,
 				description: values.description,
-			} as NotUndefined<EventDataQuery>;
+			} as NonNullable<EventDataQuery>;
 			UpdateEvent(data, invitedUsers).then(() => {
 				setOpen(false);
 				toast.message("Event has been updated", {

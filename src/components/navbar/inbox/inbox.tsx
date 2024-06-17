@@ -1,6 +1,6 @@
 "use client";
 
-import { useNotificationStore } from "@/stores/Notifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";

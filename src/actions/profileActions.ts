@@ -14,12 +14,16 @@ export async function getUserProfile() {
 		error,
 	} = await supabase.auth.getUser();
 	if (error || !user) {
-		return;
+		redirect("/error");
 	}
 
 	const profile = await db.query.profiles.findFirst({
 		where: eq(profiles.id, user.id),
 	});
+
+	if (!profile) {
+		redirect("/error");
+	}
 
 	return profile;
 }

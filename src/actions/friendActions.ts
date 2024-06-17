@@ -1,6 +1,7 @@
 "use server";
 import { db } from "@/db";
 import { Profile, friendships, profiles } from "@/db/schema";
+import { WithoutArray } from "@/utils/TypeUtils";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -41,7 +42,7 @@ export async function addFriend(usernameQuery: string) {
 		receiving_user: targetFriend.id,
 	});
 
-	revalidatePath("/");
+	revalidatePath("/", "layout");
 }
 
 export async function getUser() {
@@ -136,4 +137,5 @@ export async function getFriends() {
 	return queryResult.map((result) => result.profile);
 }
 
-export type FriendStatusAndProfile = Awaited<ReturnType<typeof getFriendshipsWithStatus>>;
+export type FriendStatusAndProfiles = Awaited<ReturnType<typeof getFriendshipsWithStatus>>;
+export type FriendStatusAndProfile = WithoutArray<FriendStatusAndProfiles>;
