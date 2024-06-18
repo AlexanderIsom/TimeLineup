@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "../ui/button";
-import styles from "./timeSelector.module.scss";
 import { Separator } from "../ui/separator";
 import { useEffect, useRef } from "react";
 
@@ -70,7 +69,7 @@ export default function TimeSelector(props: Props) {
 				<span className="text-sm">Min</span>
 			</div>
 			<Separator />
-			<div className={`${styles.customScroll} flex h-32 justify-evenly gap-2`}>
+			<div className={`no-scrollbar flex h-32 justify-evenly gap-2`}>
 				<div className="flex flex-col overflow-y-scroll">{hourElements}</div>
 				<div className="flex flex-col overflow-y-scroll">{minuteElements}</div>
 			</div>

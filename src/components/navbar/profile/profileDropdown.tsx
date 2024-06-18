@@ -9,6 +9,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 import { HeartHandshake, LogOut, User } from "lucide-react";
 import ManageFriendsDialog from "./manageFriends/manageFriendsDialog";
 import { ProfileAvatar } from "./profileAvatar";
@@ -27,10 +28,13 @@ export default function ProfileDropdown() {
 				<DropdownMenuContent className="w-80">
 					<DropdownMenuLabel>My Account</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="hover:cursor-pointer" {...profileDialog.triggerProps}>
-						<User className="mr-2 h-4 w-4" />
-						<span>Profile</span>
+					<DropdownMenuItem className="hover:cursor-pointer">
+						<Link href="?dialog=profile" className="flex h-full w-full items-center" shallow={true}>
+							<User className="mr-2 h-4 w-4" />
+							<span>Profile</span>
+						</Link>
 					</DropdownMenuItem>
+
 					<DropdownMenuItem className="hover:cursor-pointer" {...friendsDialog.triggerProps}>
 						<HeartHandshake className="mr-2 h-4 w-4" />
 						<span>Manage friends</span>
@@ -49,7 +53,7 @@ export default function ProfileDropdown() {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<ProfileDialog dialogProps={profileDialog.dialogProps} />
+			{/* <ProfileDialog dialogProps={profileDialog.dialogProps} /> */}
 			<ManageFriendsDialog dialogProps={friendsDialog.dialogProps} />
 		</>
 	);

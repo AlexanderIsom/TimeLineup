@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
+import { ProfileDialog } from "@/components/navbar/profile/profileDialog";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<Navbar />
 					<div className="flex h-screen flex-col pt-24">{children}</div>
 				</ScrollbarWrapper>
+				<ProfileDialog />
 				<SpeedInsights />
 				<Toaster />
 			</body>
