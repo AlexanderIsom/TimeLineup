@@ -16,7 +16,7 @@ export default function QueryDialog({ children, query, value }: Props) {
 	const removeQueryFromUrl = () => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.delete(query);
-		window.history.pushState(null, "", `?${params.toString()}`);
+		window.history.replaceState(null, "", `?${params.toString()}`);
 	};
 
 	return (
