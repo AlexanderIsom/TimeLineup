@@ -1,19 +1,13 @@
-"use client";
 import { getUserProfile } from "@/actions/profileActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import useSWR from "swr";
 
 interface Props {
 	iconOnly?: boolean;
 }
 
-export function ProfileAvatar({ iconOnly }: Props = { iconOnly: false }) {
-	const { data: profile, isLoading, error } = useSWR("/api/profile", getUserProfile);
-
-	if (isLoading || error) {
-		return <ProfileAvatarFallback iconOnly={iconOnly} />;
-	}
+export async function ProfileAvatar({ iconOnly }: Props = { iconOnly: false }) {
+	const profile = await getUserProfile();
 
 	return (
 		<div className="flex items-center space-x-2">

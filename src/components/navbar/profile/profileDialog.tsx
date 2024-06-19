@@ -1,24 +1,19 @@
-import { DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import { DialogContent, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer";
-import { ProfileAvatar } from "./profileAvatar";
+import { ProfileAvatar, ProfileAvatarFallback } from "./profileAvatar";
 
 import ProfileForm from "./profileForm";
 import QueryDialog from "@/components/queryDialog";
-
-interface DialogProps {
-	children?: React.ReactNode;
-	dialogProps?: {
-		open: boolean;
-		onOpenChange: (open: boolean) => void;
-	};
-}
+import { Suspense } from "react";
 
 export function ProfileDialog() {
 	return (
 		<QueryDialog query="dialog" value="profile">
-			<DialogContent className="w-11/12 px-4 sm:max-w-md md:px-6">
+			<DialogContent>
 				<DialogHeader className="flex flex-col items-center space-y-2">
-					<ProfileAvatar />
+					<Suspense fallback={<ProfileAvatarFallback />}>
+						<ProfileAvatar />
+					</Suspense>
 					<DialogDescription>Change your profile picture and username here.</DialogDescription>
 				</DialogHeader>
 				<ProfileForm />

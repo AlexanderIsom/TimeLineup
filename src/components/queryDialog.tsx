@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Dialog } from "./ui/dialog";
 import { useSearchParams } from "next/navigation";
 
@@ -19,9 +19,15 @@ export default function QueryDialog({ children, query, value }: Props) {
 		window.history.replaceState(null, "", `?${params.toString()}`);
 	};
 
+	const [isOpen, setIsOpen] = React.useState(false);
+
+	useEffect(() => {
+		setIsOpen(dialogString !== null && dialogString === value);
+	}, [setIsOpen, dialogString, value]);
+
 	return (
 		<Dialog
-			open={dialogString !== null && dialogString === value}
+			open={isOpen}
 			onOpenChange={(open: boolean) => {
 				if (!open) {
 					removeQueryFromUrl();

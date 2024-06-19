@@ -7,6 +7,7 @@ import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
 import { ProfileDialog } from "@/components/navbar/profile/profileDialog";
+import ManageFriendsDialog from "@/components/navbar/profile/manageFriends/manageFriendsDialog";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<div className="flex h-screen flex-col pt-24">{children}</div>
 				</ScrollbarWrapper>
 				<ProfileDialog />
+				<ManageFriendsDialog />
 				<SpeedInsights />
 				<Toaster />
 			</body>
