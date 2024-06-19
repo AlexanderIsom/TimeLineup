@@ -78,16 +78,6 @@ export default function ProfileForm() {
 				/>
 				<div className="flex justify-between">
 					<div className="flex gap-2">
-						<Button
-							type="button"
-							variant="outline"
-							onClick={() => {
-								form.reset();
-							}}
-							className="hidden md:flex"
-						>
-							Cancel
-						</Button>
 						<DeleteProfile />
 					</div>
 					<Button onClick={form.handleSubmit(processForm)}>Update</Button>

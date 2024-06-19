@@ -1,26 +1,21 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 import FriendsList from "./friendsList";
+import QueryDialog from "@/components/queryDialog";
+import { getFriendshipsWithStatus } from "@/actions/friendActions";
 
-interface DialogProps {
-	children?: React.ReactNode;
-	dialogProps?: {};
-}
-
-export default function ManageFriendsDialog({ children, dialogProps }: DialogProps) {
+export default async function ManageFriendsDialog() {
+	const friends = await getFriendshipsWithStatus();
 	return (
-		<Dialog {...dialogProps}>
-			<DialogTrigger asChild className="hidden md:flex">
-				{children}
-			</DialogTrigger>
+		<QueryDialog query="dialog" value="manageFriends">
 			<DialogContent className="w-11/12 sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">Manage friends</DialogTitle>
 				</DialogHeader>
-				<FriendsList />
+				<FriendsList friends={friends} />
 			</DialogContent>
-		</Dialog>
+		</QueryDialog>
 	);
 }
 
@@ -28,7 +23,8 @@ interface DrawerProps {
 	children?: React.ReactNode;
 }
 
-export function ManageFriendsDrawer({ children }: DrawerProps) {
+export async function ManageFriendsDrawer({ children }: DrawerProps) {
+	const friends = await getFriendshipsWithStatus();
 	return (
 		<Drawer>
 			<DrawerTrigger asChild className="flex md:hidden">
@@ -38,7 +34,7 @@ export function ManageFriendsDrawer({ children }: DrawerProps) {
 				<DrawerHeader>
 					<DrawerTitle>Manage friends</DrawerTitle>
 				</DrawerHeader>
-				<FriendsList />
+				<FriendsList friends={friends} />
 			</DrawerContent>
 		</Drawer>
 	);
