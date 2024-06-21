@@ -1,14 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, userAgent } from "next/server";
 import { createClient } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+	const { device } = userAgent(request);
+	const viewport = device.type === "mobile" ? "mobile" : "desktop";
+	request.nextUrl.searchParams.set("viewport", viewport);
+
 	const { supabase, response } = createClient(request);
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
 
 	if (!user && request.nextUrl.pathname !== "/" && !request.nextUrl.pathname.startsWith("/auth")) {
-		return NextResponse.redirect(new URL("/", request.url));
+		const url = request.nextUrl;
+		url.searchParams.set("dialog", "login");
+		url.pathname = "/";
+		return NextResponse.redirect(url);
 	}
 
 	return response;
