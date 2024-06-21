@@ -2,9 +2,10 @@ import { NextRequest, NextResponse, userAgent } from "next/server";
 import { createClient } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+	const url = request.nextUrl;
 	const { device } = userAgent(request);
 	const viewport = device.type === "mobile" ? "mobile" : "desktop";
-	request.nextUrl.searchParams.set("viewport", viewport);
+	url.searchParams.set("viewport", viewport);
 
 	const { supabase, response } = createClient(request);
 	const {
