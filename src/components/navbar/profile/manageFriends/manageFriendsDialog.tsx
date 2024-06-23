@@ -8,7 +8,7 @@ import { getFriendshipsWithStatus } from "@/actions/friendActions";
 export default async function ManageFriendsDialog() {
 	const friends = await getFriendshipsWithStatus();
 	return (
-		<QueryDialog query="dialog" value="manageFriends">
+		<QueryDialog value="manageFriends">
 			<DialogContent className="w-11/12 sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">Manage friends</DialogTitle>

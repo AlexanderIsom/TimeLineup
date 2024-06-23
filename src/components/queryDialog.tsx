@@ -1,23 +1,15 @@
 "use client";
 import React, { useEffect } from "react";
 import { Dialog } from "./ui/dialog";
-import { useSearchParams } from "next/navigation";
+import { useQueryState } from "nuqs";
 
 interface Props {
 	children?: React.ReactNode;
-	query: string;
 	value: string;
 }
 
-export default function QueryDialog({ children, query, value }: Props) {
-	const searchParams = useSearchParams();
-	const dialogString = searchParams?.get(query);
-
-	const removeQueryFromUrl = () => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.delete(query);
-		window.history.replaceState(null, "", `?${params.toString()}`);
-	};
+export default function QueryDialog({ children, value }: Props) {
+	const [dialogString, setDialogString] = useQueryState("dialog");
 
 	const [isOpen, setIsOpen] = React.useState(false);
 
@@ -30,7 +22,7 @@ export default function QueryDialog({ children, query, value }: Props) {
 			open={isOpen}
 			onOpenChange={(open: boolean) => {
 				if (!open) {
-					removeQueryFromUrl();
+					setDialogString(null);
 				}
 			}}
 		>

@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { getFriends } from "@/actions/friendActions";
 import CreateEventDialog from "@/components/events/newEventForm/createEventDialog";
 import { Profile } from "@/db/schema";
-import EventCardSkeleton from "@/components/events/EventCardSkeleton";
 import { Button } from "@/components/ui/button";
 
 export default async function Events() {

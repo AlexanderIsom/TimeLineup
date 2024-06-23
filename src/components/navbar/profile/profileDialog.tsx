@@ -8,7 +8,7 @@ import { Suspense } from "react";
 
 export function ProfileDialog() {
 	return (
-		<QueryDialog query="dialog" value="profile">
+		<QueryDialog value="profile">
 			<DialogContent>
 				<DialogHeader className="flex flex-col items-center space-y-2">
 					<Suspense fallback={<ProfileAvatarFallback />}>
