@@ -1,36 +1,35 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog } from "./ui/dialog";
-import { useSearchParams } from "next/navigation";
+import { useQueryState } from "nuqs";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface Props {
 	children?: React.ReactNode;
-	query: string;
-	value: string;
+	dialogId: string;
 }
 
-export default function QueryDialog({ children, query, value }: Props) {
-	const searchParams = useSearchParams();
-	const dialogString = searchParams?.get(query);
+export default function QueryDialog({ children, dialogId }: Props) {
+	const [modalString, setModalString] = useQueryState("modal");
 
-	const removeQueryFromUrl = () => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.delete(query);
-		window.history.replaceState(null, "", `?${params.toString()}`);
-	};
+	const [isOpen, setIsOpen] = useState(false);
 
-	const [isOpen, setIsOpen] = React.useState(false);
+	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	useEffect(() => {
-		setIsOpen(dialogString !== null && dialogString === value);
-	}, [setIsOpen, dialogString, value]);
+		setIsOpen(modalString !== null && modalString === dialogId);
+	}, [setIsOpen, modalString, dialogId]);
+
+	if (!isDesktop) {
+		return null;
+	}
 
 	return (
 		<Dialog
 			open={isOpen}
 			onOpenChange={(open: boolean) => {
 				if (!open) {
-					removeQueryFromUrl();
+					setModalString(null);
 				}
 			}}
 		>

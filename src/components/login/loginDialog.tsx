@@ -1,15 +1,11 @@
 import React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import ProviderButton from "./providerButton";
+import QueryDialog from "../queryDialog";
 
-interface Props {
-	children?: React.ReactNode;
-}
-
-export default function LoginDialog({ children }: Props) {
+export default function LoginDialog() {
 	return (
-		<Dialog>
-			<DialogTrigger asChild>{children}</DialogTrigger>
+		<QueryDialog dialogId="login">
 			<DialogContent className="flex max-w-max flex-col rounded-lg">
 				<DialogHeader className="flex">
 					<DialogTitle>Sign In</DialogTitle>
@@ -18,6 +14,6 @@ export default function LoginDialog({ children }: Props) {
 				<ProviderButton provider="google">Sign in with Google</ProviderButton>
 				<ProviderButton provider="discord">Sign in with Discord</ProviderButton>
 			</DialogContent>
-		</Dialog>
+		</QueryDialog>
 	);
 }

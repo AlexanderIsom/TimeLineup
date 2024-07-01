@@ -10,7 +10,7 @@ import {
 import { HeartHandshake, LogOut, User } from "lucide-react";
 
 import { ProfileAvatar } from "./profileAvatar";
-import DropdownMenuItemQuery from "../dropdownMenuItemQuery";
+import DropdownDialogTrigger from "../dropdownDialogTrigger";
 
 export default function ProfileDropdown() {
 	return (
@@ -22,15 +22,15 @@ export default function ProfileDropdown() {
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 
-				<DropdownMenuItemQuery query="?dialog=profile" className="hover:cursor-pointer">
+				<DropdownDialogTrigger dialogId="profile" className="hover:cursor-pointer">
 					<User className="mr-2 h-4 w-4" />
 					<span>Profile</span>
-				</DropdownMenuItemQuery>
+				</DropdownDialogTrigger>
 
-				<DropdownMenuItemQuery query="?dialog=manageFriends" className="hover:cursor-pointer">
+				<DropdownDialogTrigger dialogId="friends" className="hover:cursor-pointer">
 					<HeartHandshake className="mr-2 h-4 w-4" />
 					<span>Manage friends</span>
-				</DropdownMenuItemQuery>
+				</DropdownDialogTrigger>
 
 				<DropdownMenuSeparator />
 

@@ -2,14 +2,12 @@ import { createClient } from "@/utils/supabase/server";
 import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import LoginDialog from "../login/loginDialog";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import Inbox from "./inbox/inbox";
-import { ManageFriendsDrawer } from "./profile/manageFriends/manageFriendsDialog";
-import { ProfileDrawer } from "./profile/profileDialog";
 import ProfileDropdown from "./profile/profileDropdown";
+import QueryButton from "../queryButton";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -43,9 +41,7 @@ export default async function Navbar() {
 							</div>
 						</>
 					) : (
-						<LoginDialog>
-							<Button>Sign In</Button>
-						</LoginDialog>
+						<QueryButton value="login">Sign in</QueryButton>
 					)}
 				</nav>
 
@@ -70,18 +66,19 @@ export default async function Navbar() {
 										</Link>
 									</SheetClose>
 
-									<ProfileDrawer>
+									<QueryButton value={"profile"} styled={false}>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<User className="mr-2 h-4 w-4" />
 											<span>Profile</span>
 										</div>
-									</ProfileDrawer>
-									<ManageFriendsDrawer>
+									</QueryButton>
+
+									<QueryButton value={"friends"} styled={false}>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
 										</div>
-									</ManageFriendsDrawer>
+									</QueryButton>
 								</div>
 								<SheetClose asChild>
 									<form action={"/auth/signout"} method="POST">
@@ -100,12 +97,12 @@ export default async function Navbar() {
 								<div className="flex w-full flex-col items-center gap-6 p-6">
 									Please sign in to continue
 									<Separator />
-									<LoginDialog>
+									<QueryButton styled={false} value="login">
 										<div className="flex items-center font-medium hover:underline">
 											<LogIn className="mr-2 h-4 w-4" />
 											<span>Sign In</span>
 										</div>
-									</LoginDialog>
+									</QueryButton>
 								</div>
 							</div>
 						)}
