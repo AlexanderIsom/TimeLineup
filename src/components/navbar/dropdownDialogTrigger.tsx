@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function DropdownDialogTrigger({ children, className, dialogId: value }: Props) {
-	const [_, setQuery] = useQueryState("dialog", parseAsString.withOptions({ history: "replace" }));
+	const [_, setQuery] = useQueryState("modal", parseAsString.withOptions({ history: "replace" }));
 	return (
 		<DropdownMenuItem
 			className={cn(className)}

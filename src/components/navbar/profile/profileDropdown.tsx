@@ -27,7 +27,7 @@ export default function ProfileDropdown() {
 					<span>Profile</span>
 				</DropdownDialogTrigger>
 
-				<DropdownDialogTrigger dialogId="manageFriends" className="hover:cursor-pointer">
+				<DropdownDialogTrigger dialogId="friends" className="hover:cursor-pointer">
 					<HeartHandshake className="mr-2 h-4 w-4" />
 					<span>Manage friends</span>
 				</DropdownDialogTrigger>

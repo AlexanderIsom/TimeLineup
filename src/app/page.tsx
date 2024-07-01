@@ -16,6 +16,7 @@ import AnimatedNumber from "@/components/landingPage/animatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import LoginDialog from "@/components/login/loginDialog";
 import Image from "next/image";
+import QueryButton from "@/components/queryButton";
 
 export default function Home() {
 	return (
@@ -35,9 +36,9 @@ export default function Home() {
 							Timelineup allows you to plan out events for anyone anywhere in any timezone.
 						</p>
 						<div className="flex w-full flex-col gap-4 md:flex-row">
-							<LoginDialog>
-								<Button size={"lg"}>Get started</Button>
-							</LoginDialog>
+							<QueryButton value="login" size={"lg"}>
+								Get started
+							</QueryButton>
 						</div>
 					</div>
 					<div className="z-10 hidden h-auto w-1/4 -translate-x-56 rotate-[-15deg] md:block">
@@ -269,11 +270,9 @@ export default function Home() {
 						Build simple, easy, flexible and fully customizable events.
 					</p>
 					<div className="flex w-full justify-center gap-4">
-						<LoginDialog>
-							<Button size={"lg"} className="w-full md:w-auto">
-								Get started
-							</Button>
-						</LoginDialog>
+						<QueryButton value="login" size={"lg"} className="w-full md:w-auto">
+							Get started
+						</QueryButton>
 					</div>
 				</div>
 			</div>

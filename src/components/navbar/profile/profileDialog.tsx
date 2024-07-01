@@ -5,10 +5,11 @@ import { ProfileAvatar, ProfileAvatarFallback } from "./profileAvatar";
 import ProfileForm from "./profileForm";
 import QueryDialog from "@/components/queryDialog";
 import { Suspense } from "react";
+import QueryDrawer from "@/components/queryDrawer";
 
 export function ProfileDialog() {
 	return (
-		<QueryDialog value="profile">
+		<QueryDialog dialogId="profile">
 			<DialogContent>
 				<DialogHeader className="flex flex-col items-center space-y-2">
 					<Suspense fallback={<ProfileAvatarFallback />}>
@@ -22,21 +23,18 @@ export function ProfileDialog() {
 	);
 }
 
-interface DrawerProps {
-	children: React.ReactNode;
-}
-
-export function ProfileDrawer({ children }: DrawerProps) {
+export function ProfileDrawer() {
 	return (
-		<Drawer>
-			<DrawerTrigger asChild>{children}</DrawerTrigger>
+		<QueryDrawer drawerId="profile">
 			<DrawerContent className="p-4">
 				<DrawerHeader className="flex flex-col items-center space-y-2">
-					<ProfileAvatar />
+					<Suspense fallback={<ProfileAvatarFallback />}>
+						<ProfileAvatar />
+					</Suspense>
 					<DrawerDescription>Change your profile picture and username here.</DrawerDescription>
 				</DrawerHeader>
 				<ProfileForm />
 			</DrawerContent>
-		</Drawer>
+		</QueryDrawer>
 	);
 }

@@ -1,28 +1,28 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog } from "./ui/dialog";
 import { useQueryState } from "nuqs";
 
 interface Props {
 	children?: React.ReactNode;
-	value: string;
+	dialogId: string;
 }
 
-export default function QueryDialog({ children, value }: Props) {
-	const [dialogString, setDialogString] = useQueryState("dialog");
+export default function QueryDialog({ children, dialogId }: Props) {
+	const [modalString, setModalString] = useQueryState("modal");
 
-	const [isOpen, setIsOpen] = React.useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
-		setIsOpen(dialogString !== null && dialogString === value);
-	}, [setIsOpen, dialogString, value]);
+		setIsOpen(modalString !== null && modalString === dialogId);
+	}, [setIsOpen, modalString, dialogId]);
 
 	return (
 		<Dialog
 			open={isOpen}
 			onOpenChange={(open: boolean) => {
 				if (!open) {
-					setDialogString(null);
+					setModalString(null);
 				}
 			}}
 		>

@@ -7,7 +7,8 @@ import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
 import { ProfileDialog } from "@/components/navbar/profile/profileDialog";
-import ManageFriendsDialog from "@/components/navbar/profile/manageFriends/manageFriendsDialog";
+import { createClient } from "@/utils/supabase/server";
+import FriendsDialog from "@/components/navbar/profile/manageFriends/friendsDialog";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -20,7 +21,13 @@ export const metadata: Metadata = {
 	description: "",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	const supabase = createClient();
+	const {
+		data: { user },
+		error,
+	} = await supabase.auth.getUser();
+
 	return (
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
@@ -28,8 +35,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<Navbar />
 					<div className="flex h-screen flex-col pt-24">{children}</div>
 				</ScrollbarWrapper>
-				<ProfileDialog />
-				<ManageFriendsDialog />
+				{user && (
+					<>
+						<ProfileDialog />
+						<FriendsDialog />
+					</>
+				)}
 				<SpeedInsights />
 				<Toaster />
 			</body>
