@@ -8,7 +8,6 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import Inbox from "./inbox/inbox";
 import ProfileDropdown from "./profile/profileDropdown";
 import QueryButton from "../queryButton";
-import { ProfileDrawer } from "./profile/profileDialog";
 
 export default async function Navbar() {
 	const supabase = createClient();

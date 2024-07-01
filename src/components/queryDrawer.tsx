@@ -2,6 +2,7 @@
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { Drawer } from "./ui/drawer";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface Props {
 	children: React.ReactNode;
@@ -13,9 +14,15 @@ export default function QueryDrawer({ children, drawerId }: Props) {
 
 	const [isOpen, setIsOpen] = useState(false);
 
+	const isDesktop = useMediaQuery("(min-width: 768px)");
+
 	useEffect(() => {
 		setIsOpen(modalString !== null && modalString === drawerId);
 	}, [setIsOpen, modalString, drawerId]);
+
+	if (isDesktop) {
+		return null;
+	}
 
 	return (
 		<Drawer

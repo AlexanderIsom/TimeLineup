@@ -6,9 +6,10 @@ import { Inter } from "next/font/google";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
-import { ProfileDialog } from "@/components/navbar/profile/profileDialog";
+import { ProfileModal } from "@/components/navbar/profile/profileModal";
 import { createClient } from "@/utils/supabase/server";
-import FriendsDialog from "@/components/navbar/profile/manageFriends/friendsDialog";
+import FriendsModal from "@/components/navbar/profile/manageFriends/friendsModal";
+import LoginDialog from "@/components/login/loginDialog";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -35,11 +36,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 					<Navbar />
 					<div className="flex h-screen flex-col pt-24">{children}</div>
 				</ScrollbarWrapper>
-				{user && (
+				{user ? (
 					<>
-						<ProfileDialog />
-						<FriendsDialog />
+						<ProfileModal />
+						<FriendsModal />
 					</>
+				) : (
+					<LoginDialog />
 				)}
 				<SpeedInsights />
 				<Toaster />

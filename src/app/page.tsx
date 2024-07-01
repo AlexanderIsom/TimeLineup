@@ -14,7 +14,6 @@ import {
 import BoxItem from "@/components/landingPage/BoxItem";
 import AnimatedNumber from "@/components/landingPage/animatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
-import LoginDialog from "@/components/login/loginDialog";
 import Image from "next/image";
 import QueryButton from "@/components/queryButton";
 
