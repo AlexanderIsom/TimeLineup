@@ -10,6 +10,8 @@ import { ProfileModal } from "@/components/navbar/profile/profileModal";
 import { createClient } from "@/utils/supabase/server";
 import FriendsModal from "@/components/navbar/profile/manageFriends/friendsModal";
 import LoginDialog from "@/components/login/loginDialog";
+import RegisterUsernameModal from "@/components/navbar/profile/registerUsernameModal";
+import { getProfile } from "@/utils/utils";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -24,10 +26,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const supabase = createClient();
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
+	const { profile, user } = await getProfile(supabase);
 
 	return (
 		<html lang="en" className={`${inter.variable}`}>
@@ -40,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 					<>
 						<ProfileModal />
 						<FriendsModal />
+						{!profile.username && <RegisterUsernameModal />}
 					</>
 				) : (
 					<LoginDialog />
