@@ -8,6 +8,7 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import Inbox from "./inbox/inbox";
 import ProfileDropdown from "./profile/profileDropdown";
 import QueryButton from "../queryButton";
+import { DarkModeToggle } from "../darkModeToggle";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -17,7 +18,7 @@ export default async function Navbar() {
 	const signedIn = user !== null;
 
 	return (
-		<nav className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-white/90 px-8 backdrop-blur-md">
+		<nav className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-background/90 px-8 backdrop-blur-md">
 			<div className="flex w-full items-center justify-between gap-12">
 				<Link className="flex h-fit items-center gap-1 text-2xl font-bold" href={"/"}>
 					<Image src="/logo.svg" alt="logo" width={30} height={30} />
@@ -36,6 +37,7 @@ export default async function Navbar() {
 							</Link>
 
 							<div className="flex items-center gap-8">
+								<DarkModeToggle />
 								<Inbox />
 								<ProfileDropdown />
 							</div>

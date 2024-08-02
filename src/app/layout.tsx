@@ -12,6 +12,7 @@ import FriendsModal from "@/components/navbar/profile/manageFriends/friendsModal
 import LoginDialog from "@/components/login/loginDialog";
 import RegisterUsernameModal from "@/components/navbar/profile/registerUsernameModal";
 import { getProfile } from "@/utils/utils";
+import { ThemeProvider } from "@/components/themeProvider";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -31,21 +32,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	return (
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
-				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
-					<Navbar />
-					<div className="flex h-screen flex-col pt-24">{children}</div>
-				</ScrollbarWrapper>
-				{user ? (
-					<>
-						<ProfileModal />
-						<FriendsModal />
-						{!profile.username && <RegisterUsernameModal />}
-					</>
-				) : (
-					<LoginDialog />
-				)}
-				<SpeedInsights />
-				<Toaster />
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+					<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
+						<Navbar />
+						<div className="flex h-screen flex-col pt-24">{children}</div>
+					</ScrollbarWrapper>
+					{user ? (
+						<>
+							<ProfileModal />
+							<FriendsModal />
+							{!profile.username && <RegisterUsernameModal />}
+						</>
+					) : (
+						<LoginDialog />
+					)}
+					<SpeedInsights />
+					<Toaster />
+				</ThemeProvider>
 			</body>
 		</html>
 	);

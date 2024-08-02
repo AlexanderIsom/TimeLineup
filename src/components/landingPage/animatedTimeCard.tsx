@@ -50,7 +50,7 @@ export default function AnimatedTimeCard(props: Props) {
 			}}
 		>
 			<div className="flex h-[100px] w-full items-center justify-center">
-				<div className="absolute my-0 flex h-20 w-full items-center justify-between rounded-xl bg-blue-400 shadow-md shadow-gray-200">
+				<div className="absolute my-0 flex h-20 w-full items-center justify-between rounded-xl bg-input">
 					<span className="overflow-hidden text-ellipsis p-2 font-semibold text-white">
 						{format(
 							roundToNearestMinutes(addMinutes(startTime, currentX * 5), {

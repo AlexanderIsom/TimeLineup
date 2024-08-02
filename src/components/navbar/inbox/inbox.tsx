@@ -75,7 +75,7 @@ export default function Inbox() {
 				<PopoverTrigger asChild className="hidden md:block">
 					<Button variant="outline" className="h-10 gap-2 rounded-full pl-4 pr-4">
 						<div className="flex gap-2">
-							<InboxIcon className="h-5 w-6" color="rgb(2,8,23)" />
+							<InboxIcon className="h-5 w-6" />
 							{messageText}
 						</div>
 					</Button>

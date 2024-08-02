@@ -20,13 +20,13 @@ import QueryButton from "@/components/queryButton";
 export default function Home() {
 	return (
 		<div className="md:pt-16">
-			<div className="overflow-x-clip bg-gradient-to-b from-white/0 to-blue-50">
+			<div className="overflow-x-clip bg-gradient-to-b from-white/0 to-blue-50 dark:to-black">
 				<div className="mx-auto flex max-w-6xl">
 					<div className="z-20 mx-auto grow-0 px-4 py-8 md:px-16 md:py-16">
 						<span className="text-5xl font-bold md:text-7xl">
 							Make your events
 							<br />
-							actually{" "}
+							{"actually "}
 							<span className="bg-gradient-to-b from-transparent from-[82%] via-orange-300 via-[82%] to-orange-300 text-primary">
 								happen.
 							</span>
@@ -77,13 +77,13 @@ export default function Home() {
 					</div>
 				</div>
 				<svg
-					className={`relative z-20 w-full translate-y-1 overflow-hidden`}
+					className="relative z-20 w-full translate-y-1 overflow-hidden fill-current text-background"
 					preserveAspectRatio="none"
 					x="0px"
 					y="0px"
 					viewBox="0 0 1920 100.1"
 				>
-					<path fill="#ffffff" d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
+					<path d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
 				</svg>
 			</div>
 			<div className="mx-4 my-5">
@@ -130,7 +130,7 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
-			<div className="bg-gradient-to-b from-white/0 to-blue-50">
+			<div className="bg-gradient-to-b from-white/0 to-blue-50 dark:to-black">
 				<div className="mx-auto my-0 max-w-2xl px-4 py-8">
 					<div className="m-auto text-center">
 						<h4>Plan and create events fast</h4>
@@ -181,7 +181,7 @@ export default function Home() {
 				<div className="mx-auto my-8 flex w-full max-w-6xl px-2">
 					<div className="flex w-full flex-wrap justify-center gap-2">
 						<BoxItem index={0}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<Puzzle size={25} color="white" />
 								</div>
@@ -192,7 +192,7 @@ export default function Home() {
 							</div>
 						</BoxItem>
 						<BoxItem index={1}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<DraftingCompass size={25} color="white" />
 								</div>
@@ -204,7 +204,7 @@ export default function Home() {
 							</div>
 						</BoxItem>
 						<BoxItem index={2}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<Brush size={25} color="white" />
 								</div>
@@ -215,7 +215,7 @@ export default function Home() {
 							</div>
 						</BoxItem>
 						<BoxItem index={3}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<Earth size={25} color="white" />
 								</div>
@@ -227,7 +227,7 @@ export default function Home() {
 							</div>
 						</BoxItem>
 						<BoxItem index={4}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<BadgeCheck size={25} color="white" />
 								</div>
@@ -239,7 +239,7 @@ export default function Home() {
 							</div>
 						</BoxItem>
 						<BoxItem index={5}>
-							<div className="h-full w-full rounded-lg bg-white p-8 shadow-lg">
+							<div className="h-full w-full rounded-lg bg-background p-8 shadow-lg">
 								<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
 									<BellRing size={25} color="white" />
 								</div>
@@ -253,13 +253,13 @@ export default function Home() {
 					</div>
 				</div>
 				<svg
-					className={`relative z-20 w-full translate-y-1 overflow-hidden`}
+					className="relative z-20 w-full translate-y-1 overflow-hidden fill-current text-background"
 					preserveAspectRatio="none"
 					x="0px"
 					y="0px"
 					viewBox="0 0 1920 100.1"
 				>
-					<path fill="#ffffff" d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
+					<path d="M0,0c0,0,934.4,93.4,1920,0v100.1H0L0,0z"></path>
 				</svg>
 			</div>
 			<div className="mx-auto my-8 flex max-w-6xl justify-center px-4 pb-8 text-center">
