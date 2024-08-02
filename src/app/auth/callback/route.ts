@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-export async function GET(request: Request) {
-	const requestUrl = new URL(request.url);
-	const code = requestUrl.searchParams.get("code");
-	const next = requestUrl.searchParams.get("next") ?? "/";
+export async function GET(request: NextRequest) {
+	const { searchParams } = new URL(request.url);
+	const code = searchParams.get("code");
+	const next = searchParams.get("next") ?? "/";
 
 	if (code) {
 		const supabase = createClient();
@@ -12,5 +12,5 @@ export async function GET(request: Request) {
 	}
 
 	// URL to redirect to after sign up process completes
-	return NextResponse.redirect(`${requestUrl.origin}${next}`);
+	return NextResponse.redirect(new URL(next, request.url));
 }
