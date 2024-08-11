@@ -15,11 +15,11 @@ import BoxItem from "@/components/landingPage/BoxItem";
 import AnimatedNumber from "@/components/landingPage/animatedNumber";
 import AnimatedTimeCard from "@/components/landingPage/animatedTimeCard";
 import Image from "next/image";
-import QueryButton from "@/components/queryButton";
+import Link from "next/link";
 
 export default function Home() {
 	return (
-		<div className="md:pt-16">
+		<div className="pt-16">
 			<div className="overflow-x-clip bg-gradient-to-b from-white/0 to-blue-50">
 				<div className="mx-auto flex max-w-6xl">
 					<div className="z-20 mx-auto grow-0 px-4 py-8 md:px-16 md:py-16">
@@ -35,9 +35,9 @@ export default function Home() {
 							Timelineup allows you to plan out events for anyone anywhere in any timezone.
 						</p>
 						<div className="flex w-full flex-col gap-4 md:flex-row">
-							<QueryButton value="login" size={"lg"}>
-								Get started
-							</QueryButton>
+							<Button asChild size={"lg"}>
+								<Link href="/auth/sign-in">Get started</Link>
+							</Button>
 						</div>
 					</div>
 					<div className="z-10 hidden h-auto w-1/4 -translate-x-56 rotate-[-15deg] md:block">
@@ -269,9 +269,9 @@ export default function Home() {
 						Build simple, easy, flexible and fully customizable events.
 					</p>
 					<div className="flex w-full justify-center gap-4">
-						<QueryButton value="login" size={"lg"} className="w-full md:w-auto">
-							Get started
-						</QueryButton>
+						<Button asChild size={"lg"}>
+							<Link href="/auth/sign-in">Get started</Link>
+						</Button>
 					</div>
 				</div>
 			</div>

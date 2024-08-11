@@ -20,3 +20,8 @@ export async function getProfile(supabase: SupabaseClient, slug: string | undefi
 		user,
 	} as { profile: Profile; user: User | null };
 }
+
+export async function getSession(supabase: SupabaseClient) {
+	const { data } = await supabase.auth.getSession();
+	return data.session;
+}

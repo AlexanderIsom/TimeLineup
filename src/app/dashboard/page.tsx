@@ -7,7 +7,7 @@ import CreateEventDialog from "@/components/events/newEventForm/createEventDialo
 import { Profile } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 
-export default async function Events() {
+export default async function Dashboard() {
 	const userEvents = await GetLocalUserEvents();
 	const friends: Array<Profile> | undefined = await getFriends();
 

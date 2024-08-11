@@ -33,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 			<body className="overflow-hidden">
 				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
 					<Navbar />
-					<div className="flex h-screen flex-col pt-24">{children}</div>
+					<div className="flex h-screen flex-col">{children}</div>
 				</ScrollbarWrapper>
 				{user ? (
 					<>

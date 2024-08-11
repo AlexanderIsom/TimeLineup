@@ -31,7 +31,7 @@ export async function createClient(request: NextRequest) {
 
 	const { profile, user } = await getProfile(supabase);
 
-	if (!request.nextUrl.pathname.startsWith("/auth")) {
+	if (request.nextUrl.pathname !== "/" && !request.nextUrl.pathname.startsWith("/auth")) {
 		if (request.nextUrl.pathname !== "/" && !user) {
 			const url = new URL("/", request.nextUrl);
 			url.searchParams.set("modal", "login");

@@ -17,7 +17,7 @@ export default async function Navbar() {
 	const signedIn = user !== null;
 
 	return (
-		<nav className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-white/90 px-8 backdrop-blur-md">
+		<nav className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b bg-white/70 px-8 backdrop-blur-md">
 			<div className="flex w-full items-center justify-between gap-12">
 				<Link className="flex h-fit items-center gap-1 text-2xl font-bold" href={"/"}>
 					<Image src="/logo.svg" alt="logo" width={30} height={30} />
@@ -26,22 +26,21 @@ export default async function Navbar() {
 					</span>
 				</Link>
 
-				<nav className={`w-full ${signedIn ? "justify-between" : "justify-end"} hidden pr-4 md:flex`}>
+				<nav
+					className={`w-full ${signedIn ? "justify-end" : "justify-end"} hidden items-center gap-8 pr-4 md:flex`}
+				>
 					{signedIn ? (
 						<>
-							<Link href="/events">
-								<Button variant="ghost">
-									<div className="text-xl font-medium">Events</div>
-								</Button>
-							</Link>
-
-							<div className="flex items-center gap-8">
-								<Inbox />
-								<ProfileDropdown />
-							</div>
+							<Button asChild size={"sm"} className="bg-primary">
+								<Link href="/dashboard">dashboard</Link>
+							</Button>
+							<Inbox />
+							<ProfileDropdown />
 						</>
 					) : (
-						<QueryButton value="login">Sign in</QueryButton>
+						<Button asChild>
+							<Link href="/auth/sign-in">Sign in</Link>
+						</Button>
 					)}
 				</nav>
 
@@ -97,12 +96,13 @@ export default async function Navbar() {
 								<div className="flex w-full flex-col items-center gap-6 p-6">
 									Please sign in to continue
 									<Separator />
-									<QueryButton styled={false} value="login">
-										<div className="flex items-center font-medium hover:underline">
-											<LogIn className="mr-2 h-4 w-4" />
-											<span>Sign In</span>
-										</div>
-									</QueryButton>
+									<Link
+										href={"/auth/sign-in"}
+										className="flex items-center font-medium hover:underline"
+									>
+										<LogIn className="mr-2 size-4" />
+										Sign In
+									</Link>
 								</div>
 							</div>
 						)}
