@@ -1,11 +1,9 @@
 import { addDays, areIntervalsOverlapping } from "date-fns";
 import { GetLocalUserEvents } from "@/actions/eventActions";
 import EventCard from "@/components/events/EventCard";
-import { Card } from "@/components/ui/card";
 import { getFriends } from "@/actions/friendActions";
-import CreateEventDialog from "@/components/events/newEventForm/createEventDialog";
 import { Profile } from "@/db/schema";
-import { Button } from "@/components/ui/button";
+
 
 export default async function Dashboard() {
 	const userEvents = await GetLocalUserEvents();
@@ -23,11 +21,6 @@ export default async function Dashboard() {
 
 	return (
 		<div className="flex grow flex-col gap-4 p-4">
-			<Card className="flex items-center p-4 align-middle">
-				<CreateEventDialog friendsList={friends}>
-					<Button>Create event</Button>
-				</CreateEventDialog>
-			</Card>
 			<div className="flex grow flex-col gap-4 md:flex-row">
 				<EventCard title={"Next 7 days"} description="Events over the next week." events={currentEvents} />
 				<EventCard title={"Upcoming"} description="Future events." events={upcomingEvents} />

@@ -17,7 +17,7 @@ export default async function Navbar() {
 	const signedIn = user !== null;
 
 	return (
-		<nav className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b bg-white/70 px-8 backdrop-blur-md">
+		<nav className="row-start-1 row-end-2 h-16 flex w-full items-center justify-between border-b px-8 bg-white">
 			<div className="flex w-full items-center justify-between gap-12">
 				<Link className="flex h-fit items-center gap-1 text-2xl font-bold" href={"/"}>
 					<Image src="/logo.svg" alt="logo" width={30} height={30} />

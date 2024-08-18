@@ -19,11 +19,11 @@ import Link from "next/link";
 
 export default function Home() {
 	return (
-		<div className="pt-16">
-			<div className="overflow-x-clip bg-gradient-to-b from-white/0 to-blue-50">
-				<div className="mx-auto flex max-w-6xl">
-					<div className="z-20 mx-auto grow-0 px-4 py-8 md:px-16 md:py-16">
-						<span className="text-5xl font-bold md:text-7xl">
+		<div>
+			<div className="bg-gradient-to-b from-white/0 to-blue-50">
+				<div className="flex max-w-6xl mt-20 mx-auto">
+					<div className="z-20 grow-0 px-4 py-8 md:px-16 md:py-16">
+						<span className="text-5xl font-bold md:text-7xl ">
 							Make your events
 							<br />
 							actually{" "}

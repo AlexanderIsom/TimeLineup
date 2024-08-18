@@ -31,21 +31,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	return (
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
-				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
+				<div className="grid grid-rows-[auto_1fr] max-h-full h-screen w-screen">
 					<Navbar />
-					<div className="flex h-screen flex-col">{children}</div>
-				</ScrollbarWrapper>
-				{user ? (
+					<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
+						{children}
+					</ScrollbarWrapper>
+				</div>
+				{/* {user &&
 					<>
 						<ProfileModal />
 						<FriendsModal />
 						{!profile.username && <RegisterUsernameModal />}
 					</>
-				) : (
-					<LoginDialog />
-				)}
-				<SpeedInsights />
-				<Toaster />
+				} */}
+				{/* <SpeedInsights /> */}
+				{/* <Toaster /> */}
 			</body>
 		</html>
 	);
