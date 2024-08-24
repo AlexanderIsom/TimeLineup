@@ -1,4 +1,4 @@
-import DashboardNav from "@/components/dashboard/sideNav"
+import DashboardNav from "@/components/dashboard/dashboardNav"
 
 export default function DashboardLayout({
 	children,
@@ -7,9 +7,10 @@ export default function DashboardLayout({
 }) {
 	return (
 		<section className="grid h-full grid-cols-[auto_minmax(900px,_1fr)]">
-			<DashboardNav />
 
+			<DashboardNav />
 			{children}
+
 		</section>
 	)
 }
