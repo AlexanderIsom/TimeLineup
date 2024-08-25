@@ -24,7 +24,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import TimeSelector from "@/components/timeSelector/timeSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendSelector from "./friendSelector";
 import { InsertEvent, Profile } from "@/db/schema";

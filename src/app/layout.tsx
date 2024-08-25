@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const supabase = createClient();
-	const { profile, user } = await getProfile(supabase);
+	// const { profile, user } = await getProfile(supabase);
 
 	return (
 		<html lang="en" className={`${inter.variable}`}>
@@ -44,8 +44,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 						{!profile.username && <RegisterUsernameModal />}
 					</>
 				} */}
-				{/* <SpeedInsights /> */}
-				{/* <Toaster /> */}
+				<SpeedInsights />
+				<Toaster />
 			</body>
 		</html>
 	);

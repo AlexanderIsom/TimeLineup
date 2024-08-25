@@ -5,35 +5,22 @@ import { cn } from "@/lib/utils";
 
 type Props = ButtonProps & {
 	children?: React.ReactNode;
-	value: string;
+	query: string;
 	styled?: boolean;
 	className?: string;
 };
 
-export default function QueryButton({ children, value, className, styled = true, ...props }: Props) {
-	const [modalString, setModalString] = useQueryState("modal");
-	if (styled) {
-		return (
-			<Button
-				{...props}
-				onClick={() => {
-					setModalString(value);
-				}}
-				className={cn(className)}
-			>
-				{children}
-			</Button>
-		);
-	}
-
+export default function QueryButton({ children, query, className, styled = true, ...props }: Props) {
+	const [modalString, setModalString] = useQueryState("dialog");
 	return (
-		<button
-			className={cn(className)}
+		<Button
+			{...props}
 			onClick={() => {
-				setModalString(value);
+				setModalString(query);
 			}}
+			className={cn(className)}
 		>
 			{children}
-		</button>
+		</Button>
 	);
 }

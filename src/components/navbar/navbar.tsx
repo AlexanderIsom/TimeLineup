@@ -65,14 +65,14 @@ export default async function Navbar() {
 										</Link>
 									</SheetClose>
 
-									<QueryButton value={"profile"} styled={false}>
+									<QueryButton query={"profile"} styled={false}>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<User className="mr-2 h-4 w-4" />
 											<span>Profile</span>
 										</div>
 									</QueryButton>
 
-									<QueryButton value={"friends"} styled={false}>
+									<QueryButton query={"friends"} styled={false}>
 										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
 											<HeartHandshake className="mr-2 h-4 w-4" />
 											<span>Manage friends</span>
