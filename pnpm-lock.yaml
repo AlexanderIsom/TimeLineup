@@ -56,6 +56,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@stepperize/react':
+        specifier: ^3.0.1
+        version: 3.0.1(react@18.3.1)
       '@supabase/ssr':
         specifier: ^0.4.0
         version: 0.4.0(@supabase/supabase-js@2.45.0)
@@ -1086,6 +1089,11 @@ packages:
 
   '@rushstack/eslint-patch@1.10.3':
     resolution: {integrity: sha512-qC/xYId4NMebE6w/V33Fh9gWxLgURiNYgVNObbJl2LZv0GUUItCcCqC5axQSwRaAgaxl2mELq1rMzlswaQ0Zxg==}
+
+  '@stepperize/react@3.0.1':
+    resolution: {integrity: sha512-1U9oN3hVghVvGpQSo7ZTPYunY+9YcqTk3qL+T6f4yQ6gi8Tv+5mpqovuOlsN6Ao3Zu7e60FUz7WtidZt/ll6SQ==}
+    peerDependencies:
+      react: ^18.3.1
 
   '@supabase/auth-js@2.64.4':
     resolution: {integrity: sha512-9ITagy4WP4FLl+mke1rchapOH0RQpf++DI+WSG2sO1OFOZ0rW3cwAM0nCrMOxu+Zw4vJ4zObc08uvQrXx590Tg==}
@@ -3846,6 +3854,10 @@ snapshots:
     optional: true
 
   '@rushstack/eslint-patch@1.10.3': {}
+
+  '@stepperize/react@3.0.1(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@supabase/auth-js@2.64.4':
     dependencies:
