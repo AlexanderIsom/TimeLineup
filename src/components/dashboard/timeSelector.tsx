@@ -1,22 +1,22 @@
 "use client";
 
-import { eachMinuteOfInterval, endOfDay, format } from "date-fns";
+import { eachMinuteOfInterval, format, isSameMinute } from "date-fns";
+import React from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Separator } from "../ui/separator";
-import React, { useEffect, useRef } from "react";
 
 interface Props {
 	children: React.ReactNode;
 	start: Date;
-	value: Date;
+	end: Date;
+	selected: Date;
 	onSelected: (date: Date) => void;
 }
 
-export default function TimeSelectorPopover({ children, start, value, onSelected }: Props) {
+export default function TimeSelectorPopover({ children, start, end, selected, onSelected }: Props) {
 	const elements = eachMinuteOfInterval({
 		start,
-		end: endOfDay(start)
+		end
 	}, { step: 15 });
 
 	return (
@@ -25,10 +25,11 @@ export default function TimeSelectorPopover({ children, start, value, onSelected
 				{children}
 			</PopoverTrigger>
 
-			<PopoverContent className="w-auto flex flex-col gap-2 overflow-y-scroll max-h-32 p-1 w-28" align="start">
+			<PopoverContent className="flex flex-col gap-2 overflow-y-scroll max-h-32 p-1 w-28" align="start">
 				{elements.map((date, i) => {
+					console.log(`DATE: ${date}, selected: ${selected}`)
 					return <Button
-						variant={date === value ? "default" : "ghost"}
+						variant={isSameMinute(date, selected) ? "secondary" : "ghost"}
 						key={i}
 						onClick={() => {
 							onSelected(date);

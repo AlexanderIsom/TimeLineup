@@ -5,7 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addMinutes, format, max, roundToNearestMinutes } from "date-fns";
+import { addMinutes, endOfDay, format, isSameDay, max, roundToNearestMinutes, startOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
@@ -54,24 +54,34 @@ const formSchema = z.object({
 	{ message: "Events cannot be less than 15 minutes long", path: ["endDate"] },
 );
 
+function setHoursFromDate(date: Date) {
+	const newDate = new Date(0);
+	newDate.setHours(date.getHours(), date.getMinutes())
+	return newDate;
+}
+
 export default function CreateEvent() {
+	const roundedCurrentDate = roundToNearestMinutes(new Date(), { roundingMethod: "ceil", nearestTo: 15 })
+	const timeStart = setHoursFromDate(roundedCurrentDate);
 	const stepper = useStepper();
 
 	const formDefaults = {
 		title: "",
 		description: "",
-		date: new Date(),
-		startDateTime: roundToNearestMinutes(new Date(), { roundingMethod: "ceil", nearestTo: 15 }),
-		endDateTime: addMinutes(roundToNearestMinutes(new Date(), { roundingMethod: "ceil", nearestTo: 15 }), 15),
+		date: startOfDay(new Date()),
+		startDateTime: timeStart,
+		endDateTime: addMinutes(timeStart, 15),
 	}
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: formDefaults
 	})
-	const [minDate, setMinDate] = useState(formDefaults.startDateTime);
 	const [modalString, setModalString] = useQueryState("dialog");
 	const [isOpen, setIsOpen] = useState(false);
+	const [minStartTime, setMinStartTime] = useState(setHoursFromDate(roundedCurrentDate))
+	const [startTime, setStartTime] = useState(minStartTime);
+
 	useEffect(() => {
 		setIsOpen(modalString !== null && modalString === "new");
 	}, [setIsOpen, modalString]);
@@ -97,7 +107,6 @@ export default function CreateEvent() {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Title</FormLabel>
 										<FormControl>
 											<Input placeholder="Title" {...field} />
 										</FormControl>
@@ -110,8 +119,8 @@ export default function CreateEvent() {
 								control={form.control}
 								name="description"
 								render={({ field }) => (
-									<FormItem className="pb-4">
-										<FormLabel>Description</FormLabel>
+									<FormItem>
+
 										<FormControl>
 											<Textarea placeholder="Description" className="resize-none" {...field} />
 										</FormControl>
@@ -124,7 +133,7 @@ export default function CreateEvent() {
 									control={form.control}
 									name="date"
 									render={({ field }) => (
-										<FormItem className="flex flex-col text-center">
+										<FormItem className="flex flex-col text-center w-full">
 											<Popover>
 												<PopoverTrigger asChild>
 													<FormControl>
@@ -148,13 +157,16 @@ export default function CreateEvent() {
 														onSelect={(date) => {
 															if (!date) return;
 															form.setValue("date", date)
-															setMinDate(max([date, formDefaults.startDateTime]))
+															if (isSameDay(new Date(), date)) {
+																setMinStartTime(setHoursFromDate(new Date()))
+															} else {
+																setMinStartTime(setHoursFromDate(date))
+															}
 														}}
 														initialFocus
 													/>
 												</PopoverContent>
 											</Popover>
-
 											<FormMessage />
 										</FormItem>
 									)}
@@ -165,10 +177,15 @@ export default function CreateEvent() {
 									render={({ field }) => (
 										<FormItem className="flex flex-col text-center">
 											<TimeSelectorPopover
-												start={minDate}
-												value={field.value}
+												start={minStartTime}
+												end={endOfDay(minStartTime)}
+												selected={field.value}
 												onSelected={(date) => {
 													form.setValue("startDateTime", date);
+													setStartTime(date)
+													if (date >= form.getValues("endDateTime")) {
+														form.setValue("endDateTime", addMinutes(date, 15))
+													}
 												}}
 											>
 												<FormControl>
@@ -194,8 +211,9 @@ export default function CreateEvent() {
 										<FormItem className="flex flex-col text-center">
 
 											<TimeSelectorPopover
-												start={addMinutes(minDate, 15)}
-												value={field.value}
+												start={addMinutes(startTime, 15)}
+												end={endOfDay(startTime)}
+												selected={field.value}
 												onSelected={(date) => {
 													form.setValue("endDateTime", date);
 												}}
