@@ -12,6 +12,7 @@ import FriendsModal from "@/components/navbar/profile/manageFriends/friendsModal
 import LoginDialog from "@/components/login/loginDialog";
 import RegisterUsernameModal from "@/components/navbar/profile/registerUsernameModal";
 import { getProfile } from "@/utils/utils";
+import ReactQueryClientProvider from "@/components/ReactQueryClientProvider";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -29,24 +30,26 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	// const { profile, user } = await getProfile(supabase);
 
 	return (
-		<html lang="en" className={`${inter.variable}`}>
-			<body className="overflow-hidden">
-				<div className="grid grid-rows-[auto_1fr] max-h-full h-screen w-screen">
-					<Navbar />
-					<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
-						{children}
-					</ScrollbarWrapper>
-				</div>
-				{/* {user &&
+		<ReactQueryClientProvider>
+			<html lang="en" className={`${inter.variable}`}>
+				<body className="overflow-hidden">
+					<div className="grid grid-rows-[auto_1fr] max-h-full h-screen w-screen">
+						<Navbar />
+						<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
+							{children}
+						</ScrollbarWrapper>
+					</div>
+					{/* {user &&
 					<>
-						<ProfileModal />
-						<FriendsModal />
-						{!profile.username && <RegisterUsernameModal />}
+					<ProfileModal />
+					<FriendsModal />
+					{!profile.username && <RegisterUsernameModal />}
 					</>
-				} */}
-				<SpeedInsights />
-				<Toaster />
-			</body>
-		</html>
+					} */}
+					<SpeedInsights />
+					<Toaster />
+				</body>
+			</html>
+		</ReactQueryClientProvider>
 	);
 }

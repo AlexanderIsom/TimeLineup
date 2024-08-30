@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { getProfile } from "../utils";
+import { getProfile, getProfileAndUser } from "../utils";
 
 export async function updateSession(request: NextRequest) {
 	// Create an unmodified response
@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
 		},
 	);
 
-	const { profile, user } = await getProfile(supabase);
+	const { profile, user } = await getProfileAndUser(supabase);
 
 	if (request.nextUrl.pathname !== "/" && !request.nextUrl.pathname.startsWith("/auth")) {
 		if (!user) {

@@ -17,9 +17,7 @@ export async function getUserProfile() {
 		redirect("/error");
 	}
 
-	const profile = await db.query.profiles.findFirst({
-		where: eq(profiles.id, user.id),
-	});
+	const { data: profile } = await supabase.from("profile").select("*").eq("id", user.id).throwOnError().single();
 
 	if (!profile) {
 		redirect("/error");

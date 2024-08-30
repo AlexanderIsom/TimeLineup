@@ -1,18 +1,20 @@
 import { getUserProfile } from "@/actions/profileActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
 
 interface Props {
 	iconOnly?: boolean;
+	className?: string;
 }
 
-export async function ProfileAvatar({ iconOnly }: Props = { iconOnly: false }) {
+export async function ProfileAvatar({ iconOnly, className }: Props = { iconOnly: false }) {
 	const profile = await getUserProfile();
 
 	return (
-		<div className="flex items-center space-x-2">
+		<div className={cn("flex items-center gap-2", className)}>
 			<Avatar>
-				<AvatarImage src={profile?.avatarUrl ?? undefined} />
+				<AvatarImage src={profile?.avatar_url ?? undefined} />
 				<AvatarFallback className="bg-gray-200">
 					<User />
 				</AvatarFallback>

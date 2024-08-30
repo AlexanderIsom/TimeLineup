@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import DeleteProfile from "./deleteProfile";
+import { Profile } from "@/db/schema";
 
 const formSchema = z.object({
 	username: z
@@ -19,12 +20,16 @@ const formSchema = z.object({
 	avatarUrl: z.string().url({ message: "Invalid Url" }).or(z.literal("")),
 });
 
-export default function ProfileForm() {
+interface Props {
+	profile: Profile;
+}
+
+export default function ProfileForm({ profile }: Props) {
 	const router = useRouter();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			username: "",
+			username: profile.username!,
 			avatarUrl: "",
 		},
 	});

@@ -3,7 +3,7 @@
 import { useNotificationStore } from "@/stores/notificationStore";
 
 import { useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
+import useSupabaseBrowser from "@/utils/supabase/browser";
 import { useRouter } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export default function Inbox() {
 	const messageText = messageCount > 0 ? (messageCount < 99 ? messageCount : "99+") : undefined;
 
 	const router = useRouter();
-	const supabase = createClient();
+	const supabase = useSupabaseBrowser();
 
 	const { data: friends, isLoading: friendsLoading } = useSWR("getFreindRequests", getFriendshipsWithStatus);
 	const { data: notifications, isLoading: notificationsLoading } = useSWR("getNotifications", getNotifications);
