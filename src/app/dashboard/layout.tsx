@@ -9,7 +9,7 @@ export default function DashboardLayout({
 
 }) {
 	return (
-		<section className="grid h-full grid-cols-[auto_minmax(900px,_1fr)]">
+		<section className="grid h-full grid-cols-[auto_minmax(400px,_1fr)]">
 
 			<DashboardNav />
 			{children}

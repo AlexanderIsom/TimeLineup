@@ -1,33 +1,16 @@
 "use server";
 import { db } from "@/db";
 import { profiles } from "@/db/schema";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { getProfile } from "@/lib/utils";
 import { eq, ilike } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function getUserProfile() {
+export async function isUsernameAvaliable(usernameQuery: string) {
 	const supabase = createClient();
 
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
-	if (error || !user) {
-		redirect("/error");
-	}
-
-	const { data: profile } = await supabase.from("profile").select("*").eq("id", user.id).throwOnError().single();
-
-	if (!profile) {
-		redirect("/error");
-	}
-
-	return profile;
-}
-
-export async function isUsernameAvaliable(usernameQuery: string) {
-	const localUser = await getUserProfile();
+	const { profile, user: localUser } = await getProfile(supabase);
 
 	if (usernameQuery) {
 		const user = await db.query.profiles.findFirst({
@@ -43,7 +26,8 @@ export async function isUsernameAvaliable(usernameQuery: string) {
 }
 
 export async function updateUserProfile(values: { username?: string; avatarUrl?: string }) {
-	const localUser = await getUserProfile();
+	const supabase = createClient();
+	const { profile, user: localUser } = await getProfile(supabase);
 	await db.update(profiles).set(values).where(eq(profiles.id, localUser!.id));
 }
 

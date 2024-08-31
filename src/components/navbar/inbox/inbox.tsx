@@ -3,7 +3,7 @@
 import { useNotificationStore } from "@/stores/notificationStore";
 
 import { useEffect } from "react";
-import useSupabaseBrowser from "@/utils/supabase/browser";
+import useSupabaseBrowser from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";

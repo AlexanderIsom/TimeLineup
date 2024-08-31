@@ -1,13 +1,12 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
-import Inbox from "./inbox/inbox";
-import ProfileDropdown from "./profile/profileDropdown";
-import QueryButton from "../queryButton";
+import Inbox from "./navbar/inbox/inbox";
+import QueryButton from "./queryButton";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -35,7 +34,6 @@ export default async function Navbar() {
 								<Link href="/dashboard">dashboard</Link>
 							</Button>
 							<Inbox />
-							<ProfileDropdown />
 						</>
 					) : (
 						<Button asChild>

@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { Profile, friendships, profiles } from "@/db/schema";
 import { WithoutArray } from "@/utils/TypeUtils";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

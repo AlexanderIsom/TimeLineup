@@ -10,7 +10,7 @@ import {
 	rsvps,
 	timeSegments,
 } from "@/db/schema";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { isWithinInterval } from "date-fns";
 import { and, eq, inArray, or } from "drizzle-orm";
 import { redirect } from "next/navigation";

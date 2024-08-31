@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

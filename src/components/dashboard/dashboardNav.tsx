@@ -1,9 +1,9 @@
 
-import { CalendarCheck, Copy, ListPlus, MessageCircleQuestion, SquareUserRound, UserSearch } from "lucide-react";
+import { CalendarCheck, Copy, ListPlus, LogOut, MessageCircleQuestion, SquareUserRound, UserSearch } from "lucide-react";
 import Link from "next/link";
 import QueryButton from "../queryButton";
 import { Button } from "../ui/button";
-
+import { Separator } from "../ui/separator";
 
 export default async function DashboardNav() {
 	return (
@@ -54,6 +54,15 @@ export default async function DashboardNav() {
 						copy profile page link
 					</Link>
 				</Button>
+				<Separator className="mt-2" />
+				<div className="my-2">
+					<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
+						<Link href="availability" className="no-underline">
+							<LogOut className="size-5" />
+							sign out
+						</Link>
+					</Button>
+				</div>
 			</div>
 		</nav >
 	)

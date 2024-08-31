@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-import RegisterUsernameForm from "./registerUsernameForm";
 import { useRouter } from "next/navigation";
+import RegisterUsernameForm from "./registerUsernameForm";
 
 export default function RegisterUsernameModal() {
 	const router = useRouter();
-	const [modalString, setModalString] = useQueryState("modal");
+	const [modalString, setModalString] = useQueryState("dialog");
 	const [open, setOpen] = useState(false);
 
 	useEffect(() => {
@@ -41,7 +41,7 @@ export default function RegisterUsernameModal() {
 				</AlertDialogHeader>
 				<RegisterUsernameForm
 					onSuccess={() => {
-						router.push("/events");
+						router.push("/dashboard/events");
 						setOpen(false);
 					}}
 				/>

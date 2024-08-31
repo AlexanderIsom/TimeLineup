@@ -1,6 +1,6 @@
-import { getUserProfile } from "@/actions/profileActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/server";
+import { cn, getProfile } from "@/lib/utils";
 import { User } from "lucide-react";
 
 interface Props {
@@ -9,7 +9,8 @@ interface Props {
 }
 
 export async function ProfileAvatar({ iconOnly, className }: Props = { iconOnly: false }) {
-	const profile = await getUserProfile();
+	const supabase = createClient()
+	const { profile, user } = await getProfile(supabase);
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>

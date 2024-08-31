@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import DeleteProfile from "./deleteProfile";
-import { Profile } from "@/db/schema";
+import { Tables } from "@/utils/database.types"
 
 const formSchema = z.object({
 	username: z
@@ -21,7 +21,7 @@ const formSchema = z.object({
 });
 
 interface Props {
-	profile: Profile;
+	profile: Tables<"profile">;
 }
 
 export default function ProfileForm({ profile }: Props) {

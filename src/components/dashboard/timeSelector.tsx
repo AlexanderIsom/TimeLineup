@@ -27,7 +27,6 @@ export default function TimeSelectorPopover({ children, start, end, selected, on
 
 			<PopoverContent className="flex flex-col gap-2 overflow-y-scroll max-h-32 p-1 w-28" align="start">
 				{elements.map((date, i) => {
-					console.log(`DATE: ${date}, selected: ${selected}`)
 					return <Button
 						variant={isSameMinute(date, selected) ? "secondary" : "ghost"}
 						key={i}

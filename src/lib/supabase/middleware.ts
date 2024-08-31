@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { getProfile, getProfileAndUser } from "../utils";
+import { getProfile } from "../utils";
 
 export async function updateSession(request: NextRequest) {
 	// Create an unmodified response
@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
 		},
 	);
 
-	const { profile, user } = await getProfileAndUser(supabase);
+	const { profile, user } = await getProfile(supabase);
 
 	if (request.nextUrl.pathname !== "/" && !request.nextUrl.pathname.startsWith("/auth")) {
 		if (!user) {
@@ -38,9 +38,10 @@ export async function updateSession(request: NextRequest) {
 			return NextResponse.redirect(url);
 		}
 
-		if (user && profile.username == null && !request.nextUrl.searchParams.has("modal", "register")) {
+		if (user && profile.username == null && !request.nextUrl.searchParams.has("dialog", "register")) {
 			const url = request.nextUrl.clone();
-			url.pathname = "/auth/sign-in";
+			url.pathname = "/";
+			url.searchParams.set("dialog", "register");
 			return NextResponse.redirect(url);
 		}
 	}
