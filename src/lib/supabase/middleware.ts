@@ -2,6 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { getCurrentProfile } from "../session";
 
+const ignoredPaths = ["/auth", "/me"];
+
 export async function updateSession(request: NextRequest) {
 	// Create an unmodified response
 	let supabaseResponse = NextResponse.next({
@@ -31,19 +33,17 @@ export async function updateSession(request: NextRequest) {
 
 	const { profile, user } = await getCurrentProfile(false);
 
-	if (request.nextUrl.pathname !== "/" && !request.nextUrl.pathname.startsWith("/auth")) {
-		if (!user) {
-			const url = request.nextUrl.clone();
-			url.pathname = "/auth/sign-in";
-			return NextResponse.redirect(url);
-		}
+	if (!user) {
+		const url = request.nextUrl.clone();
+		url.pathname = "/auth/sign-in";
+		return NextResponse.redirect(url);
+	}
 
-		if (user && profile!.username == null && !request.nextUrl.searchParams.has("dialog", "register")) {
-			const url = request.nextUrl.clone();
-			url.pathname = "/";
-			url.searchParams.set("dialog", "register");
-			return NextResponse.redirect(url);
-		}
+	if (user && profile!.username == null && !request.nextUrl.searchParams.has("dialog", "register")) {
+		const url = request.nextUrl.clone();
+		url.pathname = "/";
+		url.searchParams.set("dialog", "register");
+		return NextResponse.redirect(url);
 	}
 
 	return supabaseResponse;

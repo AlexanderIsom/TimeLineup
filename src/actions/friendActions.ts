@@ -5,59 +5,49 @@ import { WithoutArray } from "@/utils/TypeUtils";
 import { createClient } from "@/lib/supabase/server";
 import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { getUser } from "@/lib/session";
+import { User } from "@supabase/supabase-js";
 
-export async function addFriend(usernameQuery: string) {
-	const supabase = createClient();
-
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-	const targetFriend = await db.query.profiles.findFirst({
-		where: ilike(profiles.username, usernameQuery!.toLowerCase()),
-	});
-
-	if (targetFriend === undefined || user.id === targetFriend.id) {
-		return { success: false, error: "Could not find username" };
-	}
+export async function addFriendById(id: string) {
+	const user = (await getUser()) as User;
 
 	const pendingRequest = await db.query.friendships.findFirst({
 		where: or(
-			and(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, targetFriend.id)),
-			and(eq(friendships.sending_user, targetFriend.id), eq(friendships.receiving_user, user.id)),
+			and(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, id)),
+			and(eq(friendships.sending_user, id), eq(friendships.receiving_user, user.id)),
 		),
 	});
 
 	if (pendingRequest !== undefined) {
 		if (pendingRequest.status === "pending") {
-			acceptFriendRequest(targetFriend.id);
+			acceptFriendRequest(id);
 		}
 		return;
 	}
 
 	await db.insert(friendships).values({
 		sending_user: user.id,
-		receiving_user: targetFriend.id,
+		receiving_user: id,
 	});
 
 	revalidatePath("/", "layout");
 }
 
-export async function getUser() {
+export async function addFriendByName(username: string) {
+	const user = await getUser();
 	const supabase = createClient();
+	const { data: targetUser } = await supabase
+		.from("profile")
+		.select("*")
+		.ilike("username", username.toLowerCase())
+		.single();
 
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
+	if (!targetUser || user!.id === targetUser.id) {
+		const message = user?.id === targetUser?.id ? "You cannot add yourself" : "Could not find username";
+		return { success: false, error: message };
 	}
 
-	const user = data.user;
-
-	return await db.query.profiles.findFirst({
-		where: eq(profiles.id, user.id),
-	});
+	return await addFriendById(targetUser.id);
 }
 
 export interface friendRequest {

@@ -2,6 +2,7 @@ import { Tables } from "@/utils/database.types";
 import { SupabaseClient, User } from "@supabase/supabase-js";
 import { cache } from "react";
 import { createClient } from "./supabase/server";
+import { profile } from "console";
 
 const fetchUser = async () => {
 	const supabase = createClient();
@@ -12,15 +13,11 @@ const fetchUser = async () => {
 	return user;
 };
 
-const fetchProfile = async () => {
+const fetchProfile = async (id: string) => {
 	const supabase = createClient();
+	const { data: profile } = await supabase.from("profile").select(`*`).match({ id: id }).single();
 
-	const user = await fetchUser();
-	if (!user) return { profile: undefined, user: undefined };
-
-	const { data: profile } = await supabase.from("profile").select(`*`).match({ id: user.id }).single();
-
-	return { profile, user } as { profile: Tables<"profile"> | undefined; user: User | undefined };
+	return profile;
 };
 
 export async function getUser(useCache = true) {
@@ -32,9 +29,20 @@ export async function getUser(useCache = true) {
 }
 
 export async function getCurrentProfile(useCache = true) {
+	const user = await getUser(useCache);
+	if (!user) return {};
+
 	if (useCache) {
-		return cache(fetchProfile)();
+		return { profile: await cache(fetchProfile)(user.id), user: user };
 	} else {
-		return fetchProfile();
+		return { profile: await fetchProfile(user.id), user: user };
+	}
+}
+
+export async function getProfile(id: string, useCache = true) {
+	if (useCache) {
+		return cache(fetchProfile)(id);
+	} else {
+		return fetchProfile(id);
 	}
 }

@@ -4,8 +4,10 @@ import Link from "next/link";
 import QueryButton from "../queryButton";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
+import { getCurrentProfile } from "@/lib/session";
 
 export default async function DashboardNav() {
+	const { profile } = await getCurrentProfile();
 	return (
 		<nav className="prose size-full p-2 border-r flex flex-col justify-between">
 			<div className="flex flex-col justify-start gap-2">
@@ -43,7 +45,7 @@ export default async function DashboardNav() {
 					</Link>
 				</Button>
 				<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
-					<Link href="/me/testUser" className="no-underline">
+					<Link href={`/me/${profile?.id}`} className="no-underline">
 						< SquareUserRound className="size-5" />
 						go to public profile page
 					</Link>

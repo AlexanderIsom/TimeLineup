@@ -21,7 +21,7 @@ export default async function Profile() {
 				<Avatar className="size-32 not-prose">
 					<AvatarImage src={profile?.avatar_url ?? undefined} />
 					<AvatarFallback className="bg-gray-200">
-						<User />
+						<User className="size-16" />
 					</AvatarFallback>
 				</Avatar>
 				<h2 className="mt-2">{profile?.username}</h2>
