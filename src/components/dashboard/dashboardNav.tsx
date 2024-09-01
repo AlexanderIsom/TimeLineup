@@ -1,10 +1,12 @@
 
-import { CalendarCheck, Copy, ListPlus, LogOut, MessageCircleQuestion, SquareUserRound, UserSearch } from "lucide-react";
+import { CalendarCheck, Copy, ListPlus, LogOut, MessageCircleQuestion, SquareUserRound, User, UserSearch } from "lucide-react";
 import Link from "next/link";
 import QueryButton from "../queryButton";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { getCurrentProfile } from "@/lib/session";
+import CopyProfileLink from "./copyProfileLink";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardNav() {
 	const { profile } = await getCurrentProfile();
@@ -40,7 +42,7 @@ export default async function DashboardNav() {
 			<div className="flex flex-col justify-center">
 				<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
 					<Link href="profile" className="no-underline">
-						< SquareUserRound className="size-5" />
+						< User className="size-5" />
 						edit profile
 					</Link>
 				</Button>
@@ -50,12 +52,7 @@ export default async function DashboardNav() {
 						go to public profile page
 					</Link>
 				</Button>
-				<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
-					<Link href="availability" className="no-underline">
-						<Copy className="size-5" />
-						copy profile page link
-					</Link>
-				</Button>
+				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} />
 				<Separator className="mt-2" />
 				<div className="my-2">
 					<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>

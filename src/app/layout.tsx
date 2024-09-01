@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 						</ScrollbarWrapper>
 					</div>
 					{user &&
-						!profile.username && <RegisterUsernameModal />
+						profile?.username && <RegisterUsernameModal />
 					}
 					<SpeedInsights />
 					<Toaster />

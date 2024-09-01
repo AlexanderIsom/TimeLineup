@@ -1,8 +1,10 @@
+"use client"
 import AddFriendForm from "@/components/dashboard/friends/addFriendForm";
 import { Card } from "@/components/ui/card";
 import { UserPlus } from "lucide-react";
 
 export default function Friends() {
+
 	return <div className="p-4 prose space-y-4 min-w-full flex flex-col">
 		<div>
 			<h3 className="m-0">
@@ -22,7 +24,6 @@ export default function Friends() {
 					<h3 className="m-0">No friends</h3>
 					<p className="m-0 text-wrap w-3/4">You havent added any friend, search for a user above or go to their profile to add them</p>
 				</div>
-
 			</div>
 		</Card>
 

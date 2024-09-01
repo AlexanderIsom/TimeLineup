@@ -7,9 +7,10 @@ import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getUser } from "@/lib/session";
 import { User } from "@supabase/supabase-js";
+import { TypedSupabaseClient } from "@/utils/types";
 
-export async function addFriendById(id: string) {
-	const user = (await getUser()) as User;
+export async function addFriendById(client: TypedSupabaseClient, id: string) {
+	const user = (await getUser(client)) as User;
 
 	const pendingRequest = await db.query.friendships.findFirst({
 		where: or(
@@ -33,22 +34,22 @@ export async function addFriendById(id: string) {
 	revalidatePath("/", "layout");
 }
 
-export async function addFriendByName(username: string) {
-	const user = await getUser();
-	const supabase = createClient();
-	const { data: targetUser } = await supabase
-		.from("profile")
-		.select("*")
-		.ilike("username", username.toLowerCase())
-		.single();
+// export async function addFriendByName(username: string) {
+// 	// const user = await getUser();
+// 	const supabase = createClient();
+// 	const { data: targetUser } = await supabase
+// 		.from("profile")
+// 		.select("*")
+// 		.ilike("username", username.toLowerCase())
+// 		.single();
 
-	if (!targetUser || user!.id === targetUser.id) {
-		const message = user?.id === targetUser?.id ? "You cannot add yourself" : "Could not find username";
-		return { success: false, error: message };
-	}
+// 	if (!targetUser || user!.id === targetUser.id) {
+// 		const message = user?.id === targetUser?.id ? "You cannot add yourself" : "Could not find username";
+// 		return { success: false, error: message };
+// 	}
 
-	return await addFriendById(targetUser.id);
-}
+// 	return await addFriendById(targetUser.id);
+// }
 
 export interface friendRequest {
 	id: string;
