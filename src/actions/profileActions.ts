@@ -1,16 +1,14 @@
 "use server";
 import { db } from "@/db";
 import { profiles } from "@/db/schema";
+import { getCurrentProfile } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { getProfile } from "@/lib/utils";
 import { eq, ilike } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function isUsernameAvaliable(usernameQuery: string) {
-	const supabase = createClient();
-
-	const { profile, user: localUser } = await getProfile(supabase);
+	const { profile, user: localUser } = await getCurrentProfile();
 
 	if (usernameQuery) {
 		const user = await db.query.profiles.findFirst({
@@ -26,8 +24,7 @@ export async function isUsernameAvaliable(usernameQuery: string) {
 }
 
 export async function updateUserProfile(values: { username?: string; avatarUrl?: string }) {
-	const supabase = createClient();
-	const { profile, user: localUser } = await getProfile(supabase);
+	const { profile, user: localUser } = await getCurrentProfile();
 	await db.update(profiles).set(values).where(eq(profiles.id, localUser!.id));
 }
 

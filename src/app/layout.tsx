@@ -1,17 +1,15 @@
 import Navbar from "@/components/navbar";
+import ReactQueryClientProvider from "@/components/ReactQueryClientProvider";
+import RegisterUsernameModal from "@/components/registerUsernameModal";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
 import { Toaster } from "@/components/ui/sonner";
+import { getCurrentProfile } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
-
-
-import ReactQueryClientProvider from "@/components/ReactQueryClientProvider";
-import { getProfile } from "@/lib/utils";
-import RegisterUsernameModal from "@/components/registerUsernameModal";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -25,8 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-	const supabase = createClient();
-	const { profile, user } = await getProfile(supabase);
+	const { profile, user } = await getCurrentProfile();
 
 	return (
 		<ReactQueryClientProvider>

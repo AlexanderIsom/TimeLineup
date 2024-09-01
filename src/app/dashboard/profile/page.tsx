@@ -1,12 +1,10 @@
 import ProfileForm from "@/components/dashboard/profile/profileForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createClient } from "@/lib/supabase/server";
-import { getProfile } from "@/lib/utils";
+import { getCurrentProfile } from "@/lib/session";
 import { User } from "lucide-react";
 
 export default async function Profile() {
-	const client = createClient()
-	const { profile } = await getProfile(client);
+	const { profile } = await getCurrentProfile();
 
 	return <div className="flex flex-col gap-4 p-4 prose min-w-full ">
 		<div className="flex flex-col w-fit ">

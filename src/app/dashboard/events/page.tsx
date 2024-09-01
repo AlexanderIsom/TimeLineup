@@ -1,10 +1,9 @@
-import { addDays, areIntervalsOverlapping } from "date-fns";
 import { GetLocalUserEvents } from "@/actions/eventActions";
-import EventCard from "@/components/events/EventCard";
 import { getFriends } from "@/actions/friendActions";
-import { Profile } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Profile } from "@/db/schema";
+import { addDays, areIntervalsOverlapping } from "date-fns";
 import { Calendar } from "lucide-react";
 
 
