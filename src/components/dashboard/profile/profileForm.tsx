@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import DeleteProfile from "./deleteProfile";
-import { Tables } from "@/utils/database.types"
+import { Tables } from "@/lib/supabase/database.types";
 
 const formSchema = z.object({
 	username: z

@@ -1,16 +1,10 @@
 "use client";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { useShallow } from "zustand/react/shallow";
-import { Badge } from "@/components/ui/badge";
 import FriendRequests from "./friendRequests";
 import Messages from "./messages";
-import { getFriendshipsWithStatus } from "@/actions/friendActions";
-import { getNotifications } from "@/actions/notificationAction";
-import { useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import useSWR from "swr";
 
 export default function InboxTabs() {
 	const [notifications, friendRequests] = useNotificationStore(
