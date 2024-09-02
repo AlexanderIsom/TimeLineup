@@ -1,9 +1,15 @@
-"use client"
-import AddFriendForm from "@/components/dashboard/friends/addFriendForm";
-import { Card } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import FriendFilters from "@/components/dashboard/friends/friendFilters";
+import { getCurrentProfile } from "@/lib/session";
+import { getFriends } from "@/lib/supabase/queries/getFriends";
+import { createClient } from "@/lib/supabase/server";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { prefetchQuery } from "@supabase-cache-helpers/postgrest-react-query"
 
-export default function Friends() {
+export default async function Friends() {
+	const queryClient = new QueryClient();
+	const supabase = createClient();
+	const profile = await getCurrentProfile()
+	await prefetchQuery(queryClient, getFriends(supabase))
 
 	return <div className="p-4 prose space-y-4 min-w-full flex flex-col">
 		<div>
@@ -14,18 +20,8 @@ export default function Friends() {
 				see and manage your friends.
 			</p>
 		</div>
-		<AddFriendForm />
-		<Card className="w-full min-h-96">
-			<div className="size-full flex flex-col gap-2 justify-center items-center text-center">
-				<div className="bg-gray-200 rounded-full p-4">
-					<UserPlus className="size-8" />
-				</div>
-				<div className="flex flex-col gap-1 text-center items-center justify-center">
-					<h3 className="m-0">No friends</h3>
-					<p className="m-0 text-wrap w-3/4">You havent added any friend, search for a user above or go to their profile to add them</p>
-				</div>
-			</div>
-		</Card>
-
+		<HydrationBoundary state={dehydrate(queryClient)}>
+			<FriendFilters profile={profile.profile!} />
+		</HydrationBoundary>
 	</div>
 }

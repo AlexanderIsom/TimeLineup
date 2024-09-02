@@ -1,8 +1,5 @@
-import { Tables } from "@/utils/database.types";
-import { SupabaseClient, User } from "@supabase/supabase-js";
 import { cache } from "react";
 import { createClient } from "./supabase/server";
-import { profile } from "console";
 
 const fetchUser = async () => {
 	const supabase = createClient();

@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { Calendar, HeartHandshake, LogIn, LogOut, MenuIcon, User } from "lucide-react";
+import { Calendar, LogIn, LogOut, MenuIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Inbox from "./navbar/inbox/inbox";
-import QueryButton from "./queryButton";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -33,7 +32,7 @@ export default async function Navbar() {
 							<Button asChild size={"sm"} className="bg-primary">
 								<Link href="/dashboard">dashboard</Link>
 							</Button>
-							<Inbox />
+							{/* <Inbox /> */}
 						</>
 					) : (
 						<Button asChild>
@@ -62,20 +61,6 @@ export default async function Navbar() {
 											<span>Events</span>
 										</Link>
 									</SheetClose>
-
-									<QueryButton query={"profile"} styled={false}>
-										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
-											<User className="mr-2 h-4 w-4" />
-											<span>Profile</span>
-										</div>
-									</QueryButton>
-
-									<QueryButton query={"friends"} styled={false}>
-										<div className="flex items-center font-medium hover:cursor-pointer hover:underline">
-											<HeartHandshake className="mr-2 h-4 w-4" />
-											<span>Manage friends</span>
-										</div>
-									</QueryButton>
 								</div>
 								<SheetClose asChild>
 									<form action={"/auth/signout"} method="POST">

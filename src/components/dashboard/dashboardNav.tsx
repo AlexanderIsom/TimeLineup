@@ -13,7 +13,7 @@ export default async function DashboardNav() {
 	return (
 		<nav className="prose size-full p-2 border-r flex flex-col justify-between">
 			<div className="flex flex-col justify-start gap-2">
-				<QueryButton query="new" className="flex gap-2" variant={"secondary"} >
+				<QueryButton query="dialog" value="new" className="flex gap-2" variant={"secondary"} >
 					<ListPlus className="size-5" />
 					Create event
 				</QueryButton>

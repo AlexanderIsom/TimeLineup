@@ -1,5 +1,6 @@
 "use client"
 
+import { addFriendByName } from "@/actions/friendActions"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -18,9 +19,14 @@ export default function AddFriendForm() {
 			username: ""
 		}
 	})
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		await addFriendByName(values.username);
+	}
+
 	return <div>
 		<Form {...form}>
-			<form className="flex items-end gap-2">
+			<form className="flex items-end gap-2" onSubmit={form.handleSubmit(onSubmit)}>
 				<FormField
 					control={form.control}
 					name="username"
