@@ -10,18 +10,33 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { User, UserPlus } from "lucide-react";
 import { useQueryState } from "nuqs";
 import AddFriendForm from "./addFriendForm";
+import { QueryData } from "@supabase/supabase-js";
+import { WithoutArray } from "@/utils/TypeUtils";
+import { useMemo } from "react";
 
 interface Props {
 	profile: Tables<"profile">
 }
+
+type getFriendsReturnType = WithoutArray<Awaited<QueryData<ReturnType<typeof getFriends>>>>
+type reducedFriends = Pick<getFriendsReturnType, "id" | "status"> & { incoming: boolean, profile: Tables<"profile"> }
 
 export default function FriendFilters({ profile }: Props) {
 	const supabase = useSupabaseBrowser()
 	const { data: friends } = useQuery(getFriends(supabase))
 	const [filter, setFilter] = useQueryState("filter");
 
+	const filteredFriends = useMemo(() => {
+		return friends?.map((friend) => {
+			const incoming = friend.receiving_user === profile.id;
+			const targetProfile = incoming ? friend.sending_user_profile! : friend.receiving_user_profile!;
+			let newFriend: reducedFriends = { id: friend.id, incoming, status: friend.status, profile: targetProfile }
+			return newFriend
+		})
+	}, [friends, profile])
+
 	let content: React.ReactNode;
-	if (!friends || friends.length === 0) {
+	if (!filteredFriends || filteredFriends.length === 0) {
 		content = <div className="size-full flex flex-col gap-2 justify-center items-center text-center">
 			<div className="bg-gray-200 rounded-full p-4">
 				<UserPlus className="size-8" />
@@ -33,25 +48,23 @@ export default function FriendFilters({ profile }: Props) {
 		</div>
 	} else {
 		content = <div className="flex flex-col gap-2 w-full p-8">
-			{friends.filter((friend) => {
+			{filteredFriends.filter((friend) => {
 				if (filter === null) return true;
-				if (friend.sending_user === profile.id && friend.status === "pending" && filter === "outgoing") return true;
-				if (friend.receiving_user === profile.id && friend.status === "pending" && filter === "incoming") return true;
+				if (filter === "outgoing" && friend.status === "pending" && !friend.incoming) return true;
+				if (filter === "incoming" && friend.status === "pending" && friend.incoming) return true;
 				return friend.status === filter;
 			}).map((friend, i) => {
-				if (!friend.receiving_user_profile || !friend.sending_user_profile) return;
-				const filteredFriend = friend.sending_user_profile.id === profile.id ? friend.receiving_user_profile : friend.sending_user_profile;
 				return <div key={i}>
 					<div className="flex gap-2">
 						<div className=" flex gap-2 items-center">
 							<Avatar className="not-prose size-16">
-								<AvatarImage src={filteredFriend!.avatar_url ?? undefined} />
+								<AvatarImage src={friend.profile.avatar_url ?? undefined} />
 								<AvatarFallback>
 									<User />
 								</AvatarFallback>
 							</Avatar>
 							<h2 className="m-0">
-								{filteredFriend.username}
+								{friend.profile.username}
 							</h2>
 							<h3 className="m-0">
 								{friend.status}

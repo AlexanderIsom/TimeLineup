@@ -4,15 +4,7 @@ export interface EventData {
 	title: string;
 	start: Date;
 	end: Date;
-	// duration: number,
-	// user: User,
 	description: string;
-	// agenda: AgendaItem[],
-	// eventResponse: EventResponse[],
-	// userResponses: EventResponse[],
-	// color: string,
-	// weekOffset: number,
-	// day: number,
 	invitedUsers: string[];
 }
 
