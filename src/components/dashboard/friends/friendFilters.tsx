@@ -5,32 +5,46 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useSupabaseBrowser from "@/lib/supabase/browser";
 import { Tables } from "@/lib/supabase/database.types";
-import { getFriends } from "@/lib/supabase/queries/getFriends";
-import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
-import { User, UserPlus } from "lucide-react";
+import { deleteFriendRequest, getFriends } from "@/lib/supabase/queries/getFriends";
+import { useQuery, useDeleteItem, useDeleteMutation } from "@supabase-cache-helpers/postgrest-react-query";
+import { Check, Trash, User, UserPlus, X } from "lucide-react";
 import { useQueryState } from "nuqs";
 import AddFriendForm from "./addFriendForm";
 import { QueryData } from "@supabase/supabase-js";
 import { WithoutArray } from "@/utils/TypeUtils";
 import { useMemo } from "react";
+import { revalidatePath } from "next/cache";
+import { useMutation } from "@tanstack/react-query";
 
 interface Props {
 	profile: Tables<"profile">
 }
 
+export enum RequestStatus {
+	incoming,
+	outgoing,
+	accepted
+}
+
 type getFriendsReturnType = WithoutArray<Awaited<QueryData<ReturnType<typeof getFriends>>>>
-type reducedFriends = Pick<getFriendsReturnType, "id" | "status"> & { incoming: boolean, profile: Tables<"profile"> }
+export type reducedFriends = Pick<getFriendsReturnType, "id"> & { incoming: boolean, profile: Tables<"profile">, status: RequestStatus }
 
 export default function FriendFilters({ profile }: Props) {
 	const supabase = useSupabaseBrowser()
+	const { mutateAsync: deleteFriend } = useDeleteMutation(supabase.from("friendship"), ["id"])
 	const { data: friends } = useQuery(getFriends(supabase))
+
 	const [filter, setFilter] = useQueryState("filter");
 
 	const filteredFriends = useMemo(() => {
 		return friends?.map((friend) => {
 			const incoming = friend.receiving_user === profile.id;
 			const targetProfile = incoming ? friend.sending_user_profile! : friend.receiving_user_profile!;
-			let newFriend: reducedFriends = { id: friend.id, incoming, status: friend.status, profile: targetProfile }
+			let requestStatus = RequestStatus.accepted;
+			if (friend.status === "pending") {
+				requestStatus = incoming ? RequestStatus.incoming : RequestStatus.outgoing;
+			}
+			let newFriend: reducedFriends = { id: friend.id, incoming, status: requestStatus, profile: targetProfile }
 			return newFriend
 		})
 	}, [friends, profile])
@@ -50,9 +64,7 @@ export default function FriendFilters({ profile }: Props) {
 		content = <div className="flex flex-col gap-2 w-full p-8">
 			{filteredFriends.filter((friend) => {
 				if (filter === null) return true;
-				if (filter === "outgoing" && friend.status === "pending" && !friend.incoming) return true;
-				if (filter === "incoming" && friend.status === "pending" && friend.incoming) return true;
-				return friend.status === filter;
+				return RequestStatus[friend.status] === filter;
 			}).map((friend, i) => {
 				return <div key={i}>
 					<div className="flex gap-2">
@@ -67,8 +79,16 @@ export default function FriendFilters({ profile }: Props) {
 								{friend.profile.username}
 							</h2>
 							<h3 className="m-0">
-								{friend.status}
+								- {friend.status}
 							</h3>
+							{friend.status === RequestStatus.outgoing && <>
+								<Button variant={"ghost"} size={"icon"} onClick={() => {
+									deleteFriend({ id: friend.id })
+								}}>
+									<X />
+								</Button>
+							</>}
+
 						</div>
 					</div>
 				</div>
