@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import useSupabaseBrowser from "@/lib/supabase/browser";
 import { Tables } from "@/lib/supabase/database.types";
 import { deleteFriendRequest, getFriends } from "@/lib/supabase/queries/getFriends";
-import { useQuery, useDeleteItem, useDeleteMutation } from "@supabase-cache-helpers/postgrest-react-query";
+import { useQuery, useDeleteItem, useDeleteMutation, useUpdateMutation } from "@supabase-cache-helpers/postgrest-react-query";
 import { Check, Trash, User, UserPlus, X } from "lucide-react";
 import { useQueryState } from "nuqs";
 import AddFriendForm from "./addFriendForm";
@@ -15,6 +15,8 @@ import { WithoutArray } from "@/utils/TypeUtils";
 import { useMemo } from "react";
 import { revalidatePath } from "next/cache";
 import { useMutation } from "@tanstack/react-query";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 
 interface Props {
 	profile: Tables<"profile">
@@ -32,6 +34,7 @@ export type reducedFriends = Pick<getFriendsReturnType, "id"> & { incoming: bool
 export default function FriendFilters({ profile }: Props) {
 	const supabase = useSupabaseBrowser()
 	const { mutateAsync: deleteFriend } = useDeleteMutation(supabase.from("friendship"), ["id"])
+	const { mutateAsync: acceptFriend } = useUpdateMutation(supabase.from("friendship"), ["id"])
 	const { data: friends } = useQuery(getFriends(supabase))
 
 	const [filter, setFilter] = useQueryState("filter");
@@ -79,14 +82,51 @@ export default function FriendFilters({ profile }: Props) {
 								{friend.profile.username}
 							</h2>
 							<h3 className="m-0">
-								- {friend.status}
+								- {RequestStatus[friend.status]}
 							</h3>
-							{friend.status === RequestStatus.outgoing && <>
+							{friend.status === RequestStatus.outgoing &&
 								<Button variant={"ghost"} size={"icon"} onClick={() => {
 									deleteFriend({ id: friend.id })
 								}}>
 									<X />
 								</Button>
+							}
+							{friend.status === RequestStatus.incoming && <>
+								<Button variant={"ghost"} size={"icon"} onClick={() => {
+									acceptFriend({ id: friend.id, status: "accepted" })
+								}}>
+									<Check />
+								</Button>
+								<Button variant={"ghost"} size={"icon"} onClick={() => {
+									deleteFriend({ id: friend.id })
+								}}>
+									<X />
+								</Button>
+							</>}
+							{friend.status === RequestStatus.accepted && <>
+								<AlertDialog>
+									<AlertDialogTrigger asChild>
+										<Button variant={"ghost"} size={"icon"}>
+											<Trash />
+										</Button>
+									</AlertDialogTrigger>
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<AlertDialogTitle>
+												Delete friend?
+											</AlertDialogTitle>
+											<AlertDialogDescription>
+												Are you sure you want to delete this friend? this cannot be undone.
+											</AlertDialogDescription>
+										</AlertDialogHeader>
+										<AlertDialogFooter>
+											<AlertDialogCancel>Cancel</AlertDialogCancel>
+											<AlertDialogAction onClick={() => {
+												deleteFriend({ id: friend.id })
+											}}>Delete</AlertDialogAction>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
 							</>}
 
 						</div>
