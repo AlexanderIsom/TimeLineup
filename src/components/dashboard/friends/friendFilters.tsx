@@ -1,22 +1,20 @@
 "use client"
 
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useSupabaseBrowser from "@/lib/supabase/browser";
 import { Tables } from "@/lib/supabase/database.types";
-import { deleteFriendRequest, getFriends } from "@/lib/supabase/queries/getFriends";
-import { useQuery, useDeleteItem, useDeleteMutation, useUpdateMutation } from "@supabase-cache-helpers/postgrest-react-query";
+import { getFriends } from "@/lib/supabase/queries/getFriends";
+import { WithoutArray } from "@/utils/TypeUtils";
+import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
+import { useDeleteMutation, useQuery, useUpdateMutation } from "@supabase-cache-helpers/postgrest-react-query";
+import { QueryData } from "@supabase/supabase-js";
 import { Check, Trash, User, UserPlus, X } from "lucide-react";
 import { useQueryState } from "nuqs";
-import AddFriendForm from "./addFriendForm";
-import { QueryData } from "@supabase/supabase-js";
-import { WithoutArray } from "@/utils/TypeUtils";
 import { useMemo } from "react";
-import { revalidatePath } from "next/cache";
-import { useMutation } from "@tanstack/react-query";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
+import AddFriendForm from "./addFriendForm";
 
 interface Props {
 	profile: Tables<"profile">

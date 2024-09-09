@@ -4,7 +4,6 @@ import RegisterUsernameModal from "@/components/registerUsernameModal";
 import ScrollbarWrapper from "@/components/scrollbarWrapper";
 import { Toaster } from "@/components/ui/sonner";
 import { getCurrentProfile } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
