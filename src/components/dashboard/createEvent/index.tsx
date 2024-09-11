@@ -43,6 +43,7 @@ const friendsSchema = z.object({
 })
 
 export type DetailFormValues = z.infer<typeof detailsSchema>
+export type FriendsFormValues = z.infer<typeof friendsSchema>
 
 const { useStepper } = defineStepper(
 	{ id: "addDetails", title: "Setup your event", schema: detailsSchema },
@@ -66,6 +67,7 @@ export default function CreateEvent() {
 		date: startOfDay(new Date()),
 		startDateTime: timeStart,
 		endDateTime: addMinutes(timeStart, 15),
+		invitees: []
 	}
 
 	const form = useForm({
@@ -78,6 +80,7 @@ export default function CreateEvent() {
 
 	const onSubmit = (values: z.infer<typeof stepper.current.schema>) => {
 		// store values on submit
+		console.log(values);
 		if (stepper.isLast) {
 			stepper.reset();
 		} else {

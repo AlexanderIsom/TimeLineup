@@ -47,7 +47,7 @@ export default function FriendFilters({ profile }: Props) {
 			}
 			let newFriend: reducedFriends = { id: friend.id, incoming, status: requestStatus, profile: targetProfile }
 			return newFriend
-		})
+		}).sort((a, b) => a.profile.username!.localeCompare(b.profile.username!))
 	}, [friends, profile])
 
 	let content: React.ReactNode;
