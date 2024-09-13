@@ -8,18 +8,18 @@ import { Calendar } from "lucide-react";
 
 
 export default async function Events() {
-	const userEvents = await GetLocalUserEvents();
-	const friends: Array<Profile> | undefined = await getFriends();
+	// const userEvents = await GetLocalUserEvents();
+	// const friends: Array<Profile> | undefined = await getFriends();
 
 	const today = new Date();
 	const sevenDaysTime = addDays(today, 7);
 
-	const pastEvents = userEvents?.filter((event) => event.end < today);
-	const currentEvents = userEvents?.filter((event) => {
-		return areIntervalsOverlapping({ start: today, end: sevenDaysTime }, { start: event.start, end: event.end });
-	});
+	// const pastEvents = userEvents?.filter((event) => event.end < today);
+	// const currentEvents = userEvents?.filter((event) => {
+	// 	return areIntervalsOverlapping({ start: today, end: sevenDaysTime }, { start: event.start, end: event.end });
+	// });
 
-	const upcomingEvents = userEvents?.filter((event) => event.start > sevenDaysTime);
+	// const upcomingEvents = userEvents?.filter((event) => event.start > sevenDaysTime);
 
 	return (
 		<div className="flex grow flex-col gap-4 p-4 prose min-w-full">

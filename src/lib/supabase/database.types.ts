@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -12,33 +11,36 @@ export type Database = {
     Tables: {
       event: {
         Row: {
+          date: string
           description: string
-          end: string
-          id: string
-          start: string
+          end_time: string
+          host: string
+          id: number
+          start_time: string
           title: string
-          user_id: string
         }
         Insert: {
+          date?: string
           description?: string
-          end?: string
-          id?: string
-          start?: string
+          end_time?: string
+          host: string
+          id?: number
+          start_time?: string
           title?: string
-          user_id: string
         }
         Update: {
+          date?: string
           description?: string
-          end?: string
-          id?: string
-          start?: string
+          end_time?: string
+          host?: string
+          id?: number
+          start_time?: string
           title?: string
-          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "public_event_user_id_fkey"
-            columns: ["user_id"]
+            columns: ["host"]
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
@@ -47,19 +49,19 @@ export type Database = {
       }
       friendship: {
         Row: {
-          id: string
+          id: number
           receiving_user: string
           sending_user: string
           status: Database["public"]["Enums"]["friendship_status"]
         }
         Insert: {
-          id?: string
+          id?: number
           receiving_user?: string
           sending_user?: string
           status?: Database["public"]["Enums"]["friendship_status"]
         }
         Update: {
-          id?: string
+          id?: number
           receiving_user?: string
           sending_user?: string
           status?: Database["public"]["Enums"]["friendship_status"]
@@ -84,7 +86,7 @@ export type Database = {
       notification: {
         Row: {
           event: string
-          id: string
+          id: number
           message: string | null
           seen: boolean
           sender: string | null
@@ -93,7 +95,7 @@ export type Database = {
         }
         Insert: {
           event: string
-          id?: string
+          id?: number
           message?: string | null
           seen?: boolean
           sender?: string | null
@@ -102,7 +104,7 @@ export type Database = {
         }
         Update: {
           event?: string
-          id?: string
+          id?: number
           message?: string | null
           seen?: boolean
           sender?: string | null
@@ -110,13 +112,6 @@ export type Database = {
           type?: Database["public"]["Enums"]["notification_type"]
         }
         Relationships: [
-          {
-            foreignKeyName: "public_notification_event_fkey"
-            columns: ["event"]
-            isOneToOne: false
-            referencedRelation: "event"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "public_notification_sender_fkey"
             columns: ["sender"]
@@ -161,31 +156,24 @@ export type Database = {
       }
       rsvp: {
         Row: {
-          event_id: string
-          id: string
+          event_id: number
+          id: number
           status: Database["public"]["Enums"]["rsvp_status"]
           user_id: string
         }
         Insert: {
-          event_id: string
-          id?: string
+          event_id: number
+          id?: number
           status?: Database["public"]["Enums"]["rsvp_status"]
           user_id: string
         }
         Update: {
-          event_id?: string
-          id?: string
+          event_id?: number
+          id?: number
           status?: Database["public"]["Enums"]["rsvp_status"]
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "public_rsvp_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "event"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "public_rsvp_user_id_fkey"
             columns: ["user_id"]
@@ -193,53 +181,11 @@ export type Database = {
             referencedRelation: "profile"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      time_segment: {
-        Row: {
-          end: string
-          event_id: string
-          id: string
-          rsvp_id: string
-          start: string
-          user_id: string
-        }
-        Insert: {
-          end: string
-          event_id: string
-          id?: string
-          rsvp_id?: string
-          start: string
-          user_id: string
-        }
-        Update: {
-          end?: string
-          event_id?: string
-          id?: string
-          rsvp_id?: string
-          start?: string
-          user_id?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "time_segment_event_id_fkey"
+            foreignKeyName: "rsvp_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "event"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "time_segment_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profile"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "time_spans_rsvp_id_fkey"
-            columns: ["rsvp_id"]
-            isOneToOne: false
-            referencedRelation: "rsvp"
             referencedColumns: ["id"]
           },
         ]

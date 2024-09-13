@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import useSupabaseBrowser from "@/lib/supabase/browser";
+import { useEventStore } from "@/stores/eventStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { defineStepper } from "@stepperize/react";
 import { addMinutes, roundToNearestMinutes, startOfDay } from "date-fns";
@@ -38,16 +40,16 @@ const detailsSchema = z.object({
 	{ message: "Events cannot be less than 15 minutes long", path: ["endDate"] },
 );
 
-const friendsSchema = z.object({
+const inviteeSchema = z.object({
 	invitees: z.string().array()
 })
 
 export type DetailFormValues = z.infer<typeof detailsSchema>
-export type FriendsFormValues = z.infer<typeof friendsSchema>
+export type InviteeFormValues = z.infer<typeof inviteeSchema>
 
 const { useStepper } = defineStepper(
 	{ id: "addDetails", title: "Setup your event", schema: detailsSchema },
-	{ id: "addFriends", title: "Add some friends", schema: friendsSchema }
+	{ id: "addInvitees", title: "Add some friends", schema: inviteeSchema }
 )
 
 function setHoursFromDate(date: Date) {
@@ -60,6 +62,8 @@ export default function CreateEvent() {
 	const roundedCurrentDate = roundToNearestMinutes(new Date(), { roundingMethod: "ceil", nearestTo: 15 })
 	const timeStart = setHoursFromDate(roundedCurrentDate);
 	const stepper = useStepper();
+	const eventStore = useEventStore();
+	const supabase = useSupabaseBrowser();
 
 	const formDefaults = {
 		title: "",
@@ -78,10 +82,47 @@ export default function CreateEvent() {
 	const [modalString, setModalString] = useQueryState("dialog");
 	const [isOpen, setIsOpen] = useState(false);
 
-	const onSubmit = (values: z.infer<typeof stepper.current.schema>) => {
-		// store values on submit
-		console.log(values);
+	const onSubmit = async (values: z.infer<typeof stepper.current.schema>) => {
+		stepper.switch({
+			addDetails: () => {
+				eventStore.setDetails(values as DetailFormValues);
+			},
+			addInvitees: () => {
+				eventStore.setInvitees((values as InviteeFormValues).invitees);
+			}
+		})
+
 		if (stepper.isLast) {
+			const data = useEventStore.getState();
+			const { data: { user } } = await supabase.auth.getUser();
+			const { error: eventError, data: eventData } = await supabase.from("event").insert({
+				host: user!.id,
+				title: data.details.title,
+				description: data.details.description,
+				date: data.details.date.toISOString(),
+				start_time: data.details.startDateTime.toISOString(),
+				end_time: data.details.endDateTime.toISOString(),
+			}).select().single();
+
+			if (eventError) {
+				console.log(eventError);
+			}
+
+			const formattedInvitees = data.invitees.map((invitee) => {
+				return {
+					event_id: eventData!.id,
+					user_id: invitee,
+				};
+			});
+
+			const { error: rsvpError } = await supabase.from("rsvp").insert(formattedInvitees);
+
+			if (rsvpError) {
+				console.log(rsvpError);
+			}
+
+			setModalString(null);
+			form.reset();
 			stepper.reset();
 		} else {
 			stepper.next();
@@ -108,7 +149,7 @@ export default function CreateEvent() {
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					{stepper.switch({
 						addDetails: () => <DetailsForm />,
-						addFriends: () => <FriendsForm />,
+						addInvitees: () => <FriendsForm />,
 					})}
 
 					<div className="flex w-full justify-between gap-2">

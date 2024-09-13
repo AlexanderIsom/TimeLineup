@@ -55,12 +55,12 @@ export default async function DashboardNav() {
 				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} />
 				<Separator className="mt-2" />
 				<div className="my-2">
-					<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
-						<Link href="availability" className="no-underline">
+					<form action={"/auth/signout"} method="POST">
+						<Button variant={"ghost"} className="flex gap-2 justify-start w-full text-gray-900">
 							<LogOut className="size-5" />
 							sign out
-						</Link>
-					</Button>
+						</Button>
+					</form>
 				</div>
 			</div>
 		</nav >

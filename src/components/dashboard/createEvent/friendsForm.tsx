@@ -5,10 +5,10 @@ import { getFriends } from "@/lib/supabase/queries/getFriends";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import { FriendsFormValues } from ".";
+import { InviteeFormValues } from ".";
 
 export default function FriendsForm() {
-	const form = useFormContext<FriendsFormValues>();
+	const form = useFormContext<InviteeFormValues>();
 
 	const supabase = useSupabaseBrowser();
 	const { data: userProfiles, isLoading } = useQuery({
