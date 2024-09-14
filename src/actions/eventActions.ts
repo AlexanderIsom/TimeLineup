@@ -21,30 +21,37 @@ export async function deleteEvent(eventId: string) {
 	redirect("/events");
 }
 
-export async function GetLocalUserInvitedEvents() {
+export async function GetEventsAsHost() {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) return;
+	const { data } = await supabase
+		.from("event")
+		.select("*, host_profile:profile(*), rsvp(*)")
+		.eq("host", user.id)
+		.order("start_time");
+}
+
+export async function GetEventsAsAttendee() {
 	const supabase = createClient();
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
 	if (!user) return;
 
-	const { data, error } = await supabase
-		.from("event")
-		.select("*, host_profile:profile(*), rsvp(*)")
-		.order("start_time");
+	const { data: result, error } = await supabase
+		.from("rsvp")
+		.select("*, event:event(*, host_profile:profile(*))")
+		.eq("user_id", user.id)
+		.order("start_time", { referencedTable: "event" });
 
 	if (error) {
 		console.log(error);
 	}
 
-	const result = data?.map((event) => {
-		return {
-			...event,
-			rsvp: event.rsvp?.find((rsvp) => rsvp.user_id === user.id),
-		};
-	});
-
 	return result;
 }
 
-export type GetLocalUserEventsType = Awaited<ReturnType<typeof GetLocalUserInvitedEvents>> | undefined;
+export type GetLocalUserEventsType = Awaited<ReturnType<typeof GetEventsAsAttendee>> | undefined;

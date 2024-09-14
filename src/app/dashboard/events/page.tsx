@@ -1,18 +1,16 @@
-import { GetLocalUserInvitedEvents } from "@/actions/eventActions";
+import { GetEventsAsAttendee } from "@/actions/eventActions";
 import RsvpToggle from "@/components/dashboard/events/rsvpToggle";
 import { ProfileAvatar } from "@/components/profileAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getCurrentProfile } from "@/lib/session";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 
 export default async function Events() {
-	const { user } = await getCurrentProfile();
-	const userEvents = await GetLocalUserInvitedEvents();
+	const userRsvpEvents = await GetEventsAsAttendee();
 
 	let content;
-	if (!userEvents || userEvents.length <= 0) {
+	if (!userRsvpEvents || userRsvpEvents.length <= 0) {
 		content = <div className="size-full flex flex-col gap-2 justify-center items-center text-center">
 			<div className="bg-gray-200 rounded-full p-4">
 				<Calendar className="size-8" />
@@ -25,22 +23,24 @@ export default async function Events() {
 	} else {
 		content = (
 			<div className="flex flex-col gap-2">
-				{userEvents.map((event) => {
-					return <div key={event.id} className="flex gap-2">
+				{userRsvpEvents.map((rsvp) => {
+					if (!rsvp.event) return;
+
+					return <div key={rsvp.id} className="flex gap-2">
 						<div className="not-prose flex gap-2 items-center justify-center">
-							<ProfileAvatar className="not-prose size-16" profile={event.host_profile!} iconOnly={true} />
+							<ProfileAvatar className="not-prose size-16" profile={rsvp.event.host_profile!} iconOnly={true} />
 							<div>
-								<p>{event.title}</p>
-								<p className="text-sm">{event.description}</p>
+								<p>{rsvp.event?.title}</p>
+								<p className="text-sm">{rsvp.event?.description}</p>
 							</div>
 							<div className="flex flex-col items-center">
-								<p>{format(event.date, "PPP")}</p>
-								<p>{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}</p>
+								<p>{format(rsvp.event.date, "PPP")}</p>
+								<p>{format(rsvp.event.start_time, "HH:mm")} - {format(rsvp.event.end_time, "HH:mm")}</p>
 							</div>
 							<div>
 								<div className="flex gap-2">
 									<div className="flex items-center gap-2">
-										{event.host === user?.id ? "hosting " : <RsvpToggle status={event.rsvp?.status ?? "pending"} />}
+										<RsvpToggle rsvpId={rsvp.id} defaultStatus={rsvp.status} />
 									</div>
 								</div>
 							</div>

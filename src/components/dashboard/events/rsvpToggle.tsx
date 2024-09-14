@@ -1,20 +1,32 @@
+"use client"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import useSupabaseBrowser from "@/lib/supabase/browser";
 import { Enums } from "@/lib/supabase/database.types";
+import { useUpdateMutation } from "@supabase-cache-helpers/postgrest-react-query";
 
 interface Props {
-	status: Enums<"rsvp_status">
+	rsvpId: number;
+	defaultStatus: Enums<"rsvp_status">
 }
 
-export default function RsvpToggle({ status }: Props) {
+export default function RsvpToggle({ rsvpId, defaultStatus }: Props) {
+	const supabase = useSupabaseBrowser();
+	const { mutateAsync: changeStatus } = useUpdateMutation(supabase.from("rsvp"), ["id"], "status")
+
+	const onChange = (value: Enums<"rsvp_status">) => {
+		changeStatus({ id: rsvpId, status: value })
+	}
+
+
 	return (
-		<Select>
+		<Select defaultValue={defaultStatus} onValueChange={onChange}>
 			<SelectTrigger className="w-[180px]">
-				<SelectValue defaultValue={status} />
+				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectItem value="attending" className="flex gap-2">attending</SelectItem>
-				<SelectItem value="pending">pending </SelectItem>
-				<SelectItem value="declined">declined </SelectItem>
+				<SelectItem value="pending">pending</SelectItem>
+				<SelectItem value="attending">attending</SelectItem>
+				<SelectItem value="declined">declined</SelectItem>
 			</SelectContent>
 		</Select>
 	)
