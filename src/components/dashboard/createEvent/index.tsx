@@ -121,9 +121,11 @@ export default function CreateEvent() {
 				console.log(rsvpError);
 			}
 
-			setModalString(null);
-			form.reset();
-			stepper.reset();
+			if (!eventError && !rsvpError) {
+				setModalString(null);
+				form.reset();
+				stepper.reset();
+			}
 		} else {
 			stepper.next();
 		}

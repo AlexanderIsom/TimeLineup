@@ -24,20 +24,13 @@ export default async function DashboardNav() {
 						Events
 					</Link>
 				</Button>
-				<Button variant={'ghost'} className={`flex gap-2 justify-start `} asChild>
-					<Link href="availability" className="no-underline underline-offset-2">
-						<MessageCircleQuestion className="size-5" />
-						Availability
-					</Link>
-				</Button>
 				<Button variant={'ghost'} className="flex gap-2 justify-start" asChild>
 					<Link href="friends" className="no-underline underline-offset-2">
 						<UserSearch className="size-5" />
 						Friends
 					</Link>
 				</Button>
-			</div >
-
+			</div>
 
 			<div className="flex flex-col justify-center">
 				<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
