@@ -25,7 +25,7 @@ export async function ProfileAvatar(props: Props) {
 					<User />
 				</AvatarFallback>
 			</Avatar>
-			{!iconOnly && <span>{profile?.username}</span>}
+			{!iconOnly && <p>{profile?.username}</p>}
 		</div>
 	);
 }

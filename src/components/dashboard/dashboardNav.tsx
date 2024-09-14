@@ -7,6 +7,8 @@ import { Separator } from "../ui/separator";
 import { getCurrentProfile } from "@/lib/session";
 import CopyProfileLink from "./copyProfileLink";
 import { createClient } from "@/lib/supabase/server";
+import { ProfileAvatar } from "../profileAvatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default async function DashboardNav() {
 	const { profile } = await getCurrentProfile();
@@ -47,9 +49,18 @@ export default async function DashboardNav() {
 				</Button>
 				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} />
 				<Separator className="mt-2" />
-				<div className="my-2">
+				<div className="flex flex-col gap-2 my-2">
+					<div className="flex w-full items-center justify-center gap-2">
+						<Avatar className="size-8 not-prose">
+							<AvatarImage src={profile!.avatar_url ?? undefined} />
+							<AvatarFallback className="bg-gray-200">
+								<User />
+							</AvatarFallback>
+						</Avatar>
+						<p className="not-prose text-sm text-gray-900">{profile!.username}</p>
+					</div>
 					<form action={"/auth/signout"} method="POST">
-						<Button variant={"ghost"} className="flex gap-2 justify-start w-full text-gray-900">
+						<Button variant={"ghost"} className="flex gap-2 justify-center w-full text-gray-900">
 							<LogOut className="size-5" />
 							sign out
 						</Button>
