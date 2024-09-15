@@ -95,11 +95,12 @@ export default function CreateEvent() {
 		if (stepper.isLast) {
 			const data = useEventStore.getState();
 			const { data: { user } } = await supabase.auth.getUser();
+
 			const { error: eventError, data: eventData } = await supabase.from("event").insert({
 				host: user!.id,
 				title: data.details.title,
 				description: data.details.description,
-				date: data.details.date.toISOString(),
+				date: data.details.date.toDateString(),
 				start_time: data.details.startDateTime.toISOString(),
 				end_time: data.details.endDateTime.toISOString(),
 			}).select().single();

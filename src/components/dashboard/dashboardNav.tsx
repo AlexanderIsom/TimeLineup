@@ -1,14 +1,12 @@
 
-import { CalendarCheck, Copy, ListPlus, LogOut, MessageCircleQuestion, SquareUserRound, User, UserSearch } from "lucide-react";
+import { getCurrentProfile } from "@/lib/session";
+import { CalendarCheck, ListPlus, LogOut, SquareUserRound, User, UserSearch } from "lucide-react";
 import Link from "next/link";
 import QueryButton from "../queryButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { getCurrentProfile } from "@/lib/session";
 import CopyProfileLink from "./copyProfileLink";
-import { createClient } from "@/lib/supabase/server";
-import { ProfileAvatar } from "../profileAvatar";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default async function DashboardNav() {
 	const { profile } = await getCurrentProfile();
@@ -49,7 +47,7 @@ export default async function DashboardNav() {
 				</Button>
 				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} />
 				<Separator className="mt-2" />
-				<div className="flex flex-col gap-2 my-2">
+				<div className="flex flex-col gap-2 mt-2">
 					<div className="flex w-full items-center justify-center gap-2">
 						<Avatar className="size-8 not-prose">
 							<AvatarImage src={profile!.avatar_url ?? undefined} />
