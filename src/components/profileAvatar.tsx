@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getCurrentProfile } from "@/lib/session";
 import { Tables } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
