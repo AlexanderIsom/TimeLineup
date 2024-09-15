@@ -158,7 +158,7 @@ export default function FriendFilters({ profile }: Props) {
 				Outgoing
 			</Button>
 		</div>
-		<Card className="w-full min-h-96">
+		<Card className="w-full h-full">
 			{content}
 		</Card>
 	</>

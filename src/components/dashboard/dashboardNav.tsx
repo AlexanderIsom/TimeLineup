@@ -19,13 +19,13 @@ export default async function DashboardNav() {
 				</QueryButton>
 
 				<Button variant={'ghost'} className="flex gap-2 justify-start" asChild>
-					<Link href="events" className="no-underline underline-offset-2">
+					<Link href="/dashboard/events" className="no-underline underline-offset-2">
 						<CalendarCheck className="size-5" />
 						Events
 					</Link>
 				</Button>
 				<Button variant={'ghost'} className="flex gap-2 justify-start" asChild>
-					<Link href="friends" className="no-underline underline-offset-2">
+					<Link href="/dashboard/friends" className="no-underline underline-offset-2">
 						<UserSearch className="size-5" />
 						Friends
 					</Link>

@@ -1,11 +1,10 @@
 import { GetEvents } from "@/actions/eventActions";
-import EventFilters from "@/components/dashboard/events/filters";
 import RsvpToggle from "@/components/dashboard/events/rsvpToggle";
 import { ProfileAvatar } from "@/components/profileAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { format, isAfter, isFuture } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 
@@ -71,9 +70,9 @@ export default async function Events({
 							<Separator orientation="vertical" />
 							<div className="flex flex-col text-center w-1/3">
 								<p className="text-xs text-gray-400">when</p>
-								<div className="flex flex-col items-center">
+								<div className="flex flex-col items-center ">
 									<p>{format(event.date, "PPP")}</p>
-									<p>{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}</p>
+									<p className="text-xs">{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}</p>
 								</div>
 							</div>
 						</div>
@@ -84,8 +83,10 @@ export default async function Events({
 								</div>
 							</div>
 							<div>
-								<Button variant={"ghost"}>
-									view
+								<Button variant={"ghost"} asChild>
+									<Link href={`/dashboard/events/${event.id}`} className="no-underline underline-offset-2">
+										view
+									</Link>
 								</Button>
 							</div>
 						</div>
@@ -133,7 +134,7 @@ export default async function Events({
 				</Button>
 			</div>
 
-			<Card className="w-full min-h-96 p-4">
+			<Card className="w-full h-full p-4">
 				{content}
 			</Card>
 		</div>
