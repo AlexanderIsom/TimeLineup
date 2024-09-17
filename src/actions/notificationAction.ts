@@ -1,9 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { notifications } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getNotifications() {
@@ -16,17 +14,13 @@ export async function getNotifications() {
 
 	const user = data.user;
 
-	const queryNotifications = await db.query.notifications.findMany({
-		where: eq(notifications.target, user.id),
-		with: { event: true, sender: true },
-	});
-
-	return queryNotifications;
+	const notifications = await supabase.from("notification").select("*, event(*), profile(*)");
+	return notifications;
 }
 
 export async function markNoticiationAsRead(id: string) {
-	await db.update(notifications).set({ seen: true }).where(eq(notifications.id, id));
-
+	const supabase = createClient();
+	await supabase.from("notification").update({ seen: true }).eq("id", id);
 	revalidatePath("/");
 }
 

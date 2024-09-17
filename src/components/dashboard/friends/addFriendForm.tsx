@@ -21,7 +21,10 @@ export default function AddFriendForm() {
 	})
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		await addFriendByName(values.username);
+		const { success, error } = await addFriendByName(values.username);
+		if (!success && error !== undefined) {
+			form.setError("username", { message: error })
+		}
 	}
 
 	return <div>
@@ -33,14 +36,17 @@ export default function AddFriendForm() {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Add a friend via username</FormLabel>
-							<FormControl>
-								<Input placeholder="Username" {...field} className="min-w-64" />
-							</FormControl>
+							<div className="flex gap-2">
+								<FormControl>
+									<Input placeholder="Username" {...field} className="min-w-64" />
+								</FormControl>
+								<Button type="submit">Add</Button>
+							</div>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">Add</Button>
+
 			</form>
 		</Form>
 	</div>
