@@ -2,8 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Provider } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
-	const provider = params.slug as Provider;
+export async function GET(req: NextRequest, { params }: { params: { provider: string } }) {
+	const provider = params.provider as Provider;
 
 	if (provider) {
 		const supabase = createClient();

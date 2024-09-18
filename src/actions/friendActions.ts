@@ -27,6 +27,13 @@ export async function addFriendById(id: string) {
 		receiving_user: id,
 	});
 
+	await supabase.from("notification").insert({
+		event_id: null,
+		sender: user.id,
+		target: id,
+		type: "friend",
+	});
+
 	revalidatePath("/", "layout");
 }
 

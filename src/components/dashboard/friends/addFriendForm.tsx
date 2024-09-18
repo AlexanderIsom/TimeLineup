@@ -46,7 +46,6 @@ export default function AddFriendForm() {
 						</FormItem>
 					)}
 				/>
-
 			</form>
 		</Form>
 	</div>

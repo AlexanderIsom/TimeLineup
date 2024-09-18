@@ -14,6 +14,7 @@ import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
 import DetailsForm from "./detailsForm";
 import FriendsForm from "./friendsForm";
+import { Tables, TablesInsert } from "@/lib/supabase/database.types";
 
 const detailsSchema = z.object({
 	title: z.string().min(5, { message: "Event title must be at least 5 characters." }),
@@ -109,14 +110,30 @@ export default function CreateEvent() {
 				console.log(eventError);
 			}
 
-			const formattedInvitees = data.invitees.map((invitee) => {
+			const rsvpInvites = data.invitees.map((invitee) => {
 				return {
 					event_id: eventData!.id,
 					user_id: invitee,
 				};
 			});
 
-			const { error: rsvpError } = await supabase.from("rsvp").insert(formattedInvitees);
+			const notificationInvites: TablesInsert<'notification'>[] = data.invitees.map((invitee) => {
+				const newNotification: TablesInsert<'notification'> = {
+					event_id: eventData!.id,
+					sender: user!.id,
+					target: invitee,
+					type: "event"
+				};
+				return newNotification;
+			});
+
+			const { error: notificationError } = await supabase.from("notification").insert(notificationInvites);
+
+			if (notificationError) {
+				console.log(notificationError);
+			}
+
+			const { error: rsvpError } = await supabase.from("rsvp").insert(rsvpInvites);
 
 			if (rsvpError) {
 				console.log(rsvpError);

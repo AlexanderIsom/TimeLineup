@@ -6,6 +6,7 @@ import Inbox from "./navbar/inbox/inbox";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
+import HideOnRoute from "./hideOnRoute";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -29,10 +30,12 @@ export default async function Navbar() {
 				>
 					{signedIn ? (
 						<>
-							<Button asChild size={"sm"} className="bg-primary">
-								<Link href="/dashboard">dashboard</Link>
-							</Button>
-							{/* <Inbox /> */}
+							<HideOnRoute route="/dashboard">
+								<Button asChild size={"sm"} className="bg-primary">
+									<Link href="/dashboard">dashboard</Link>
+								</Button>
+							</HideOnRoute>
+							<Inbox />
 						</>
 					) : (
 						<Button asChild>

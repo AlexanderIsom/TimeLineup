@@ -25,16 +25,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	const { profile, user } = await getCurrentProfile();
 
 	return (
-
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
 				<div className="grid grid-rows-[auto_1fr] max-h-full h-screen w-screen">
-					<Navbar />
-					<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
-						<ReactQueryClientProvider>
+					<ReactQueryClientProvider>
+						<Navbar />
+						<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
 							{children}
-						</ReactQueryClientProvider>
-					</ScrollbarWrapper>
+						</ScrollbarWrapper>
+					</ReactQueryClientProvider>
 				</div>
 				{user &&
 					profile?.username && <RegisterUsernameModal />

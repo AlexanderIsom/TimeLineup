@@ -85,33 +85,34 @@ export type Database = {
       }
       notification: {
         Row: {
-          event: string
+          event_id: number | null
           id: number
-          message: string | null
-          seen: boolean
           sender: string | null
           target: string | null
           type: Database["public"]["Enums"]["notification_type"]
         }
         Insert: {
-          event: string
+          event_id?: number | null
           id?: number
-          message?: string | null
-          seen?: boolean
           sender?: string | null
           target?: string | null
           type: Database["public"]["Enums"]["notification_type"]
         }
         Update: {
-          event?: string
+          event_id?: number | null
           id?: number
-          message?: string | null
-          seen?: boolean
           sender?: string | null
           target?: string | null
           type?: Database["public"]["Enums"]["notification_type"]
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "event"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_notification_sender_fkey"
             columns: ["sender"]
