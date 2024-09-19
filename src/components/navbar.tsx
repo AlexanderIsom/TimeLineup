@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Calendar, LogIn, LogOut, MenuIcon } from "lucide-react";
+import { Calendar, LogIn, LogOut, MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Inbox from "./navbar/inbox/inbox";
@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 import HideOnRoute from "./hideOnRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default async function Navbar() {
 	const supabase = createClient();
@@ -26,7 +27,7 @@ export default async function Navbar() {
 				</Link>
 
 				<nav
-					className={`w-full ${signedIn ? "justify-end" : "justify-end"} hidden items-center gap-8 pr-4 md:flex`}
+					className={`w-full ${signedIn ? "justify-end" : "justify-end"}  items-center gap-8 pr-4 flex`}
 				>
 					{signedIn ? (
 						<>
@@ -45,7 +46,7 @@ export default async function Navbar() {
 				</nav>
 
 				<Sheet>
-					<SheetTrigger asChild className="block md:hidden">
+					<SheetTrigger asChild className="hidden md:hidden">
 						<Button size="icon" variant="outline">
 							<MenuIcon className="h-6 w-6" />
 						</Button>

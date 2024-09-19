@@ -11,7 +11,7 @@ import CopyProfileLink from "./copyProfileLink";
 export default async function DashboardNav() {
 	const { profile } = await getCurrentProfile();
 	return (
-		<nav className="prose size-full p-2 border-r flex flex-col justify-between">
+		<nav className="prose size-full p-2 border-r flex flex-col justify-between min-w-64">
 			<div className="flex flex-col justify-start gap-2">
 				<QueryButton query="dialog" value="new" className="flex gap-2" variant={"secondary"} >
 					<ListPlus className="size-5" />
