@@ -2,19 +2,21 @@
 import { Copy } from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Props {
 	path: string;
+	className?: string;
+	children?: React.ReactNode;
 }
 
-export default function CopyProfileLink({ path }: Props) {
+export default function CopyProfileLink({ path, className, children }: Props) {
 	return (
-		<Button variant={"ghost"} className="flex gap-2 justify-start text-gray-900" onClick={() => {
+		<Button variant={"ghost"} className={cn("flex gap-2 justify-start text-gray-900", className)} onClick={() => {
 			navigator.clipboard.writeText(path)
 			toast("Link coppied to clipboard")
 		}}>
-			<Copy className="size-5" />
-			copy profile page link
+			{children}
 		</Button>
 	)
 }

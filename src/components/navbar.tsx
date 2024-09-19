@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Calendar, LogIn, LogOut, MenuIcon, User } from "lucide-react";
+import { Calendar, Copy, ListPlus, LogIn, LogOut, MenuIcon, SquareUserRound, User, UserSearch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Inbox from "./navbar/inbox/inbox";
@@ -8,12 +8,12 @@ import { Separator } from "./ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 import HideOnRoute from "./hideOnRoute";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import QueryButton from "./queryButton";
+import CopyProfileLink from "./dashboard/copyProfileLink";
+import { getCurrentProfile } from "@/lib/session";
 
 export default async function Navbar() {
-	const supabase = createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+	const { profile, user } = await getCurrentProfile();
 	const signedIn = user !== null;
 
 	return (
@@ -27,7 +27,7 @@ export default async function Navbar() {
 				</Link>
 
 				<nav
-					className={`w-full ${signedIn ? "justify-end" : "justify-end"}  items-center gap-8 pr-4 flex`}
+					className={`w-full ${signedIn ? "justify-end" : "justify-end"}  items-center gap-8 pr-4 hidden md:flex`}
 				>
 					{signedIn ? (
 						<>
@@ -46,7 +46,7 @@ export default async function Navbar() {
 				</nav>
 
 				<Sheet>
-					<SheetTrigger asChild className="hidden md:hidden">
+					<SheetTrigger asChild className="block md:hidden">
 						<Button size="icon" variant="outline">
 							<MenuIcon className="h-6 w-6" />
 						</Button>
@@ -55,28 +55,69 @@ export default async function Navbar() {
 						{signedIn ? (
 							<div className="flex h-full flex-col justify-between">
 								<div className="grid gap-6 px-2 py-6">
-									<Inbox />
+									<QueryButton query="dialog" value="new" className="flex gap-2" variant={"secondary"} >
+										<ListPlus className="size-5" />
+										Create event
+									</QueryButton>
+
 									<SheetClose asChild>
 										<Link
-											href="/events"
+											href="/dashboard/events"
 											className="flex items-center font-medium hover:cursor-pointer hover:underline"
 										>
 											<Calendar className="mr-2 h-4 w-4" />
 											<span>Events</span>
 										</Link>
 									</SheetClose>
-								</div>
-								<SheetClose asChild>
-									<form action={"/auth/signout"} method="POST">
-										<button
-											type="submit"
-											className="flex items-center px-2 font-medium hover:cursor-pointer hover:underline"
+									<SheetClose asChild>
+										<Link
+											href="/dashboard/friends"
+											className="flex items-center font-medium hover:cursor-pointer hover:underline"
 										>
-											<LogOut className="mr-2 h-4 w-4" />
-											<span>Sign out</span>
-										</button>
-									</form>
-								</SheetClose>
+											<UserSearch className="mr-2 h-4 w-4" />
+											<span>Friends</span>
+										</Link>
+									</SheetClose>
+								</div>
+
+								<div className="flex flex-col gap-4 not-prose">
+									<SheetClose asChild>
+										<Link href="profile" className="no-underline flex gap-2">
+											< User className="size-5" />
+											edit profile
+										</Link>
+									</SheetClose>
+									<SheetClose asChild>
+										<Link href={`/me/${profile?.id}`} className="no-underline flex gap-2 ">
+											< SquareUserRound className="size-5" />
+											go to public profile page
+										</Link>
+									</SheetClose>
+
+									<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} className="p-0 h-fit text-base font-normal ">
+										<Copy className="size-5" />
+										copy profile page link
+									</CopyProfileLink>
+
+									<Separator className="mt-2" />
+									<div className="flex flex-col gap-2 mt-2">
+										<div className="flex w-full items-center justify-center gap-2">
+											<Avatar className="size-8 not-prose">
+												<AvatarImage src={profile!.avatar_url ?? undefined} />
+												<AvatarFallback className="bg-gray-200">
+													<User />
+												</AvatarFallback>
+											</Avatar>
+											<p className="not-prose text-sm text-gray-900">{profile!.username}</p>
+										</div>
+										<form action={"/auth/signout"} method="POST">
+											<Button variant={"ghost"} className="flex gap-2 justify-center w-full text-gray-900">
+												<LogOut className="size-5" />
+												sign out
+											</Button>
+										</form>
+									</div>
+								</div>
 							</div>
 						) : (
 							<div className="flex h-full flex-col items-center justify-end">

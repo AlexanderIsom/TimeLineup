@@ -1,6 +1,6 @@
 
 import { getCurrentProfile } from "@/lib/session";
-import { CalendarCheck, ListPlus, LogOut, SquareUserRound, User, UserSearch } from "lucide-react";
+import { CalendarCheck, Copy, ListPlus, LogOut, SquareUserRound, User, UserSearch } from "lucide-react";
 import Link from "next/link";
 import QueryButton from "../queryButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -11,7 +11,7 @@ import CopyProfileLink from "./copyProfileLink";
 export default async function DashboardNav() {
 	const { profile } = await getCurrentProfile();
 	return (
-		<nav className="prose size-full p-2 border-r flex flex-col justify-between min-w-64">
+		<nav className="prose size-full p-2 border-r flex-col justify-between min-w-64 hidden md:flex">
 			<div className="flex flex-col justify-start gap-2">
 				<QueryButton query="dialog" value="new" className="flex gap-2" variant={"secondary"} >
 					<ListPlus className="size-5" />
@@ -45,7 +45,10 @@ export default async function DashboardNav() {
 						go to public profile page
 					</Link>
 				</Button>
-				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} />
+				<CopyProfileLink path={`${process.env.BASE_URL}/me/${profile!.id}`} >
+					<Copy className="size-5" />
+					copy profile page link
+				</CopyProfileLink>
 				<Separator className="mt-2" />
 				<div className="flex flex-col gap-2 mt-2">
 					<div className="flex w-full items-center justify-center gap-2">
