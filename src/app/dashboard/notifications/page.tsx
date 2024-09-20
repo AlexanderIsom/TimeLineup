@@ -3,11 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useSupabaseBrowser from "@/lib/supabase/browser";
-import { useQuery } from "@tanstack/react-query";
-import { User } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { MailOpen, User } from "lucide-react";
 import Link from "next/link";
 
 export default function NotificationsPage() {
+	const queryClient = useQueryClient();
 	const supabase = useSupabaseBrowser();
 
 	const { data: notifications, isLoading, isPending } = useQuery({
@@ -18,24 +19,41 @@ export default function NotificationsPage() {
 		}, refetchInterval: 10000
 	})
 
+	const deleteNotification = useMutation({
+		mutationFn: async (id: number) => {
+			const { data } = await supabase.from("notification").delete().eq("id", id)
+			return data;
+		},
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({ queryKey: ["getNotifications"] });
+		}
+	})
+
 	let content;
 
 	if (isPending) {
 		content = <div>loading...</div>
 	} else {
 		content = notifications?.map((notification) => {
-			return <Button key={notification.id} variant={"ghost"} asChild className="w-full not-prose flex justify-start px-2 py-6">
-				<Link className="flex gap-2 " href={notification.type === "event" ? `/dashboard/events/${notification.event_id}` : `/dashboard/friends`}>
-					<Avatar className="size-8">
-						<AvatarImage src={notification.sending_profile?.avatar_url ?? undefined} />
-						<AvatarFallback className="bg-gray-200">
-							<User />
-						</AvatarFallback>
-					</Avatar>
-					{notification.type === "event" && `${notification.sending_profile?.username} invited you to an event`}
-					{notification.type === "friend" && `${notification.sending_profile?.username} sent you a friend request`}
-				</Link>
-			</Button>
+			return <div key={notification.id} className="flex gap-2 items-center w-full">
+				<Button key={notification.id} variant={"ghost"} asChild className="w-full not-prose flex justify-start px-2 py-6">
+					<Link className="flex gap-2 " href={notification.type === "event" ? `/dashboard/events/${notification.event_id}` : `/dashboard/friends`}>
+						<Avatar className="size-8">
+							<AvatarImage src={notification.sending_profile?.avatar_url ?? undefined} />
+							<AvatarFallback className="bg-gray-200">
+								<User />
+							</AvatarFallback>
+						</Avatar>
+						{notification.type === "event" && `${notification.sending_profile?.username} invited you to an event`}
+						{notification.type === "friend" && `${notification.sending_profile?.username} sent you a friend request`}
+					</Link>
+				</Button>
+				<Button variant={"ghost"} size={"icon"} className="text-gray-200" onClick={() => {
+					deleteNotification.mutate(notification.id)
+				}}>
+					<MailOpen />
+				</Button>
+			</div>
 		})
 	}
 
