@@ -11,7 +11,7 @@ export default async function Friends() {
 	const profile = await getCurrentProfile()
 	await prefetchQuery(queryClient, getFriends(supabase))
 
-	return <div className="p-4 prose space-y-4 min-w-full flex flex-col">
+	return <div className="p-4 prose space-y-4 min-w-full flex flex-col col-start-2 col-end-3 ">
 		<div>
 			<h3 className="m-0">
 				Friends

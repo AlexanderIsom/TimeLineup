@@ -82,6 +82,7 @@ export default function CreateEvent() {
 	})
 	const [modalString, setModalString] = useQueryState("dialog");
 	const [isOpen, setIsOpen] = useState(false);
+	const [isSubmitting, setSubmitting] = useState(false);
 
 	const onSubmit = async (values: z.infer<typeof stepper.current.schema>) => {
 		stepper.switch({
@@ -94,6 +95,7 @@ export default function CreateEvent() {
 		})
 
 		if (stepper.isLast) {
+			setSubmitting(true);
 			const data = useEventStore.getState();
 			const { data: { user } } = await supabase.auth.getUser();
 
@@ -178,7 +180,7 @@ export default function CreateEvent() {
 						}}>Reset</Button>
 						<div className="flex gap-2">
 							<Button type="button" variant="secondary" className={stepper.isFirst ? "hidden" : ""} onClick={stepper.prev}>Back</Button>
-							<Button type="submit">Next</Button>
+							<Button type="submit" disabled={isSubmitting}>Next</Button>
 						</div>
 					</div>
 				</form>

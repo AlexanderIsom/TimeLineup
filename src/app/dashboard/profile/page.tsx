@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 export default async function Profile() {
 	const { profile } = await getCurrentProfile();
 
-	return <div className="flex flex-col gap-4 p-4 prose min-w-full ">
+	return <div className="flex flex-col gap-4 p-4 prose min-w-full col-start-2 col-end-3 ">
 		<div className="flex flex-col w-fit ">
 			<h3 className="m-0">
 				Profile

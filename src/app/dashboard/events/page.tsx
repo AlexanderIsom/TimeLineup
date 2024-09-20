@@ -14,7 +14,7 @@ export default async function Events() {
 	});
 
 	return (
-		<div className="flex grow flex-col gap-4 p-4 prose min-w-full">
+		<div className="flex grow flex-col gap-4 p-4 prose min-w-full col-start-2 col-end-3 ">
 			<div>
 				<h3 className="m-0">
 					Events

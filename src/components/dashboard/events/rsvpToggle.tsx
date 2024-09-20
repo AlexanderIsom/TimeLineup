@@ -20,7 +20,7 @@ export default function RsvpToggle({ rsvpId, defaultStatus }: Props) {
 
 	return (
 		<Select defaultValue={defaultStatus} onValueChange={onChange}>
-			<SelectTrigger className="w-[180px]">
+			<SelectTrigger className="w-full">
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>

@@ -14,7 +14,7 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 	const isHost = event.host === user.id;
 	const localRsvp = event.rsvps.find((rsvp) => rsvp.user_id === user.id);
 	return (
-		<div className="flex grow flex-col gap-4 p-4 prose min-w-full">
+		<div className="flex grow flex-col gap-4 p-4 prose min-w-full col-start-2 col-end-3 ">
 			<Card className="min-h-full p-4 flex flex-col">
 				<div className="not-prose text-center flex flex-col items-center">
 					<Avatar className="size-32">

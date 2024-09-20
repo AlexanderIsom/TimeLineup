@@ -65,47 +65,45 @@ export default function EventFilters() {
 					}
 					return true;
 				}).map((event) => {
-					return <div key={event.id} className="not-prose flex gap-2 items-center justify-between border p-2 rounded-md">
-						<div className="flex flex-col items-center justify-center text-center w-20">
-							<Avatar className="not-prose size-14">
-								<AvatarImage src={event.host_profile?.avatar_url ?? undefined} />
-								<AvatarFallback className="bg-gray-200">
-									<User />
-								</AvatarFallback>
-							</Avatar>
-							<p className="text-sm truncate w-20">{event.host_profile?.username}</p>
-
-						</div>
-						<div className="flex gap-2 h-full w-full mx-2">
-							<div className="flex flex-col text-center w-2/3">
-								<p className="text-xs text-gray-400 w-11/12">details</p>
-
-								<p className="font-bold truncate w-11/12">{event.title}</p>
-								<p className="text-sm truncate w-11/12">{event.description}</p>
+					return <div key={event.id} className="not-prose flex flex-col md:flex-row gap-2 items-center justify-between border p-2 rounded-md">
+						<div className="w-full flex gap-2">
+							<div className="flex flex-col items-center justify-center text-center w-20">
+								<Avatar className="not-prose size-14">
+									<AvatarImage src={event.host_profile?.avatar_url ?? undefined} />
+									<AvatarFallback className="bg-gray-200">
+										<User />
+									</AvatarFallback>
+								</Avatar>
+								<p className="text-sm truncate w-20">{event.host_profile?.username}</p>
 
 							</div>
+							<div className="flex gap-2 h-full w-full  mx-2">
+								<div className="flex flex-col text-center w-2/3">
+									<p className="text-xs text-gray-400 w-11/12">details</p>
 
-							<div className="flex flex-col text-center w-1/3">
-								<p className="text-xs text-gray-400">when</p>
-								<div className="flex flex-col items-center ">
-									<p>{format(event.date, "PPP")}</p>
-									<p className="text-xs">{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}</p>
+									<p className="font-bold truncate w-11/12">{event.title}</p>
+									<p className="text-sm truncate w-11/12">{event.description}</p>
+
+								</div>
+
+								<div className="flex flex-col text-center w-1/3">
+									<p className="text-xs text-gray-400">when</p>
+									<div className="flex flex-col items-center ">
+										<p>{format(event.date, "PPP")}</p>
+										<p className="text-xs">{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}</p>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div className="flex gap-2 min-w-64  justify-end">
-							<div className="flex gap-2">
-								<div className="flex items-center gap-2">
-									{event.is_host ? "Hosting" : <RsvpToggle rsvpId={event.local_rsvp!.id} defaultStatus={event.local_rsvp!.status} />}
-								</div>
-							</div>
-							<div>
-								<Button variant={"ghost"} asChild>
-									<Link href={`/dashboard/events/${event.id}`} className="no-underline underline-offset-2">
-										view
-									</Link>
-								</Button>
-							</div>
+						<div className="flex gap-2 min-w-64 justify-end w-full md:w-auto">
+							{event.is_host ? "Hosting" : <RsvpToggle rsvpId={event.local_rsvp!.id} defaultStatus={event.local_rsvp!.status} />}
+
+							<Button variant={"secondary"} asChild>
+								<Link href={`/dashboard/events/${event.id}`} className="no-underline underline-offset-2">
+									view
+								</Link>
+							</Button>
+
 						</div>
 					</div>
 				})}
@@ -144,9 +142,8 @@ export default function EventFilters() {
 				</Button>
 			</div>
 
-			<Card className="w-full h-full p-4">
-				{content}
-			</Card>
+			{content}
+
 		</>
 	)
 }

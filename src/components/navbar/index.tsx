@@ -1,16 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
-import { Calendar, Copy, ListPlus, LogIn, LogOut, MenuIcon, SquareUserRound, User, UserSearch } from "lucide-react";
+import { Bell, Calendar, Copy, ListPlus, LogIn, LogOut, MenuIcon, SquareUserRound, User, UserSearch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import Inbox from "./navbar/inbox/inbox";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
-import HideOnRoute from "./hideOnRoute";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import QueryButton from "./queryButton";
-import CopyProfileLink from "./dashboard/copyProfileLink";
+import Inbox from "./inbox";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
+import HideOnRoute from "../hideOnRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import QueryButton from "../queryButton";
+import CopyProfileLink from "../dashboard/copyProfileLink";
 import { getCurrentProfile } from "@/lib/session";
+import NotificationBadge from "./notiticationBadge";
 
 export default async function Navbar() {
 	const { profile, user } = await getCurrentProfile();
@@ -55,26 +56,45 @@ export default async function Navbar() {
 						{signedIn ? (
 							<div className="flex h-full flex-col justify-between">
 								<div className="grid gap-6 px-2 py-6">
+									<div className="flex h-fit items-center gap-1 text-2xl font-bold">
+										<Image src="/logo.svg" alt="logo" width={30} height={30} />
+										<span className="no-underline">
+											Time<span className="underline">Lineup.</span>
+										</span>
+									</div>
+
 									<QueryButton query="dialog" value="new" className="flex gap-2" variant={"secondary"} >
 										<ListPlus className="size-5" />
 										Create event
 									</QueryButton>
 
+									<Separator />
+
+									<SheetClose asChild>
+										<Link
+											href="/dashboard/notifications"
+											className="flex items-center font-medium hover:cursor-pointer group gap-2"
+										>
+											<Bell className="size-5" />
+											<span className="group-hover:underline">Notifications </span>
+											<NotificationBadge />
+										</Link>
+									</SheetClose>
 									<SheetClose asChild>
 										<Link
 											href="/dashboard/events"
-											className="flex items-center font-medium hover:cursor-pointer hover:underline"
+											className="flex items-center font-medium hover:cursor-pointer hover:underline gap-2"
 										>
-											<Calendar className="mr-2 h-4 w-4" />
+											<Calendar className="size-5" />
 											<span>Events</span>
 										</Link>
 									</SheetClose>
 									<SheetClose asChild>
 										<Link
 											href="/dashboard/friends"
-											className="flex items-center font-medium hover:cursor-pointer hover:underline"
+											className="flex items-center font-medium hover:cursor-pointer hover:underline gap-2"
 										>
-											<UserSearch className="mr-2 h-4 w-4" />
+											<UserSearch className="size-5" />
 											<span>Friends</span>
 										</Link>
 									</SheetClose>
@@ -137,6 +157,6 @@ export default async function Navbar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-		</nav>
+		</nav >
 	);
 }
