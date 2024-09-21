@@ -15,6 +15,10 @@ import { Check, Trash, User, UserPlus, X } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 import AddFriendForm from "./addFriendForm";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
 	profile: Tables<"profile">
@@ -24,6 +28,12 @@ export enum RequestStatus {
 	incoming,
 	outgoing,
 	accepted
+}
+
+const badgeStyles: { [key in RequestStatus]: string } = {
+	[RequestStatus.accepted]: "bg-green-500 text-black",
+	[RequestStatus.outgoing]: "bg-yellow-500 text-black",
+	[RequestStatus.incoming]: "bg-red-500 text-black"
 }
 
 type getFriendsReturnType = WithoutArray<Awaited<QueryData<ReturnType<typeof getFriends>>>>
@@ -50,6 +60,14 @@ export default function FriendFilters({ profile }: Props) {
 		}).sort((a, b) => a.profile.username!.localeCompare(b.profile.username!))
 	}, [friends, profile])
 
+	const onSelectChange = (value: string) => {
+		if (value === "all") {
+			setFilter(null)
+			return
+		}
+		setFilter(value)
+	}
+
 	let content: React.ReactNode;
 	if (!filteredFriends || filteredFriends.length === 0) {
 		content = <div className="size-full flex flex-col gap-2 justify-center items-center text-center">
@@ -62,7 +80,7 @@ export default function FriendFilters({ profile }: Props) {
 			</div>
 		</div>
 	} else {
-		content = <div className="flex flex-col gap-2 w-full p-8">
+		content = <div className="flex flex-col gap-2 w-full overflow-scroll">
 			{filteredFriends.filter((friend) => {
 				if (filter === null) return true;
 				return RequestStatus[friend.status] === filter;
@@ -76,12 +94,12 @@ export default function FriendFilters({ profile }: Props) {
 									<User />
 								</AvatarFallback>
 							</Avatar>
-							<h2 className="m-0">
-								{friend.profile.username}
+							<h2 className="m-0 flex flex-col md:items-center md:flex-row md:gap-2 ">
+								<div>{friend.profile.username}</div>
+								<Badge className={cn("not-prose size-fit ", badgeStyles[friend.status])}>
+									{RequestStatus[friend.status]}
+								</Badge>
 							</h2>
-							<h3 className="m-0">
-								- {RequestStatus[friend.status]}
-							</h3>
 							{friend.status === RequestStatus.outgoing &&
 								<Button variant={"ghost"} size={"icon"} onClick={() => {
 									deleteFriend({ id: friend.id })
@@ -136,29 +154,44 @@ export default function FriendFilters({ profile }: Props) {
 
 	return <>
 		<AddFriendForm />
-		<div className="flex gap-1">
-			<Button variant={filter === null ? "secondary" : "ghost"} onClick={() => {
-				setFilter(null);
-			}}>
-				All
-			</Button>
-			<Button variant={filter === "accepted" ? "secondary" : "ghost"} onClick={() => {
-				setFilter("accepted");
-			}}>
-				Friends
-			</Button>
-			<Button variant={filter === "incoming" ? "secondary" : "ghost"} onClick={() => {
-				setFilter("incoming");
-			}}>
-				Incoming
-			</Button>
-			<Button variant={filter === "outgoing" ? "secondary" : "ghost"} onClick={() => {
-				setFilter("outgoing");
-			}}>
-				Outgoing
-			</Button>
-		</div>
-		<Card className="w-full h-full">
+		<Card className="w-full h-full p-4 flex flex-col gap-2">
+			<div className="hidden md:flex gap-1">
+				<Button variant={filter === null ? "secondary" : "ghost"} onClick={() => {
+					setFilter(null);
+				}}>
+					All
+				</Button>
+				<Button variant={filter === "accepted" ? "secondary" : "ghost"} onClick={() => {
+					setFilter("accepted");
+				}}>
+					Friends
+				</Button>
+				<Button variant={filter === "incoming" ? "secondary" : "ghost"} onClick={() => {
+					setFilter("incoming");
+				}}>
+					Incoming
+				</Button>
+				<Button variant={filter === "outgoing" ? "secondary" : "ghost"} onClick={() => {
+					setFilter("outgoing");
+				}}>
+					Outgoing
+				</Button>
+			</div>
+
+			<Select defaultValue={filter ?? "all"} onValueChange={onSelectChange} value={filter ?? "all"}>
+				<SelectTrigger className="w-full flex md:hidden">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value="all">All</SelectItem>
+					<SelectItem value="accepted">Accepted</SelectItem>
+					<SelectItem value="incling">Incoming</SelectItem>
+					<SelectItem value="outgoing">Outgoing</SelectItem>
+				</SelectContent>
+			</Select>
+
+			<Separator />
+
 			{content}
 		</Card>
 	</>

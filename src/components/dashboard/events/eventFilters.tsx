@@ -11,6 +11,7 @@ import { Calendar, User } from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import RsvpToggle from "./rsvpToggle";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function EventFilters() {
 	const supabase = useSupabaseBrowser();
@@ -114,7 +115,7 @@ export default function EventFilters() {
 
 	return (
 		<>
-			<div className="flex gap-1">
+			<div className="hidden md:flex gap-1">
 				<Button variant={filter === "upcoming" ? "secondary" : "ghost"} onClick={() => {
 					setFilter("upcoming");
 				}}>
@@ -141,6 +142,19 @@ export default function EventFilters() {
 					Declined
 				</Button>
 			</div>
+
+			<Select defaultValue={filter ?? "upcoming"} onValueChange={setFilter} value={filter ?? "upcoming"}>
+				<SelectTrigger className="w-full flex md:hidden">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value="upcoming">Upcoming</SelectItem>
+					<SelectItem value="hosting">Hosting</SelectItem>
+					<SelectItem value="pending">Unconfirmed</SelectItem>
+					<SelectItem value="past">Past</SelectItem>
+					<SelectItem value="declined">Declined</SelectItem>
+				</SelectContent>
+			</Select>
 
 			{content}
 

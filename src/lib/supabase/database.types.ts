@@ -199,7 +199,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      friendship_status: "accepted" | "pending" | "blocked"
+      friendship_status: "accepted" | "pending"
       notification_type: "event" | "friend"
       rsvp_status: "pending" | "attending" | "declined"
     }
