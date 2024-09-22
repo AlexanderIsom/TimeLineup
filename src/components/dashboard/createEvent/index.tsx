@@ -163,12 +163,12 @@ export default function CreateEvent() {
 			}
 		}}
 	>
-		<DialogContent className="min-w-fit">
+		<DialogContent className="w-11/12 md: min-w-fit">
 			<DialogHeader>
 				{stepper.current.title}
 			</DialogHeader>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 min-w-0">
 					{stepper.switch({
 						addDetails: () => <DetailsForm />,
 						addInvitees: () => <FriendsForm />,

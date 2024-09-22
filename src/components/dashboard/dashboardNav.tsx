@@ -34,7 +34,7 @@ export default async function DashboardNav() {
 
 			<div className="flex flex-col justify-center">
 				<Button variant={"ghost"} className="flex gap-2 justify-start" asChild>
-					<Link href="profile" className="no-underline">
+					<Link href="/dashboard/profile" className="no-underline">
 						< User className="size-5" />
 						edit profile
 					</Link>

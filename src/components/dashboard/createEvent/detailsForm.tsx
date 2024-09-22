@@ -31,9 +31,9 @@ export default function DetailsForm() {
 				control={form.control}
 				name="title"
 				render={({ field }) => (
-					<FormItem>
+					<FormItem className="min-w-full">
 						<FormControl>
-							<Input placeholder="Title" {...field} />
+							<Input placeholder="Title" {...field} className="w-full" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -53,7 +53,7 @@ export default function DetailsForm() {
 					</FormItem>
 				)}
 			/>
-			<div className="flex gap-2">
+			<div className="flex flex-col gap-2">
 				<FormField
 					control={form.control}
 					name="date"
@@ -105,66 +105,68 @@ export default function DetailsForm() {
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name="startDateTime"
-					render={({ field }) => (
-						<FormItem className="flex flex-col text-center">
-							<TimeSelectorPopover
-								start={minStartTime}
-								end={endOfDay(minStartTime)}
-								selected={field.value}
-								onSelected={(date) => {
-									form.setValue("startDateTime", date);
-									setStartTime(date)
-									if (date >= form.getValues("endDateTime")) {
-										form.setValue("endDateTime", addMinutes(date, 15))
-									}
-								}}
-							>
-								<FormControl>
-									<Button
-										variant={"outline"}
-										className="w-28 flex gap-2"
-									>
-										{format(field.value, "K:mmaaa")}
-									</Button>
-								</FormControl>
-							</TimeSelectorPopover>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<div className="flex flex-col justify-end p-2">
-					-
-				</div>
-				<FormField
-					control={form.control}
-					name="endDateTime"
-					render={({ field }) => (
-						<FormItem className="flex flex-col text-center">
+				<div className="flex gap-2 w-full ">
+					<FormField
+						control={form.control}
+						name="startDateTime"
+						render={({ field }) => (
+							<FormItem className="flex flex-col text-center w-full">
+								<TimeSelectorPopover
+									start={minStartTime}
+									end={endOfDay(minStartTime)}
+									selected={field.value}
+									onSelected={(date) => {
+										form.setValue("startDateTime", date);
+										setStartTime(date)
+										if (date >= form.getValues("endDateTime")) {
+											form.setValue("endDateTime", addMinutes(date, 15))
+										}
+									}}
+								>
+									<FormControl>
+										<Button
+											variant={"outline"}
+											className="flex gap-2 w-full"
+										>
+											{format(field.value, "K:mmaaa")}
+										</Button>
+									</FormControl>
+								</TimeSelectorPopover>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<div className="flex flex-col justify-end p-2">
+						-
+					</div>
+					<FormField
+						control={form.control}
+						name="endDateTime"
+						render={({ field }) => (
+							<FormItem className="flex flex-col text-center w-full">
 
-							<TimeSelectorPopover
-								start={addMinutes(startTime, 15)}
-								end={endOfDay(startTime)}
-								selected={field.value}
-								onSelected={(date) => {
-									form.setValue("endDateTime", date);
-								}}
-							>
-								<FormControl>
-									<Button
-										variant={"outline"}
-										className="w-28 flex gap-2"
-									>
-										{format(field.value, "K:mmaaa")}
-									</Button>
-								</FormControl>
-							</TimeSelectorPopover>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+								<TimeSelectorPopover
+									start={addMinutes(startTime, 15)}
+									end={endOfDay(startTime)}
+									selected={field.value}
+									onSelected={(date) => {
+										form.setValue("endDateTime", date);
+									}}
+								>
+									<FormControl>
+										<Button
+											variant={"outline"}
+											className="flex gap-2 w-full"
+										>
+											{format(field.value, "K:mmaaa")}
+										</Button>
+									</FormControl>
+								</TimeSelectorPopover>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 			</div>
 		</>
 	)

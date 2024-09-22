@@ -6,7 +6,7 @@ export default function SignIn() {
 	return (
 		<div className="flex w-full h-full">
 			<div className="prose mx-auto mt-[10vh]">
-				<div className="flex flex-col items-center gap-2">
+				<div className="flex flex-col items-center gap-2 text-center">
 					<h3>Welcome to TimeLineup</h3>
 					<p>Hello there, please use one of the links below to continue</p>
 				</div>

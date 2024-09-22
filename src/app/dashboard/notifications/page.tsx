@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useSupabaseBrowser from "@/lib/supabase/browser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MailOpen, User } from "lucide-react";
+import { Bell, MailOpen, User } from "lucide-react";
 import Link from "next/link";
 
 export default function NotificationsPage() {
@@ -33,6 +33,17 @@ export default function NotificationsPage() {
 
 	if (isPending) {
 		content = <div>loading...</div>
+	} else if (!notifications || notifications.length === 0) {
+		content = <div className="size-full flex flex-col gap-2 justify-center items-center text-center">
+			<div className="bg-gray-200 rounded-full p-4">
+				<Bell className="size-8" />
+			</div>
+			<div className="flex flex-col gap-1 text-center items-center justify-center">
+				<h3 className="m-0">No notifications</h3>
+				<p className="m-0 text-wrap w-3/4">You have no new or unread notifications</p>
+			</div>
+		</div>
+
 	} else {
 		content = notifications?.map((notification) => {
 			return <div key={notification.id} className="flex gap-2 items-center w-full">
@@ -60,10 +71,10 @@ export default function NotificationsPage() {
 	return <div className="p-4 prose space-y-4 min-w-full flex flex-col col-start-2 col-end-3 ">
 		<div>
 			<h3 className="m-0">
-				Friends
+				Notifications
 			</h3>
 			<p className="m-0">
-				see and manage your friends.
+				see and manage your notifiations.
 			</p>
 		</div>
 		<Card className="h-full p-4 flex flex-col">
