@@ -1,12 +1,16 @@
+import DeleteButton from "@/components/dashboard/events/deleteButton";
 import RsvpFilters from "@/components/dashboard/events/rsvpFilters";
 import RsvpToggle from "@/components/dashboard/events/rsvpToggle";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getRsvps } from "@/lib/supabase/queries/getRsvps";
 import { createClient } from "@/lib/supabase/server";
 import { format } from "date-fns";
 import { User } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function EventPage({ params }: { params: { id: number } }) {
 	const supabase = createClient();
@@ -28,7 +32,7 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 					</Avatar>
 					{event?.host_profile?.username}
 				</div>
-				<Card >
+				<Card>
 					<CardHeader>
 						<CardTitle>{event?.title}</CardTitle>
 						<CardDescription>
@@ -36,7 +40,7 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 							{format(event.start_time, "HH:mm")} - {format(event.end_time, "HH:mm")}
 						</CardDescription>
 					</CardHeader>
-					<CardContent >
+					<CardContent className="flex flex-col gap-2" >
 						{event?.description === "" ? null : <>
 							<div className="flex gap-2 items-center ">
 								<div className="w-fit text-gray-400 ">
@@ -49,9 +53,11 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 							{event?.description}
 						</>
 						}
+						{isHost &&
+							<DeleteButton eventId={params.id} />
+						}
 					</CardContent>
 				</Card>
-
 
 				{!isHost && <RsvpToggle rsvpId={localRsvp!.id} defaultStatus={localRsvp!.status} />}
 
