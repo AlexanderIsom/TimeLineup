@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { getRsvps } from "@/lib/supabase/queries/getRsvps";
 import { createClient } from "@/lib/supabase/server";
-import { format } from "date-fns";
+import { format, isFuture } from "date-fns";
 import { User } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -20,6 +20,9 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 	if (!event || !user) return;
 	const isHost = event.host === user.id;
 	const localRsvp = event.rsvps.find((rsvp) => rsvp.user_id === user.id);
+	const mergedEndTime = new Date(event.date);
+	mergedEndTime.setHours(new Date(event.end_time).getHours());
+	mergedEndTime.setMinutes(new Date(event.end_time).getMinutes());
 	return (
 		<div className="flex grow flex-col gap-4 p-4 prose min-w-full col-start-2 col-end-3 ">
 			<Card className="min-h-full p-4 flex flex-col gap-2">
@@ -59,7 +62,7 @@ export default async function EventPage({ params }: { params: { id: number } }) 
 					</CardContent>
 				</Card>
 
-				{!isHost && <RsvpToggle rsvpId={localRsvp!.id} defaultStatus={localRsvp!.status} />}
+				{(!isHost && isFuture(mergedEndTime)) && <RsvpToggle rsvpId={localRsvp!.id} defaultStatus={localRsvp!.status} />}
 
 				<RsvpFilters rsvps={rsvps} />
 			</Card >

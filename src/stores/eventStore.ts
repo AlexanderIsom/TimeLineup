@@ -1,4 +1,4 @@
-import { DetailFormValues, InviteeFormValues } from "@/components/dashboard/createEvent";
+import { DetailFormValues } from "@/components/dashboard/createEvent";
 import { create } from "zustand";
 
 interface NewEventStore {
@@ -8,7 +8,7 @@ interface NewEventStore {
 	setInvitees: (invitees: string[]) => void;
 }
 
-export const useEventStore = create<NewEventStore>()((set) => ({
+export const useEventStore = create<NewEventStore>((set) => ({
 	details: {} as DetailFormValues,
 	invitees: [],
 	setDetails: (details: DetailFormValues) => {

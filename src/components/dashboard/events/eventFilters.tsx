@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useQueryState } from "nuqs";
 import RsvpToggle from "./rsvpToggle";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 export default function EventFilters() {
 	const supabase = useSupabaseBrowser();
@@ -66,6 +67,9 @@ export default function EventFilters() {
 					}
 					return true;
 				}).map((event) => {
+					const mergedEndTime = new Date(event.date);
+					mergedEndTime.setHours(new Date(event.end_time).getHours());
+					mergedEndTime.setMinutes(new Date(event.end_time).getMinutes());
 					return <div key={event.id} className="not-prose flex flex-col md:flex-row gap-2 items-center justify-between border p-2 rounded-md">
 						<div className="w-full flex gap-2">
 							<div className="flex flex-col items-center justify-center text-center w-20">
@@ -96,16 +100,17 @@ export default function EventFilters() {
 								</div>
 							</div>
 						</div>
-						<div className="flex gap-2 min-w-64 justify-end w-full md:w-auto">
-							{event.is_host ? "Hosting" : <RsvpToggle rsvpId={event.local_rsvp!.id} defaultStatus={event.local_rsvp!.status} />}
+						{isFuture(mergedEndTime) ?
+							<div className="flex gap-2 min-w-64 justify-end w-full md:w-auto">
+								{event.is_host ? "Hosting" : <RsvpToggle rsvpId={event.local_rsvp!.id} defaultStatus={event.local_rsvp!.status} />}
 
-							<Button variant={"secondary"} asChild>
-								<Link href={`/dashboard/events/${event.id}`} className="no-underline underline-offset-2">
-									view
-								</Link>
-							</Button>
+								<Button variant={"secondary"} asChild>
+									<Link href={`/dashboard/events/${event.id}`} className="no-underline underline-offset-2">
+										view
+									</Link>
+								</Button>
 
-						</div>
+							</div> : <div className="min-w-64 w-full flex justify-center"><Badge className="bg-red-500">Ended</Badge></div>}
 					</div>
 				})}
 			</div>

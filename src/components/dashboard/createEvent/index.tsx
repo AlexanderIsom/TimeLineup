@@ -103,7 +103,7 @@ export default function CreateEvent() {
 				host: user!.id,
 				title: data.details.title,
 				description: data.details.description,
-				date: data.details.date.toDateString(),
+				date: data.details.date.toISOString(),
 				start_time: data.details.startDateTime.toISOString(),
 				end_time: data.details.endDateTime.toISOString(),
 			}).select().single();

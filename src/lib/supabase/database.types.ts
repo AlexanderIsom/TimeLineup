@@ -20,12 +20,12 @@ export type Database = {
           title: string
         }
         Insert: {
-          date?: string
+          date: string
           description?: string
-          end_time?: string
+          end_time: string
           host: string
           id?: number
-          start_time?: string
+          start_time: string
           title?: string
         }
         Update: {
