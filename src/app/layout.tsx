@@ -1,17 +1,14 @@
-import Navbar from "@/components/navbar/navbar";
+import Navbar from "@/components/navbar";
+import RegisterUsernameModal from "@/components/registerUsernameModal";
+import ScrollbarWrapper from "@/components/scrollbarWrapper";
 import { Toaster } from "@/components/ui/sonner";
+import { getCurrentProfile } from "@/lib/session";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
-import ScrollbarWrapper from "@/components/scrollbarWrapper";
-import { ProfileModal } from "@/components/navbar/profile/profileModal";
-import { createClient } from "@/utils/supabase/server";
-import FriendsModal from "@/components/navbar/profile/manageFriends/friendsModal";
-import LoginDialog from "@/components/login/loginDialog";
-import RegisterUsernameModal from "@/components/navbar/profile/registerUsernameModal";
-import { getProfile } from "@/utils/utils";
+import { ReactQueryClientProvider } from "@/hooks/reactQueryClientprovider";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -25,28 +22,26 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-	const supabase = createClient();
-	const { profile, user } = await getProfile(supabase);
+	const { profile, user } = await getCurrentProfile();
 
 	return (
 		<html lang="en" className={`${inter.variable}`}>
 			<body className="overflow-hidden">
-				<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }}>
-					<Navbar />
-					<div className="flex h-screen flex-col pt-24">{children}</div>
-				</ScrollbarWrapper>
-				{user ? (
-					<>
-						<ProfileModal />
-						<FriendsModal />
-						{!profile.username && <RegisterUsernameModal />}
-					</>
-				) : (
-					<LoginDialog />
-				)}
+				<div className="grid grid-rows-[auto_1fr] max-h-full h-screen w-screen">
+					<ReactQueryClientProvider>
+						<Navbar />
+						<ScrollbarWrapper defer options={{ scrollbars: { autoHide: "move" } }} className="row-start-2 row-end-3 min-h-0 max-h-full " >
+							{children}
+						</ScrollbarWrapper>
+					</ReactQueryClientProvider>
+				</div>
+				{user &&
+					profile?.username && <RegisterUsernameModal />
+				}
 				<SpeedInsights />
 				<Toaster />
 			</body>
 		</html>
+
 	);
 }

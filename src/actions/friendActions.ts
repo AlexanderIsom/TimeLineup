@@ -1,141 +1,70 @@
 "use server";
-import { db } from "@/db";
-import { Profile, friendships, profiles } from "@/db/schema";
-import { WithoutArray } from "@/utils/TypeUtils";
-import { createClient } from "@/utils/supabase/server";
-import { and, eq, ilike, ne, or, sql } from "drizzle-orm";
+import { getUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function addFriend(usernameQuery: string) {
+export async function addFriendById(id: string) {
+	const user = await getUser();
+	if (!user) return;
+
 	const supabase = createClient();
 
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
-	}
+	const { data: pendingRequest } = await supabase
+		.from("friendship")
+		.select("*")
+		.or(`receving_user.eq.${id}, sending_user.eq.${id}`)
+		.maybeSingle();
 
-	const user = data.user;
-	const targetFriend = await db.query.profiles.findFirst({
-		where: ilike(profiles.username, usernameQuery!.toLowerCase()),
-	});
-
-	if (targetFriend === undefined || user.id === targetFriend.id) {
-		return { success: false, error: "Could not find username" };
-	}
-
-	const pendingRequest = await db.query.friendships.findFirst({
-		where: or(
-			and(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, targetFriend.id)),
-			and(eq(friendships.sending_user, targetFriend.id), eq(friendships.receiving_user, user.id)),
-		),
-	});
-
-	if (pendingRequest !== undefined) {
+	if (pendingRequest !== null) {
 		if (pendingRequest.status === "pending") {
-			acceptFriendRequest(targetFriend.id);
+			acceptFriendRequest(id);
 		}
 		return;
 	}
 
-	await db.insert(friendships).values({
+	await supabase.from("friendship").insert({
 		sending_user: user.id,
-		receiving_user: targetFriend.id,
+		receiving_user: id,
+	});
+
+	await supabase.from("notification").insert({
+		event_id: null,
+		sender: user.id,
+		target: id,
+		type: "friend",
 	});
 
 	revalidatePath("/", "layout");
 }
 
-export async function getUser() {
-	const supabase = createClient();
+export async function addFriendByName(username: string) {
+	const user = await getUser();
+	if (!user) return { success: false, error: "you are not logged in" };
 
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
+	const supabase = createClient();
+	const { data: targetUser } = await supabase
+		.from("profile")
+		.select("*")
+		.ilike("username", username.toLowerCase())
+		.single();
+
+	if (!targetUser || user!.id === targetUser.id) {
+		const message = user?.id === targetUser?.id ? "You cannot add yourself" : "Could not find username";
+		return { success: false, error: message };
 	}
 
-	const user = data.user;
-
-	return await db.query.profiles.findFirst({
-		where: eq(profiles.id, user.id),
-	});
-}
-
-export interface friendRequest {
-	id: string;
-	profile: Profile;
+	await addFriendById(targetUser.id);
+	return { success: true, message: "" };
 }
 
 export async function acceptFriendRequest(id: string) {
-	await db.update(friendships).set({ status: "accepted" }).where(eq(friendships.id, id));
+	const supabase = createClient();
+	await supabase.from("friendship").update({ status: "accepted" }).eq("id", id);
 	revalidatePath("/");
 }
 
 export async function removeFriend(id: string) {
-	await db.delete(friendships).where(eq(friendships.id, id));
+	const supabase = createClient();
+	await supabase.from("friendship").delete().eq("id", id);
 	revalidatePath("/");
 }
-
-export async function getFriendshipsWithStatus() {
-	const supabase = createClient();
-
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-
-	const queryResult = await db
-		.select({
-			id: friendships.id,
-			status: friendships.status,
-			incoming: sql<boolean>`friendship.receiving_user = ${user.id}`,
-			profile: { ...profiles },
-		})
-		.from(friendships)
-		.innerJoin(
-			profiles,
-			or(
-				and(ne(friendships.sending_user, user.id), eq(friendships.sending_user, profiles.id)),
-				and(ne(friendships.receiving_user, user.id), eq(friendships.receiving_user, profiles.id)),
-			),
-		)
-		.where(or(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, user.id)));
-
-	return queryResult;
-}
-
-export async function getFriends() {
-	const supabase = createClient();
-
-	const { data, error } = await supabase.auth.getUser();
-	if (error || !data?.user) {
-		return;
-	}
-
-	const user = data.user;
-
-	const queryResult = await db
-		.select({
-			profile: { ...profiles },
-		})
-		.from(friendships)
-		.innerJoin(
-			profiles,
-			or(
-				and(ne(friendships.sending_user, user.id), eq(friendships.sending_user, profiles.id)),
-				and(ne(friendships.receiving_user, user.id), eq(friendships.receiving_user, profiles.id)),
-			),
-		)
-		.where(
-			and(
-				or(eq(friendships.sending_user, user.id), eq(friendships.receiving_user, user.id)),
-				eq(friendships.status, "accepted"),
-			),
-		);
-
-	return queryResult.map((result) => result.profile);
-}
-
-export type FriendStatusAndProfiles = Awaited<ReturnType<typeof getFriendshipsWithStatus>>;
-export type FriendStatusAndProfile = WithoutArray<FriendStatusAndProfiles>;

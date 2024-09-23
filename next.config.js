@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+
+module.exports = {
+	async redirects() {
+		return [
+			{
+				source: "/dashboard",
+				destination: "/dashboard/events",
+				permanent: true,
+			},
+		];
+	},
 	images: {},
 };
-
-module.exports = nextConfig;

@@ -1,39 +1,30 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { useQueryState } from "nuqs";
 import { Button, ButtonProps } from "./ui/button";
-import { cn } from "@/lib/utils";
 
 type Props = ButtonProps & {
 	children?: React.ReactNode;
-	value: string;
-	styled?: boolean;
+	query: string;
+	value: string | undefined;
 	className?: string;
 };
 
-export default function QueryButton({ children, value, className, styled = true, ...props }: Props) {
-	const [modalString, setModalString] = useQueryState("modal");
-	if (styled) {
-		return (
-			<Button
-				{...props}
-				onClick={() => {
-					setModalString(value);
-				}}
-				className={cn(className)}
-			>
-				{children}
-			</Button>
-		);
-	}
-
+export default function QueryButton({ children, query, value, className, ...props }: Props) {
+	const [modalString, setModalString] = useQueryState(query);
 	return (
-		<button
-			className={cn(className)}
+		<Button
 			onClick={() => {
-				setModalString(value);
+				if (!value) {
+					setModalString(null);
+				} else {
+					setModalString(value);
+				}
 			}}
+			className={cn(className)}
+			{...props}
 		>
 			{children}
-		</button>
+		</Button>
 	);
 }
