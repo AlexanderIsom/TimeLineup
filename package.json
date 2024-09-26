@@ -7,9 +7,7 @@
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint",
-		"db:push": "drizzle-kit push:pg",
-		"db:pull": "drizzle-kit introspect:pg"
+		"lint": "next lint"
 	},
 	"dependencies": {
 		"@fontsource/roboto": "^5.0.12",
@@ -42,7 +40,6 @@
 		"date-fns": "^3.6.0",
 		"framer-motion": "^11.0.14",
 		"lucide-react": "^0.358.0",
-		"nanoid": "^5.0.7",
 		"next": "14.2.6",
 		"next-themes": "^0.3.0",
 		"nuqs": "^1.17.4",
@@ -52,14 +49,10 @@
 		"react": "^18.3.1",
 		"react-day-picker": "^8.10.0",
 		"react-dom": "^18.3.1",
-		"react-draggable": "^4.4.6",
 		"react-hook-form": "^7.51.1",
-		"react-resizable": "^3.0.5",
 		"sonner": "^1.4.41",
-		"swr": "^2.2.5",
 		"tailwind-merge": "^2.2.2",
 		"tailwindcss-animate": "^1.0.7",
-		"use-debounce": "^10.0.0",
 		"vaul": "^0.9.1",
 		"zod": "^3.22.4",
 		"zustand": "^4.5.2"
@@ -70,7 +63,6 @@
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
 		"autoprefixer": "^10.4.18",
-		"drizzle-kit": "^0.20.14",
 		"eslint": "^8.57.0",
 		"eslint-config-next": "14.1.3",
 		"postcss": "^8.4.35",

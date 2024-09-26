@@ -1,5 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
-import { Google, Discord, Apple } from "@/utils/icons/icons";
+import { Google, Github } from "@/utils/icons/icons";
 import Link from "next/link";
 
 export default function SignIn() {
@@ -20,17 +20,10 @@ export default function SignIn() {
 					</Link>
 					<Link
 						className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
-						href="/auth/discord"
+						href="/auth/github"
 					>
-						<Discord />
-						Continue with Discord
-					</Link>
-					<Link
-						className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
-						href="/auth/apple"
-					>
-						<Apple />
-						Continue with Apple
+						<Github />
+						Continue with Github
 					</Link>
 				</div>
 			</div>
