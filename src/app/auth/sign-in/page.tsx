@@ -1,5 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
-import { Google, Github } from "@/utils/icons/icons";
+import { Google, Github, Discord } from "@/utils/icons/icons";
 import Link from "next/link";
 
 export default function SignIn() {
@@ -11,20 +11,30 @@ export default function SignIn() {
 					<p>Hello there, please use one of the links below to continue</p>
 				</div>
 				<div className="mt-6 flex flex-col gap-2 items-center">
-					<Link
-						className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
-						href="/auth/google"
-					>
-						<Google />
-						Continue with Google
-					</Link>
-					<Link
-						className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
-						href="/auth/github"
-					>
-						<Github />
-						Continue with Github
-					</Link>
+					{process.env.SUPABASE_AUTH_GOOGLE_CLIENT_ID &&
+						<Link
+							className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
+							href="/auth/google"
+						>
+							<Google />
+							Continue with Google
+						</Link>}
+					{process.env.SUPABASE_AUTH_GITHUB_CLIENT_ID &&
+						<Link
+							className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
+							href="/auth/github"
+						>
+							<Github />
+							Continue with Github
+						</Link>}
+					{process.env.SUPABASE_AUTH_DISCORD_CLIENT_ID &&
+						<Link
+							className={`${buttonVariants({ variant: "outline" })} not-prose flex justify-center gap-2 w-56`}
+							href="/auth/discord"
+						>
+							<Discord />
+							Continue with Discord
+						</Link>}
 				</div>
 			</div>
 		</div>
