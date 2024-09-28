@@ -6,7 +6,7 @@ A live version of the application can be found at [timelineup.com](https://timel
 
 ## prerequisites
 
-This repo is desinged to work with supabase running in docker locally or hosted on supabase, you will need to install the [supabase cli](https://supabase.com/docs/guides/cli/getting-started) if you havent already and if you choose to run supabase locally you will need to make sure [docker](https://www.docker.com/) is installed and running. The instructions listed below are for running supabase locally in docker.
+This repo is desinged to work with supabase running in docker locally or hosted on supabase own [hosting](https://supabase.com/) platform, you will need to install the [supabase cli](https://supabase.com/docs/guides/cli/getting-started) if you havent already and if you choose to run supabase locally you will need to make sure [docker](https://www.docker.com/) is installed and running. The instructions listed below are for running supabase locally in docker.
 
 ## setup
 
