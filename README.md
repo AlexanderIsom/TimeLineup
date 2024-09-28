@@ -24,7 +24,7 @@ supabase start
 
 because supabase is pre configured theres no need to run the supabase init command.
 
-once supabase has setup the console will outout a list of addresses for supabase, copy the anon key adn the api url for use in the .env file
+once supabase has setup the console will outout a list of addresses for supabase, copy the anon key and the api url for use in the .env file
 
 stop the supabase docker container
 
