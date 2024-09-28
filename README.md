@@ -22,17 +22,14 @@ setup the docker conatainer and supabase docker container with the predefined sc
 supabase start
 ```
 
-because supabase is pre configured theres no need to run the supabase init command.
+because we have a predefined schema and config for supabase in this repo theres no need to run the supabase init command.
 
-once supabase has setup the console will outout a list of addresses for supabase, copy the anon key and the api url for use in the .env file
-
-stop the supabase docker container
-
+Once supabase has setup the console will outout a list of addresses for supabase, copy the anon key and the api url for use in the .env file and then stop the supabase docker container
 ```bash
 supabase stop
 ```
 
-before running the dev server you will need to create a `.env` file in the root of the project with the following variables
+Before running the dev server you will need to create a `.env` file in the root of the project with the following variables
 
 ```bash
 NEXT_PUBLIC_SUPABASE_ANON_KEY= *enter your supabase anon key here*
@@ -50,7 +47,7 @@ SUPABASE_AUTH_EXTERNAL_DISCORD_SECRET = [replace with discord secret]
 
 paste the values you previously copied from the supabase console into the .env file
 
-supabase is setup with 3 auth providers, google, github and discord. You can use any of these to login to the app but you will need to setup their oauth on their own sites and add them to the .env file with the matching variable. make sure when setting up each oauth that the redirect uri is set to the supabase "_api url_/auth/v1/callback"
+in this repo supabase is configured for use with 3 auth providers Google, Github and Discord. You can use any of these to login to the app but you will need to setup each oauth on the providers website and add the client id and secrets to the .env file accordingly. make sure when setting up each oauth that the redirect uri is set to the supabase "_api url_/auth/v1/callback"
 
 once your chosen oauth provider is setup and added to the .env file, re-start the supabase docker conatiner to enable auth with the .env values
 
@@ -64,4 +61,4 @@ you can now run the dev server with
 pnpm dev
 ```
 
-open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+open [http://localhost:3000](http://localhost:3000) with your browser to see the result and explore the app.
