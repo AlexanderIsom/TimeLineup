@@ -1,6 +1,6 @@
 ## Time Lineup
 
-TimeLineup is a event planning application built with [Next.js](https://nextjs.org/) as a means to explore authentication, route protection, data fetching in intervals, data fetching on the client and server with [TanStack Query](https://tanstack.com/query/latest) and [Supabase](https://supabase.com/)'s postgres database (making use of row level security policies) and [Tailwind CSS](https://tailwindcss.com/) for styling and finally state management with [Zustand](https://github.com/pmndrs/zustand).
+TimeLineup is a event planning application built with [Next.js](https://nextjs.org/) as a means to explore authentication, route protection, data fetching in intervals, data fetching on the client and server with [TanStack Query](https://tanstack.com/query/latest), [Supabase](https://supabase.com/)'s postgres database (making use of row level security policies), [Tailwind CSS](https://tailwindcss.com/) for styling and finally state management with [Zustand](https://github.com/pmndrs/zustand).
 
 A live version of the application can be found at [timelineup.com](https://timelineup.com/)
 
